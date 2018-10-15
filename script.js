@@ -60,8 +60,8 @@ function draw() {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
 						autoOpen : false,
-						height : 340,
-						width : 290,
+						height : 350,
+						width : 500,
 						modal : true,
 						resizable : false,
 						buttons : {
@@ -133,13 +133,20 @@ function init() {
 				SourcesForNode.AllSources[i].Name, TempIndex);
 		TempIndex++;
 	}
-	$("#SourceSignalType").change(function () {
+	$("#SourceSignalType").on("change paste keyup", function () {
 		$("#SourceSingnalParams").empty();
 		var SourceInt = parseInt($("#SourceSignalType").val());
 		for (var i = 0; i < SourcesForNode.AllSources[SourceInt].Parameters.length; i++) {
-			var TempString = '<div class="w3-col s6 m6 l6"><label><b>' + SourcesForNode.AllSources[SourceInt].Parameters[i].Name + '</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + SourcesForNode.AllSources[SourceInt].Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + SourcesForNode.AllSources[SourceInt].Parameters[i].Name + ', $'+ SourcesForNode.AllSources[SourceInt].Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + SourcesForNode.AllSources[SourceInt].Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
 			$("#SourceSingnalParams").append(TempString);
+			$("#SourceSingnalParam"+i).on("change paste keyup", function () {
+				$("#SourcesLaTeXRender").empty();
+				var TempString = SourcesForNode.AllSources[SourceInt].LaTeXString();
+				$("#SourcesLaTeXRender").append("$"+TempString+"$");
+				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+			});
 		}
+		$("#SourceSingnalParam0").change();
 	});
 	$("#SourceSignalType").change();
 	var TempSelect = document.getElementById("FunctionsName");
@@ -149,19 +156,20 @@ function init() {
 				StaticMathFunctions.AllFunctions[i].Name, TempIndex);
 		TempIndex++;
 	}
-	$("#FunctionsName").change(function () {
+	$("#FunctionsName").on("change paste keyup", function () {
 		$("#StaticFunctionParams").empty();
 		var FunctionInt = parseInt($("#FunctionsName").val());
 		for (var i = 0; i < StaticMathFunctions.AllFunctions[FunctionInt].Parameters.length; i++) {
-			var TempString = '<div class="w3-col s6 m6 l6"><label><b>' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Name + ', $'+ StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Name + ', $'+ StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
 			$("#StaticFunctionParams").append(TempString);
-			$("#FunctionsParam"+i).change(function () {
+			$("#FunctionsParam"+i).on("change paste keyup", function () {
+				$("#FunctionsLaTeXRender").empty();
 				var TempString = StaticMathFunctions.AllFunctions[FunctionInt].LaTeXString();
 				$("#FunctionsLaTeXRender").append("$"+TempString+"$");
 				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 			});
 		}
-		MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+		$("#FunctionsParam0").change();
 	});
 	$("#FunctionsName").change();
 }
