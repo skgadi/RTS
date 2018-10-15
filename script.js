@@ -128,34 +128,52 @@ function init() {
 	draw();
 	var TempSelect = document.getElementById("SourceSignalType");
 	var TempIndex = 0;
-	for (var i=0; i<SourcesForNode.AllSources.length; i++) {
+	for (var i = 0; i < SourcesForNode.AllSources.length; i++) {
 		TempSelect.options[TempSelect.options.length] = new Option(
-		SourcesForNode.AllSources[i].Name
-		, TempIndex);
+				SourcesForNode.AllSources[i].Name, TempIndex);
 		TempIndex++;
 	}
 	$("#SourceSignalType").change(function () {
 		$("#SourceSingnalParams").empty();
 		var SourceInt = parseInt($("#SourceSignalType").val());
-		for (var i=0; i< SourcesForNode.AllSources[SourceInt].Parameters.length; i++) {
-			var TempString = '<div class="w3-col s6  m6 l6"><label><b>'+SourcesForNode.AllSources[SourceInt].Parameters[i].Name+'</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="'+SourcesForNode.AllSources[SourceInt].Parameters[i].Value+'" id="SourceSingnalParam'+i+'"/></div>';
+		for (var i = 0; i < SourcesForNode.AllSources[SourceInt].Parameters.length; i++) {
+			var TempString = '<div class="w3-col s6 m6 l6"><label><b>' + SourcesForNode.AllSources[SourceInt].Parameters[i].Name + '</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + SourcesForNode.AllSources[SourceInt].Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
 			$("#SourceSingnalParams").append(TempString);
 		}
 	});
 	$("#SourceSignalType").change();
 	var TempSelect = document.getElementById("FunctionsName");
 	var TempIndex = 0;
-	for (var i=0; i<StaticMathFunctions.AllFunctions.length; i++) {
-		for (var j=0; j<StaticMathFunctions.AllFunctions[i].Functions.length; j++) {
-			TempSelect.options[TempSelect.options.length] = new Option(
-			StaticMathFunctions.AllFunctions[i].Functions[j].Name
-			, TempIndex);
-			TempIndex++;
-		}
+	for (var i = 0; i < StaticMathFunctions.AllFunctions.length; i++) {
+		TempSelect.options[TempSelect.options.length] = new Option(
+				StaticMathFunctions.AllFunctions[i].Name, TempIndex);
+		TempIndex++;
 	}
+	$("#FunctionsName").change(function () {
+		$("#StaticFunctionParams").empty();
+		var FunctionInt = parseInt($("#FunctionsName").val());
+		for (var i = 0; i < StaticMathFunctions.AllFunctions[FunctionInt].Parameters.length; i++) {
+			var TempString = '<div class="w3-col s6 m6 l6"><label><b>' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Name + ', $'+ StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
+			$("#StaticFunctionParams").append(TempString);
+			$("#FunctionsParam"+i).change(function () {
+				var TempString = StaticMathFunctions.AllFunctions[FunctionInt].LaTeXString();
+				$("#FunctionsLaTeXRender").append("$"+TempString+"$");
+				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+			});
+		}
+		MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+	});
+	$("#FunctionsName").change();
 }
 
 $(document).ready(function () {
+	MathJax.Hub.Config({
+		extensions : ["tex2jax.js"],
+		jax : ["input/TeX", "output/HTML-CSS"],
+		tex2jax : {
+			inlineMath : [["$", "$"], ["\\(", "\\)"]]
+		}
+	});
 	init();
 });
 
