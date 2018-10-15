@@ -126,32 +126,23 @@ function saveData(data, callback) {
 
 function init() {
 	draw();
-	$(".SourceFrequency").css("display", "none");
-	$(".SourceDutyCycle").css("display", "none");
+	var TempSelect = document.getElementById("SourceSignalType");
+	var TempIndex = 0;
+	for (var i=0; i<SourcesForNode.AllSources.length; i++) {
+		TempSelect.options[TempSelect.options.length] = new Option(
+		SourcesForNode.AllSources[i].Name
+		, TempIndex);
+		TempIndex++;
+	}
 	$("#SourceSignalType").change(function () {
-		switch($("#SourceSignalType").val()) {
-			case "STEP":
-				$(".SourceFrequency").css("display", "none");
-				$(".SourceDutyCycle").css("display", "none");
-				break;
-			case "SINE":
-				$(".SourceFrequency").css("display", "block");
-				$(".SourceDutyCycle").css("display", "none");
-				break;
-			case "SAWTOOTH":
-				$(".SourceFrequency").css("display", "block");
-				$(".SourceDutyCycle").css("display", "none");
-				break;
-			case "TRIANGLE":
-				$(".SourceFrequency").css("display", "block");
-				$(".SourceDutyCycle").css("display", "none");
-				break;
-			case "RECTANGULAR":
-				$(".SourceFrequency").css("display", "block");
-				$(".SourceDutyCycle").css("display", "block");
-				break;
+		$("#SourceSingnalParams").empty();
+		var SourceInt = parseInt($("#SourceSignalType").val());
+		for (var i=0; i< SourcesForNode.AllSources[SourceInt].Parameters.length; i++) {
+			var TempString = '<div class="w3-col s6  m6 l6"><label><b>'+SourcesForNode.AllSources[SourceInt].Parameters[i].Name+'</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="'+SourcesForNode.AllSources[SourceInt].Parameters[i].Value+'" id="SourceSingnalParam'+i+'"/></div>';
+			$("#SourceSingnalParams").append(TempString);
 		}
 	});
+	$("#SourceSignalType").change();
 	var TempSelect = document.getElementById("FunctionsName");
 	var TempIndex = 0;
 	for (var i=0; i<StaticMathFunctions.AllFunctions.length; i++) {

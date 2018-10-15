@@ -14,6 +14,7 @@
 	<script   src="https://code.jquery.com/jquery-3.3.1.min.js"   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="   crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="math-functions.js"></script>
+	<script src="sources.js"></script>
 	<script src="script.js"></script>
 </head>
 <body>
@@ -31,32 +32,9 @@
 			<div class="w3-col s6  m6 l6">
 				<label class="SourceSignalType"><b>Select a signal</b></label>
 				<select class="SourceSignalType w3-select w3-border w3-border-theme" id="SourceSignalType">
-					<option value="STEP">Step</option>
-					<option value="SINE">Sine</option>
-					<option value="SAWTOOTH">Sawtooth</option>
-					<option value="TRIANGLE">Triangle</option>
-					<option value="RECTANGULAR">Rectangular</option>
 				</select>
 			</div>
-			<div class="w3-col s6  m6 l6">
-				<label class="SourceAmplitude"><b>Amplitude</b></label>
-				<input class="SourceAmplitude w3-input w3-border w3-border-theme" type="number" value="1" id="SourceAmplitude"/>
-			</div>
-			<div class="w3-col s6  m6 l6">
-				<label class="SourceStartAt"><b>Start at</b></label>
-				<input class="SourceStartAt w3-input w3-border w3-border-theme" type="number" value="0" id="SourceStartAt"/>
-			</div>
-			<div class="w3-col s6  m6 l6">
-				<label class="SourceOffset"><b>Offset</b></label>
-				<input class="SourceOffset w3-input w3-border w3-border-theme" type="number" value="0" id="SourceOffset"/>
-			</div>
-			<div class="w3-col s6  m6 l6">
-				<label class="SourceFrequency"><b>Frequency</b></label>
-				<input class="SourceFrequency w3-input w3-border w3-border-theme" type="number" value="0" id="SourceFrequency"/>
-			</div>
-			<div class="w3-col s6  m6 l6">
-				<label class="SourceDutyCycle"><b>Duty cycle</b></label>
-				<input class="SourceDutyCycle w3-input w3-border w3-border-theme" type="number" value="0" id="SourceDutyCycle"/>
+			<div id="SourceSingnalParams">
 			</div>
 		</div>
 	</div>
