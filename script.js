@@ -5,6 +5,8 @@ var network = null;
 var data; // = getScaleFreeNetwork(25);
 var seed = 2;
 var dialog;
+var TempSourceNodeItem, TempFunctionNodeItem;
+
 function setDefaultLocale() {
 	var defaultLocal = navigator.language;
 	var select = document.getElementById('locale');
@@ -67,7 +69,7 @@ function draw() {
 						buttons : {
 							"Add node" : saveData.bind(this, data, callback),
 							Cancel : function () {
-								dialog.dialog("close");
+								cancelEdit(callback);
 							}
 						},
 						close : function () {}
@@ -78,13 +80,13 @@ function draw() {
 				dialog = $("#NodeEditor").dialog({
 						autoOpen : false,
 						height : 350,
-						width : 290,
+						width : 500,
 						modal : true,
 						resizable : false,
 						buttons : {
 							"Save node" : saveData.bind(this, data, callback),
 							Cancel : function () {
-								dialog.dialog("close");
+								cancelEdit(callback);
 							}
 						},
 						close : function () {}
@@ -118,7 +120,7 @@ function cancelEdit(callback) {
 function saveData(data, callback) {
 	var d = new Date();
 	var n = d.getTime();
-	data.id = n;
+	//data.id = n;
 	data.label = "Hey: " + n;
 	clearPopUp();
 	callback(data);
@@ -136,13 +138,15 @@ function init() {
 	$("#SourceSignalType").on("change paste keyup", function () {
 		$("#SourceSingnalParams").empty();
 		var SourceInt = parseInt($("#SourceSignalType").val());
-		for (var i = 0; i < SourcesForNode.AllSources[SourceInt].Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + SourcesForNode.AllSources[SourceInt].Parameters[i].Name + ', $'+ SourcesForNode.AllSources[SourceInt].Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + SourcesForNode.AllSources[SourceInt].Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
+		TempSourceNodeItem = SourcesForNode.AllSources[SourceInt];
+		for (var i = 0; i < TempSourceNodeItem.Parameters.length; i++) {
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempSourceNodeItem.Parameters[i].Name + ', $'+ TempSourceNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempSourceNodeItem.Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
 			$("#SourceSingnalParams").append(TempString);
 			$("#SourceSingnalParam"+i).on("change paste keyup", function () {
+				TempSourceNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
 				$("#SourcesLaTeXRender").empty();
-				var TempString = SourcesForNode.AllSources[SourceInt].LaTeXString();
-				$("#SourcesLaTeXRender").append("$"+TempString+"$");
+				var TempString = TempSourceNodeItem.LaTeXString();
+				$("#SourcesLaTeXRender").append(TempString);
 				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 			});
 		}
@@ -159,13 +163,15 @@ function init() {
 	$("#FunctionsName").on("change paste keyup", function () {
 		$("#StaticFunctionParams").empty();
 		var FunctionInt = parseInt($("#FunctionsName").val());
-		for (var i = 0; i < StaticMathFunctions.AllFunctions[FunctionInt].Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Name + ', $'+ StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + StaticMathFunctions.AllFunctions[FunctionInt].Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
+		TempFunctionNodeItem = StaticMathFunctions.AllFunctions[FunctionInt];
+		for (var i = 0; i < TempFunctionNodeItem.Parameters.length; i++) {
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempFunctionNodeItem.Parameters[i].Name + ', $'+ TempFunctionNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempFunctionNodeItem.Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
 			$("#StaticFunctionParams").append(TempString);
 			$("#FunctionsParam"+i).on("change paste keyup", function () {
+				TempFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
 				$("#FunctionsLaTeXRender").empty();
-				var TempString = StaticMathFunctions.AllFunctions[FunctionInt].LaTeXString();
-				$("#FunctionsLaTeXRender").append("$"+TempString+"$");
+				var TempString = TempFunctionNodeItem.LaTeXString();
+				$("#FunctionsLaTeXRender").append(TempString);
 				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 			});
 		}
@@ -199,4 +205,10 @@ function OpenSelectNodeType(evt, cityName) {
 	}
 	document.getElementById(cityName).style.display = "block";
 	evt.currentTarget.className += " w3-red";
+}
+
+function ExtractNumberAtEnd (Str) {
+    var matches = Str.match(/\d+$/);
+	if (matches) return matches[0];
+	else return 0;
 }

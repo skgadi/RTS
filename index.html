@@ -21,12 +21,13 @@
 <body>
 <div id="NodeEditor" title="Node editor" style="display: none; padding: 0px;">
 	<div class="w3-bar w3-theme">
-		<button style="width:16.667%" class="w3-bar-item w3-button tablink w3-red" onclick="OpenSelectNodeType(event,'Sources')"><i class="fa fa-plug"></i></button>
-		<button style="width:16.667%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Sinks')"><i class="fas fa-chart-line"></i></button>
-		<button style="width:16.667%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Functions')"><i class="fa fa-superscript"></i></button>
-		<button style="width:16.667%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'SDomain')"><i class="fas fa-signature"></i></button>
-		<button style="width:16.667%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'ZDomain')"><i class="fa fa-barcode"></i></button>
-		<button style="width:16.667%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'HardwareIO')"><i class="fab fa-usb"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink w3-red" onclick="OpenSelectNodeType(event,'Sources')"><i class="fa fa-plug"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Sinks')"><i class="fas fa-chart-line"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Operators')"><i class="fas fa-plus"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Functions')"><i class="fa fa-superscript"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'SDomain')"><i class="fas fa-signature"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'ZDomain')"><i class="fa fa-barcode"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'HardwareIO')"><i class="fab fa-usb"></i></button>
 	</div>
 	<div id="Sources" class="w3-container NodeType" style = "padding: 0px;">
 		<div class="w3-row">
@@ -79,6 +80,8 @@
 			</div>
 		</div>
 	</div>
+	<div id="Operators" class="w3-container NodeType" style="padding: 0px; display:none">
+	</div>
 	<div id="Functions" class="w3-container NodeType" style="padding: 0px; display:none">
 		<div class="w3-row">
 			<div class="w3-col s3 m3 l3">
@@ -91,7 +94,7 @@
 		</div>
 		<div class="w3-row">
 			<div class="w3-col s12 m12 l12">
-				<label class="FunctionsLaTeXRender"><b>Functionality where $u(t)$ is input and $y(t)$ is output</b></label>
+				<label class="FunctionsLaTeXRender"><b>Functionality where $u$ is input and $y$ is output</b></label>
 				<div class="w3-col s12 m12 l12" id="FunctionsLaTeXRender">
 				</div>
 			</div>
