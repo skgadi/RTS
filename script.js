@@ -146,7 +146,7 @@ function saveData(data, callback) {
 	if (CurrentTab == "Sources") {
 		data.label = TempSourceNodeItem.String();
 		data.shape = "image";
-		data.image = TempSourceNodeItem.Image;
+		data.image = location+TempSourceNodeItem.Image;
 		data.gskExtra = TempSourceNodeItem;
 		data.gskExtra.Tab = "Sources";
 	} else if (CurrentTab == "Sinks") {

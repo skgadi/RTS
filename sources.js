@@ -2,7 +2,7 @@ var SourcesForNode = {
 	"AllSources": [
 	{
 		Name: "Step",
-		Image: "https://www.iconspng.com/clipart/function-generator/function-generator.svg",
+		Image: "images/tex/sources-figure0.png",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -72,7 +72,7 @@ var SourcesForNode = {
 	},
 	{
 		Name: "Sine",
-		Image: "https://www.iconspng.com/clipart/function-generator/function-generator.svg",
+		Image: "images/tex/sources-figure1.png",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -145,7 +145,7 @@ var SourcesForNode = {
 	},
 	{
 		Name: "Triangular",
-		Image: "https://www.iconspng.com/clipart/function-generator/function-generator.svg",
+		Image: "images/tex/sources-figure2.png",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -196,7 +196,7 @@ var SourcesForNode = {
 	},
 	{
 		Name: "Sawtooth",
-		Image: "https://www.iconspng.com/clipart/function-generator/function-generator.svg",
+		Image: "images/tex/sources-figure3.png",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -235,7 +235,7 @@ var SourcesForNode = {
 	},
 	{
 		Name: "Rectangular",
-		Image: "https://vectr.com/sgadi/bsQvM3HPK.svg?width=500&height=250&select=bsQvM3HPKpage0",
+		Image: "images/tex/sources-figure4.png",
 		Parameters: [
 		{
 			Name: "Amplitude",
