@@ -85,18 +85,24 @@ function draw() {
 							}
 						},
 						close : function () {}
-					});
-				dialog.dialog("open");
+					}).dialog("open");
 			},
 			editNode : function (data, callback) {
 				if (data.gskExtra === 'undefined') {
 				} else {
 					$("#btn"+data.gskExtra.Tab)[0].click();
-					var Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
-					$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
-					Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
-					for (var i=1; i<Elements.length; i++) {
-						$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value);
+					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions") {
+						var Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
+						$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
+						Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
+						for (var i=1; i<Elements.length; i++) {
+							$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value);
+						}
+					} else if (data.gskExtra.Tab == "Sinks") {
+						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
+						$("#SinksLineType").val(data.gskExtra.SinksLineType);
+						$("#SinksXAxisType").val(data.gskExtra.SinksXAxisType);
+						$("#SinksYAxisType").val(data.gskExtra.SinksYAxisType);
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
@@ -112,8 +118,7 @@ function draw() {
 							}
 						},
 						close : function () {}
-					});
-				dialog.dialog("open");
+					}).dialog("open");
 			},
 			addEdge : function (data, callback) {
 				if (data.from == data.to) {
@@ -146,20 +151,38 @@ function saveData(data, callback) {
 	if (CurrentTab == "Sources") {
 		data.label = TempSourceNodeItem.String();
 		data.shape = "image";
-		data.image = location+TempSourceNodeItem.Image;
+		data.image = TempSourceNodeItem.Image;
 		data.gskExtra = TempSourceNodeItem;
-		data.gskExtra.Tab = "Sources";
+		data.gskExtra.MaxInputs = 0;
+		data.gskExtra.MaxOutputs = 1;
 	} else if (CurrentTab == "Sinks") {
 		data.label = "Output";
 		data.shape = "image";
-		data.image = "https://www.iconspng.com/clipart/mono-oscilloscope/mono-oscilloscope.svg";
-		//data.gskExtra.Tab = "Sinks";
+		data.image = "images/oscilloscope.png";
+		data.gskExtra = {
+			SinksPlotType: $("#SinksPlotType").val(),
+			SinksLineType: $("#SinksLineType").val(),
+			SinksXAxisType: $("#SinksXAxisType").val(),
+			SinksYAxisType: $("#SinksYAxisType").val(),
+			MaxOutputs: 0,
+		};
+		if ($("#SinksPlotType").val() == "XYGRAPH") data.gskExtra.MaxInputs = 2;
+		else data.gskExtra.MaxInputs = 1;
 	} else if (CurrentTab == "Functions") {
 		data.label = TempFunctionNodeItem.String();
-		data.shape = "box";
+		data.shape = "image";
+		data.image = TempFunctionNodeItem.Image;
 		data.gskExtra = TempFunctionNodeItem;
-		data.gskExtra.Tab = "Functions";
-	} else data.label = "Hey: " + n;
+		data.gskExtra.MaxInputs = 1;
+		data.gskExtra.MaxOutputs = 1;
+	} else {
+		data.label = "Hey: " + n;
+		data.gskExtra = {
+			MaxInputs: 1,
+			MaxOutputs: 1,			
+		}
+	}
+	data.gskExtra.Tab = CurrentTab;
 	clearPopUp();
 	callback(data);
 }

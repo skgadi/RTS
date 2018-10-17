@@ -2,7 +2,7 @@ var StaticMathFunctions = {
 	"AllFunctions": [
 	{
 		Name: "Gain",
-		Image: "https://www.iconspng.com/clipart/mono-funct/mono-funct.svg",
+		Image: "images/tex/functions-figure0.png",
 		Parameters: [
 		{
 			Name: "Gain",
@@ -27,7 +27,7 @@ var StaticMathFunctions = {
 	},
 	{
 		Name: "Sine",
-		Image: "https://www.iconspng.com/clipart/mono-funct/mono-funct.svg",
+		Image: "images/tex/functions-figure1.png",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -53,7 +53,7 @@ var StaticMathFunctions = {
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
-			var f = Math.round(Math.PI*1000)/1000*2*this.Parameters[1].Value;
+			var f = Math.round(Math.PI*2*this.Parameters[1].Value*1000)/1000;
 			var Phi = this.Parameters[2].Value;
 			var StrOut="";
 			if (A!=0 && f!=0) {
@@ -80,7 +80,7 @@ var StaticMathFunctions = {
 	},
 	{
 		Name: "Cosine",
-		Image: "https://www.iconspng.com/clipart/mono-funct/mono-funct.svg",
+		Image: "images/tex/functions-figure2.png",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -106,7 +106,7 @@ var StaticMathFunctions = {
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
-			var f = Math.round(Math.PI*1000)/1000*2*this.Parameters[1].Value;
+			var f = Math.round(Math.PI*2*this.Parameters[1].Value*1000)/1000;
 			var Phi = this.Parameters[2].Value;
 			var StrOut="";
 			if (A!=0 && f!=0) {

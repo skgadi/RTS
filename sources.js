@@ -100,7 +100,7 @@ var SourcesForNode = {
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
-			var f = Math.round(Math.PI*1000)/1000*this.Parameters[1].Value*2;
+			var f = Math.round(Math.PI*this.Parameters[1].Value*2*1000)/1000;
 			var phi = this.Parameters[2].Value;
 			var O = this.Parameters[3].Value;
 			var StrOut;
