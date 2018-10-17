@@ -4,6 +4,7 @@
 	<title>Real-time simulation - S. K. Gadi</title>
 	<link rel="icon" type="image/png" href="favicon.png">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8">
 	<link rel="stylesheet" href="style.css"/>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" />
 	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -19,21 +20,24 @@
 	<script src="script.js"></script>
 </head>
 <body>
+<div style="position: absolute; bottom: 0; border: 0; right: 0; padding: 0px;" aria-hidden="true">
+	<p class="hit-the-floor" style="padding: 0px; margin: 0px;">Real-time simulation</p>
+</div>
 <div id="NodeEditor" title="Node editor" style="display: none; padding: 0px;">
 	<div class="w3-bar w3-theme">
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink w3-red" onclick="OpenSelectNodeType(event,'Sources')"><i class="fa fa-plug"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Sinks')"><i class="fas fa-chart-line"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Operators')"><i class="fas fa-plus"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'Functions')"><i class="fa fa-superscript"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'SDomain')"><i class="fas fa-signature"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'ZDomain')"><i class="fa fa-barcode"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink" onclick="OpenSelectNodeType(event,'HardwareIO')"><i class="fab fa-usb"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink w3-red" id="btnSources"    onclick="OpenSelectNodeType(event,'Sources')"   ><i class="fa fa-plug"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnSinks"      onclick="OpenSelectNodeType(event,'Sinks')"     ><i class="fas fa-chart-line"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnOperators"  onclick="OpenSelectNodeType(event,'Operators')" ><i class="fas fa-plus"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnFunctions"  onclick="OpenSelectNodeType(event,'Functions')" ><i class="fa fa-superscript"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnSDomain"    onclick="OpenSelectNodeType(event,'SDomain')"   ><i class="fas fa-signature"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnZDomain"    onclick="OpenSelectNodeType(event,'ZDomain')"   ><i class="fa fa-barcode"></i></button>
+		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnHardwareIO" onclick="OpenSelectNodeType(event,'HardwareIO')"><i class="fab fa-usb"></i></button>
 	</div>
 	<div id="Sources" class="w3-container NodeType" style = "padding: 0px;">
 		<div class="w3-row">
 			<div class="w3-col s3 m3 l3">
 				<label class="SourceSignalType"><b>Select a signal</b></label>
-				<select class="SourceSignalType w3-select w3-border w3-border-theme" id="SourceSignalType">
+				<select class="SourceSignalType w3-input w3-select w3-border w3-border-theme" id="SourceSignalType">
 				</select>
 			</div>
 			<div id="SourceSingnalParams">
@@ -51,14 +55,14 @@
 		<div class="w3-row">
 			<div class="w3-col s3 m3 l3">
 				<label class="SinksPlotType"><b>Plot type</b></label>
-				<select class="SinksPlotType w3-select w3-border w3-border-theme" id="SinksPlotType">
+				<select class="SinksPlotType w3-input w3-select w3-border w3-border-theme" id="SinksPlotType">
 					<option value="SCOPE">Scope</option>
 					<option value="XYGRAPH">XY Graph</option>
 				</select>
 			</div>
 			<div class="w3-col s3 m3 l3">
 				<label class="SinksLineType"><b>Line type</b></label>
-				<select class="SinksLineType w3-select w3-border w3-border-theme" id="SinksLineType">
+				<select class="SinksLineType w3-input w3-select w3-border w3-border-theme" id="SinksLineType">
 					<option value="SOLID">Solid</option>
 					<option value="DASHED">Dashed</option>
 					<option value="DOTTED">Dotted</option>
@@ -66,14 +70,14 @@
 			</div>
 			<div class="w3-col s3 m3 l3">
 				<label class="SinksXAxisType"><b>X-axis type</b></label>
-				<select class="SinksXAxisType w3-select w3-border w3-border-theme" id="SinksXAxisType">
+				<select class="SinksXAxisType w3-input w3-select w3-border w3-border-theme" id="SinksXAxisType">
 					<option value="LINEAR">Linear</option>
 					<option value="LOGARITHMIC">Logarithmic</option>
 				</select>
 			</div>
 			<div class="w3-col s3 m3 l3">
 				<label class="SinksYAxisType"><b>Y-axis type</b></label>
-				<select class="SinksYAxisType w3-select w3-border w3-border-theme" id="SinksYAxisType">
+				<select class="SinksYAxisType w3-input w3-select w3-border w3-border-theme" id="SinksYAxisType">
 					<option value="LINEAR">Linear</option>
 					<option value="LOGARITHMIC">Logarithmic</option>
 				</select>
@@ -86,7 +90,7 @@
 		<div class="w3-row">
 			<div class="w3-col s3 m3 l3">
 				<label class="FunctionsName"><b>Name</b></label>
-				<select class="FunctionsName w3-select w3-border w3-border-theme" id="FunctionsName">
+				<select class="FunctionsName w3-input w3-select w3-border w3-border-theme" id="FunctionsName">
 				</select>
 			</div>
 			<div id="StaticFunctionParams">

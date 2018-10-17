@@ -2,6 +2,7 @@ var StaticMathFunctions = {
 	"AllFunctions": [
 	{
 		Name: "Gain",
+		Image: "https://www.iconspng.com/clipart/mono-funct/mono-funct.svg",
 		Parameters: [
 		{
 			Name: "Gain",
@@ -13,7 +14,7 @@ var StaticMathFunctions = {
 			return this.Parameters[0].Value*x;
 		},
 		String: function () {
-			return this.Parameters[0].Value+"*u(t)";
+			return this.Parameters[0].Value+"u";
 		},
 		LaTeXString: function () {
 			var G = this.Parameters[0].Value;
@@ -26,6 +27,7 @@ var StaticMathFunctions = {
 	},
 	{
 		Name: "Sine",
+		Image: "https://www.iconspng.com/clipart/mono-funct/mono-funct.svg",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -51,9 +53,16 @@ var StaticMathFunctions = {
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
-			var f = this.Parameters[1].Value;
+			var f = Math.round(Math.PI*1000)/1000*2*this.Parameters[1].Value;
 			var Phi = this.Parameters[2].Value;
-			return A+"sin(" + Omega+"u(t) + " + Phase + ")";
+			var StrOut="";
+			if (A!=0 && f!=0) {
+				if (A!=1) StrOut = A;
+				StrOut += "sin("+f+"u";
+				if (Phi>0) StrOut += "+" + Phi;
+				if (Phi<0) StrOut += + Phi;
+				return StrOut +")";
+			} else return "y=0";
 		},
 		LaTeXString: function () {
 			var A = this.Parameters[0].Value;
@@ -71,6 +80,7 @@ var StaticMathFunctions = {
 	},
 	{
 		Name: "Cosine",
+		Image: "https://www.iconspng.com/clipart/mono-funct/mono-funct.svg",
 		Parameters: [
 		{
 			Name: "Amplitude",
@@ -96,9 +106,16 @@ var StaticMathFunctions = {
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
-			var f = this.Parameters[1].Value;
+			var f = Math.round(Math.PI*1000)/1000*2*this.Parameters[1].Value;
 			var Phi = this.Parameters[2].Value;
-			return A+"cos(" + Omega+"u(t) + " + Phase + ")";
+			var StrOut="";
+			if (A!=0 && f!=0) {
+				if (A!=1) StrOut = A;
+				StrOut += "cos("+f+"u";
+				if (Phi>0) StrOut += "+" + Phi;
+				if (Phi<0) StrOut += + Phi;
+				return StrOut +")";
+			} else return "0";
 		},
 		LaTeXString: function () {
 			var A = this.Parameters[0].Value;

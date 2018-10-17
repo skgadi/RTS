@@ -6,6 +6,7 @@ var data; // = getScaleFreeNetwork(25);
 var seed = 2;
 var dialog;
 var TempSourceNodeItem, TempFunctionNodeItem;
+var CurrentTab = "Sources";
 
 function setDefaultLocale() {
 	var defaultLocal = navigator.language;
@@ -36,10 +37,20 @@ function draw() {
 	var options = {
 		nodes : {
 			shape : 'box',
+			color :{
+				border: '#000000',
+				background: "#ffffff",
+			},
+			font: {
+				color: '#000000',
+			},
 		},
 		edges : {
+			color: {
+				color: '#000000',
+			},
 			arrows : {
-				middle : {
+				to : {
 					enabled : true,
 					scaleFactor : 1,
 					type : 'arrow'
@@ -58,6 +69,7 @@ function draw() {
 			},
 		},
 		manipulation : {
+			initiallyActive: true,
 			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
@@ -77,6 +89,16 @@ function draw() {
 				dialog.dialog("open");
 			},
 			editNode : function (data, callback) {
+				if (data.gskExtra === 'undefined') {
+				} else {
+					$("#btn"+data.gskExtra.Tab)[0].click();
+					var Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
+					$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
+					Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
+					for (var i=1; i<Elements.length; i++) {
+						$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value);
+					}
+				}
 				dialog = $("#NodeEditor").dialog({
 						autoOpen : false,
 						height : 350,
@@ -120,8 +142,24 @@ function cancelEdit(callback) {
 function saveData(data, callback) {
 	var d = new Date();
 	var n = d.getTime();
-	//data.id = n;
-	data.label = "Hey: " + n;
+	data.gskExtra = null;
+	if (CurrentTab == "Sources") {
+		data.label = TempSourceNodeItem.String();
+		data.shape = "image";
+		data.image = TempSourceNodeItem.Image;
+		data.gskExtra = TempSourceNodeItem;
+		data.gskExtra.Tab = "Sources";
+	} else if (CurrentTab == "Sinks") {
+		data.label = "Output";
+		data.shape = "image";
+		data.image = "https://www.iconspng.com/clipart/mono-oscilloscope/mono-oscilloscope.svg";
+		//data.gskExtra.Tab = "Sinks";
+	} else if (CurrentTab == "Functions") {
+		data.label = TempFunctionNodeItem.String();
+		data.shape = "box";
+		data.gskExtra = TempFunctionNodeItem;
+		data.gskExtra.Tab = "Functions";
+	} else data.label = "Hey: " + n;
 	clearPopUp();
 	callback(data);
 }
@@ -191,7 +229,7 @@ $(document).ready(function () {
 	init();
 });
 
-function OpenSelectNodeType(evt, cityName) {
+function OpenSelectNodeType(evt, TabId) {
 	var i,
 	x,
 	tablinks;
@@ -203,8 +241,9 @@ function OpenSelectNodeType(evt, cityName) {
 	for (i = 0; i < x.length; i++) {
 		tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
 	}
-	document.getElementById(cityName).style.display = "block";
+	document.getElementById(TabId).style.display = "block";
 	evt.currentTarget.className += " w3-red";
+	CurrentTab = TabId;
 }
 
 function ExtractNumberAtEnd (Str) {
@@ -212,3 +251,6 @@ function ExtractNumberAtEnd (Str) {
 	if (matches) return matches[0];
 	else return 0;
 }
+
+//$(".vis-manipulation").css("display", "none")
+//$(".vis-edit-mode").css("display", "none")
