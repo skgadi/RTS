@@ -73,6 +73,8 @@ function draw() {
 			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
+						dialogClass: 'noTitleStuff',
+						closeOnEscape: false,
 						autoOpen : false,
 						height : 350,
 						width : 500,
@@ -106,28 +108,56 @@ function draw() {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
+						dialogClass: 'noTitleStuff',
+						closeOnEscape: false,
 						autoOpen : false,
 						height : 350,
 						width : 500,
 						modal : true,
 						resizable : false,
 						buttons : {
-							"Save node" : saveData.bind(this, data, callback),
+							"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
 							Cancel : function () {
 								cancelEdit(callback);
 							}
 						},
-						close : function () {}
+						//close : function () {}
 					}).dialog("open");
 			},
 			addEdge : function (data, callback) {
-				if (data.from == data.to) {
-					var r = confirm("Do you want to connect the node to itself?");
-					if (r == true) {
-						callback(data);
+				var NoOfOutputs=0;
+				var NoOfInputs=0;
+				for(var element in network.body.edges) {
+					if (data.from == network.body.edges[element].fromId) NoOfOutputs++;
+					if (data.to == network.body.edges[element].toId) NoOfInputs++;
+				};
+				if (
+				(network.body.nodes[data.from].options.gskExtra.MaxOutputs>NoOfOutputs)
+				&&
+				(network.body.nodes[data.to].options.gskExtra.MaxInputs>NoOfInputs)
+				) callback(data);
+				else {
+					$.notify("This connection is not allowed", "warn");
+					callback(null);
+				}
+			},
+			editEdge : function (data, callback) {
+				var NoOfOutputs=0;
+				var NoOfInputs=0;
+				for(var element in network.body.edges) {
+					if (network.body.edges[element].id != data.id) {
+						if (data.from == network.body.edges[element].fromId) NoOfOutputs++;
+						if (data.to == network.body.edges[element].toId) NoOfInputs++;
 					}
-				} else {
-					callback(data);
+				};
+				if (
+				(network.body.nodes[data.from].options.gskExtra.MaxOutputs>NoOfOutputs)
+				&&
+				(network.body.nodes[data.to].options.gskExtra.MaxInputs>NoOfInputs)
+				) callback(data);
+				else {
+					$.notify("This connection is not allowed", "warn");
+					callback(null);
 				}
 			}
 		}
@@ -144,6 +174,24 @@ function cancelEdit(callback) {
 	callback(null);
 }
 
+function saveDataAndCheckEdges(data, callback) {
+	saveData(data, callback);
+	var NoOfOutputs=0;
+	var NoOfInputs=0;
+	for(var element in network.body.edges) {
+		if (network.body.edges[element].fromId == data.id) {
+			NoOfOutputs++;
+			if (NoOfOutputs>data.gskExtra.MaxOutputs)
+				network.body.data.edges.remove ({id: element});
+		}
+		if (network.body.edges[element].toId == data.id) {
+			NoOfInputs++;
+			if (NoOfInputs>data.gskExtra.MaxInputs)
+				network.body.data.edges.remove ({id: element});
+		}
+	};	
+}
+
 function saveData(data, callback) {
 	var d = new Date();
 	var n = d.getTime();
@@ -154,7 +202,7 @@ function saveData(data, callback) {
 		data.image = TempSourceNodeItem.Image;
 		data.gskExtra = TempSourceNodeItem;
 		data.gskExtra.MaxInputs = 0;
-		data.gskExtra.MaxOutputs = 1;
+		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "Sinks") {
 		data.label = "Output";
 		data.shape = "image";
@@ -174,12 +222,12 @@ function saveData(data, callback) {
 		data.image = TempFunctionNodeItem.Image;
 		data.gskExtra = TempFunctionNodeItem;
 		data.gskExtra.MaxInputs = 1;
-		data.gskExtra.MaxOutputs = 1;
+		data.gskExtra.MaxOutputs = Infinity;
 	} else {
 		data.label = "Hey: " + n;
 		data.gskExtra = {
 			MaxInputs: 1,
-			MaxOutputs: 1,			
+			MaxOutputs: Infinity,			
 		}
 	}
 	data.gskExtra.Tab = CurrentTab;
