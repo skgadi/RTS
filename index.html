@@ -21,6 +21,7 @@
 	<script src="sources.js"></script>
 	<script src="operators.js"></script>
 	<script src="transfer-functions.js"></script>
+	<script src="hardware-io.js"></script>
 	<script src="script.js"></script>
 </head>
 <body>
@@ -29,13 +30,12 @@
 </div>
 <div id="NodeEditor" title="Node editor" style="display: none; padding: 0px;">
 	<div class="w3-bar w3-theme">
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink w3-red" id="btnSources"           onclick="OpenSelectNodeType(event,'Sources')"           ><i class="fa fa-plug"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnSinks"             onclick="OpenSelectNodeType(event,'Sinks')"             ><i class="fas fa-chart-line"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnOperators"         onclick="OpenSelectNodeType(event,'Operators')"         ><i class="fas fa-plus"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnFunctions"         onclick="OpenSelectNodeType(event,'Functions')"         ><i class="fa fa-superscript"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnTransferFunctions" onclick="OpenSelectNodeType(event,'TransferFunctions')" ><i class="fas fa-signature"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnZDomain"           onclick="OpenSelectNodeType(event,'ZDomain')"           ><i class="fa fa-barcode"></i></button>
-		<button style="width:14.2857%" class="w3-bar-item w3-button tablink"        id="btnHardwareIO"        onclick="OpenSelectNodeType(event,'HardwareIO')"        ><i class="fab fa-usb"></i></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink w3-red" id="btnSources"           onclick="OpenSelectNodeType(event,'Sources')"           ><img src="images/tex/icons-figure0.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnFunctions"         onclick="OpenSelectNodeType(event,'Functions')"         ><img src="images/tex/icons-figure1.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnSinks"             onclick="OpenSelectNodeType(event,'Sinks')"             ><img src="images/tex/icons-figure2.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnOperators"         onclick="OpenSelectNodeType(event,'Operators')"         ><img src="images/tex/icons-figure3.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnTransferFunctions" onclick="OpenSelectNodeType(event,'TransferFunctions')" ><img src="images/tex/icons-figure4.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnHardwareIOs"        onclick="OpenSelectNodeType(event,'HardwareIOs')"        ><img src="images/tex/icons-figure5.png" style="width: 100%;" /></button>
 	</div>
 	<div id="Sources" class="w3-container NodeType" style = "padding: 0px;">
 		<div class="w3-row">
@@ -140,9 +140,23 @@
 			</div>
 		</div>
 	</div>
-	<div id="ZDomain" class="w3-container NodeType" style="padding: 0px; display:none">
-	</div>
-	<div id="HardwareIO" class="w3-container NodeType" style="padding: 0px; display:none">
+	<div id="HardwareIOs" class="w3-container NodeType" style="padding: 0px; display:none">
+		<div class="w3-row">
+			<div class="w3-col s3 m3 l3">
+				<label class="HardwareIOsName"><b>Static function</b></label>
+				<select class="HardwareIOsName w3-input w3-select w3-border w3-border-theme" id="HardwareIOsName">
+				</select>
+			</div>
+			<div id="HardwareIOsParams">
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col s12 m12 l12">
+				<label class="HardwareIOsNameLaTeXRender"><b>Functionality where $u$ is input and $y$ is output</b></label>
+				<div class="w3-col s12 m12 l12" id="HardwareIOsNameLaTeXRender">
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 

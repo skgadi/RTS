@@ -5,7 +5,7 @@ var network = null;
 var data; // = getScaleFreeNetwork(25);
 var seed = 2;
 var dialog;
-var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem;
+var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
 
 function setDefaultLocale() {
@@ -92,7 +92,7 @@ function draw() {
 				if (data.gskExtra === 'undefined') {
 				} else {
 					$("#btn"+data.gskExtra.Tab)[0].click();
-					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions" || data.gskExtra.Tab == "Operators" || data.gskExtra.Tab == "TransferFunctions") {
+					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions" || data.gskExtra.Tab == "Operators" || data.gskExtra.Tab == "TransferFunctions" || data.gskExtra.Tab == "HardwareIOs") {
 						var Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
 						$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
 						Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
@@ -203,9 +203,14 @@ function saveData(data, callback) {
 		data.gskExtra.MaxInputs = 0;
 		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "Sinks") {
-		data.label = "Output";
+		var TempImgId0, TempImgId1;
+		if ($("#SinksXAxisType").val() == "LINEAR" ) TempImgId0 = 0;
+		else TempImgId0 = 1;
+		if ($("#SinksYAxisType").val() == "LINEAR" ) TempImgId1 = 0;
+		else TempImgId1 = 1;
+		data.label = $("#SinksPlotType option:selected").text();
 		data.shape = "image";
-		data.image = "images/oscilloscope.png";
+		data.image = "images/tex/sinks-figure"+(TempImgId0*2+TempImgId1)+".png";
 		data.gskExtra = {
 			SinksPlotType: $("#SinksPlotType").val(),
 			SinksLineType: $("#SinksLineType").val(),
@@ -228,17 +233,21 @@ function saveData(data, callback) {
 		data.image = TempOperatorNodeItem.Image;
 		data.gskExtra = TempOperatorNodeItem;
 		data.gskExtra.MaxInputs = Infinity;
-		data.gskExtra.MaxOutputs = Infinity;		
+		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "TransferFunctions"){
 		data.label = TempTransferFunctionNodeItem.String();
-		console.log(data.label);
 		data.shape = "image";
 		data.image = TempTransferFunctionNodeItem.Image;
 		data.gskExtra = TempTransferFunctionNodeItem;
 		data.gskExtra.MaxInputs = 1;
-		data.gskExtra.MaxOutputs = Infinity;		
-	}else {
-		data.label = "Hey: " + n;
+		data.gskExtra.MaxOutputs = Infinity;
+	} else if (CurrentTab == "HardwareIOs"){
+		data.label = TempHardwareIONodeItem.String();
+		data.shape = "image";
+		data.image = TempHardwareIONodeItem.Image;
+		data.gskExtra = TempHardwareIONodeItem;
+	} else {
+		data.label = "Error: " + n;
 		data.gskExtra = {
 			MaxInputs: 1,
 			MaxOutputs: Infinity,			
@@ -342,6 +351,31 @@ function init() {
 			});
 		}
 		$("#TransferFunctionsParam0").change();
+	}).change();
+	// set HardwareIOs Tab
+	var TempSelect = document.getElementById("HardwareIOsName");
+	var TempIndex = 0;
+	for (var i = 0; i < HardwareIOsForNode.AllHardwareIOs.length; i++) {
+		TempSelect.options[TempSelect.options.length] = new Option(
+				HardwareIOsForNode.AllHardwareIOs[i].Name, TempIndex);
+		TempIndex++;
+	}
+	$("#HardwareIOsName").on("change paste keyup", function () {
+		$("#HardwareIOsParams").empty();
+		var HardwareIOsInt = parseInt($("#HardwareIOsName").val());
+		TempHardwareIONodeItem = HardwareIOsForNode.AllHardwareIOs[HardwareIOsInt];
+		for (var i = 0; i < TempHardwareIONodeItem.Parameters.length; i++) {
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempHardwareIONodeItem.Parameters[i].Name + ', $'+ TempHardwareIONodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempHardwareIONodeItem.Parameters[i].Value + '" id="HardwareIOsParam' + i + '"/></div>';
+			$("#HardwareIOsParams").append(TempString);
+			$("#HardwareIOsParam"+i).on("change paste keyup", function () {
+				TempHardwareIONodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
+				$("#HardwareIOsNameLaTeXRender").empty();
+				var TempString = TempHardwareIONodeItem.LaTeXString();
+				$("#HardwareIOsNameLaTeXRender").append(TempString);
+				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+			});
+		}
+		$("#HardwareIOsParam0").change();
 	}).change();
 }
 
