@@ -1,0 +1,81 @@
+\RequirePackage{fix-cm}
+%
+\RequirePackage{amsmath}
+
+
+
+%\documentclass{svjour3}                     % onecolumn (standard format)
+%\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
+%\documentclass[smallextended]{svjour3}       % onecolumn (second format)
+% \documentclass[twocolumn]{svjour3}          % twocolumn
+%\documentclass[letterpaper, 12pt, twocolumn]{article}
+\documentclass{article}
+\usepackage[cm]{fullpage}
+%\usepackage[margin=1in]{geometry}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+%\usepackage{physics}
+\newcommand{\me}{\mathrm{e}}
+\usepackage{amsmath}
+\usepackage{varwidth}
+\usepackage[binary-units]{siunitx}
+\usepackage{algpseudocode}
+\usepackage{circuitikz}
+
+
+%\usepackage[monochrome]{color}
+
+
+
+%\usepackage[round]{natbib}
+%\usepackage{apacite}
+\usepackage{url}
+
+
+\PassOptionsToPackage{monochrome}{xcolor}
+
+% For the flow charts
+\usepackage{tikz}
+\usetikzlibrary{
+	external, shapes.geometric, positioning
+}
+\tikzexternalize
+
+\usetikzlibrary{shapes.geometric, arrows, calc, positioning, arrows.meta}
+\tikzstyle{startstop} = [rectangle, thick, rounded corners=2.5mm, minimum width=2cm, minimum height=5mm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, thick, trapezium left angle=70, trapezium right angle=110, text width=3.75cm, minimum height=0.5cm, text centered, draw=black]
+\tikzstyle{process} = [rectangle, thick, minimum width=2.5cm, text width=4cm, minimum height=0.5cm, text centered, draw=black]
+\tikzstyle{block} = [rectangle, thick, minimum width=0.5cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{support} = [coordinate, join=by fuzzy]
+\tikzstyle{decision} = [diamond, thick, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{dottedbox} = [rectangle, dotted, thick, minimum width=2.5cm, text width=2.8cm, minimum height=0.5cm, text centered, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{dottedarrow} = [thick, dotted,->,>=stealth]
+\tikzstyle{FigureArrow} = [-{Stealth[length=3mm, width=2mm]}, line width=0.2mm]
+
+
+
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{patchplots}
+\pgfplotsset{compat=newest, samples=100} %Set this value to 65 for the final version
+%\usepgfplotslibrary{dateplot} 
+
+
+%\providecommand{\keywords}[1]{\textbf{\textit{Index terms---}} #1}
+
+%\journalname{Journal of Science Education and Technology}
+
+\begin{document}
+
+\begin{tikzpicture}
+	\node[circle, draw=black, line width=2]{\Huge \bf +};
+\end{tikzpicture}
+
+\begin{tikzpicture}
+	\node[circle, draw=black, line width=2]{\Huge \bf $\times$};
+\end{tikzpicture}
+
+\end{document}

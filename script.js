@@ -5,7 +5,7 @@ var network = null;
 var data; // = getScaleFreeNetwork(25);
 var seed = 2;
 var dialog;
-var TempSourceNodeItem, TempFunctionNodeItem;
+var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem;
 var CurrentTab = "Sources";
 
 function setDefaultLocale() {
@@ -92,7 +92,7 @@ function draw() {
 				if (data.gskExtra === 'undefined') {
 				} else {
 					$("#btn"+data.gskExtra.Tab)[0].click();
-					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions") {
+					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions" || data.gskExtra.Tab == "Operators" || data.gskExtra.Tab == "TransferFunctions") {
 						var Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
 						$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
 						Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
@@ -176,17 +176,18 @@ function saveDataAndCheckEdges(data, callback) {
 	saveData(data, callback);
 	var NoOfOutputs=0;
 	var NoOfInputs=0;
+	var RemoveElement = false;
 	for(var element in network.body.edges) {
+		RemoveElement = false;
 		if (network.body.edges[element].fromId == data.id) {
 			NoOfOutputs++;
-			if (NoOfOutputs>data.gskExtra.MaxOutputs)
-				network.body.data.edges.remove ({id: element});
+			if (NoOfOutputs>data.gskExtra.MaxOutputs) RemoveElement = true;
 		}
 		if (network.body.edges[element].toId == data.id) {
 			NoOfInputs++;
-			if (NoOfInputs>data.gskExtra.MaxInputs)
-				network.body.data.edges.remove ({id: element});
+			if (NoOfInputs>data.gskExtra.MaxInputs) RemoveElement = true;
 		}
+		if (RemoveElement) network.body.data.edges.remove ({id: element});
 	};	
 }
 
@@ -221,7 +222,22 @@ function saveData(data, callback) {
 		data.gskExtra = TempFunctionNodeItem;
 		data.gskExtra.MaxInputs = 1;
 		data.gskExtra.MaxOutputs = Infinity;
-	} else {
+	} else if (CurrentTab == "Operators"){
+		data.label = TempOperatorNodeItem.String();
+		data.shape = "image";
+		data.image = TempOperatorNodeItem.Image;
+		data.gskExtra = TempOperatorNodeItem;
+		data.gskExtra.MaxInputs = Infinity;
+		data.gskExtra.MaxOutputs = Infinity;		
+	} else if (CurrentTab == "TransferFunctions"){
+		data.label = TempTransferFunctionNodeItem.String();
+		console.log(data.label);
+		data.shape = "image";
+		data.image = TempTransferFunctionNodeItem.Image;
+		data.gskExtra = TempTransferFunctionNodeItem;
+		data.gskExtra.MaxInputs = 1;
+		data.gskExtra.MaxOutputs = Infinity;		
+	}else {
 		data.label = "Hey: " + n;
 		data.gskExtra = {
 			MaxInputs: 1,
@@ -235,6 +251,7 @@ function saveData(data, callback) {
 
 function init() {
 	draw();
+	// set Sources Tab
 	var TempSelect = document.getElementById("SourceSignalType");
 	var TempIndex = 0;
 	for (var i = 0; i < SourcesForNode.AllSources.length; i++) {
@@ -258,8 +275,8 @@ function init() {
 			});
 		}
 		$("#SourceSingnalParam0").change();
-	});
-	$("#SourceSignalType").change();
+	}).change();
+	// set Functions Tab
 	var TempSelect = document.getElementById("FunctionsName");
 	var TempIndex = 0;
 	for (var i = 0; i < StaticMathFunctions.AllFunctions.length; i++) {
@@ -283,8 +300,49 @@ function init() {
 			});
 		}
 		$("#FunctionsParam0").change();
-	});
-	$("#FunctionsName").change();
+	}).change();
+	// set Operators Tab
+	var TempSelect = document.getElementById("OperatorsName");
+	var TempIndex = 0;
+	for (var i = 0; i < OperatorsForNode.AllOperators.length; i++) {
+		TempSelect.options[TempSelect.options.length] = new Option(
+				OperatorsForNode.AllOperators[i].Name, TempIndex);
+		TempIndex++;
+	}
+	$("#OperatorsName").on("change paste keyup", function () {
+		$("#OperatorParams").empty();
+		var OperatorInt = parseInt($("#OperatorsName").val());
+		TempOperatorNodeItem = OperatorsForNode.AllOperators[OperatorInt];
+		var TempString = TempOperatorNodeItem.LaTeXString();
+		$("#OperatorsLaTeXRender").empty();
+		$("#OperatorsLaTeXRender").append(TempString);
+		MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+	}).change();
+	// set TransferFunctions Tab
+	var TempSelect = document.getElementById("TransferFunctionsName");
+	var TempIndex = 0;
+	for (var i = 0; i < TransferFunctionsForNode.AllTransferFunctions.length; i++) {
+		TempSelect.options[TempSelect.options.length] = new Option(
+				TransferFunctionsForNode.AllTransferFunctions[i].Name, TempIndex);
+		TempIndex++;
+	}
+	$("#TransferFunctionsName").on("change paste keyup", function () {
+		$("#TransferFunctionsParams").empty();
+		var TransferFunctionInt = parseInt($("#TransferFunctionsName").val());
+		TempTransferFunctionNodeItem = TransferFunctionsForNode.AllTransferFunctions[TransferFunctionInt];
+		for (var i = 0; i < TempTransferFunctionNodeItem.Parameters.length; i++) {
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempTransferFunctionNodeItem.Parameters[i].Name + ', $'+ TempTransferFunctionNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" value="' + TempTransferFunctionNodeItem.Parameters[i].Value + '" id="TransferFunctionsParam' + i + '"/></div>';
+			$("#TransferFunctionsParams").append(TempString);
+			$("#TransferFunctionsParam"+i).on("change paste keyup", function () {
+				TempTransferFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
+				$("#TransferFunctionsLaTeXRender").empty();
+				var TempString = TempTransferFunctionNodeItem.LaTeXString();
+				$("#TransferFunctionsLaTeXRender").append(TempString);
+				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+			});
+		}
+		$("#TransferFunctionsParam0").change();
+	}).change();
 }
 
 $(document).ready(function () {
