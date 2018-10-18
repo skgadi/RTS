@@ -73,7 +73,6 @@ function draw() {
 			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
-						dialogClass: 'noTitleStuff',
 						closeOnEscape: false,
 						autoOpen : false,
 						height : 350,
@@ -108,7 +107,6 @@ function draw() {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
-						dialogClass: 'noTitleStuff',
 						closeOnEscape: false,
 						autoOpen : false,
 						height : 350,
