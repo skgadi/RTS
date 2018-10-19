@@ -97,7 +97,8 @@ function draw() {
 						$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
 						Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
 						for (var i=1; i<Elements.length; i++) {
-							$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value);
+							console.log(data.gskExtra.Parameters[i-1].Value);
+							$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value).change();
 						}
 					} else if (data.gskExtra.Tab == "Sinks") {
 						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
@@ -194,12 +195,12 @@ function saveDataAndCheckEdges(data, callback) {
 function saveData(data, callback) {
 	var d = new Date();
 	var n = d.getTime();
-	data.gskExtra = null;
+	data.gskExtra = {};
 	if (CurrentTab == "Sources") {
 		data.label = TempSourceNodeItem.String();
 		data.shape = "image";
 		data.image = TempSourceNodeItem.Image;
-		data.gskExtra = TempSourceNodeItem;
+		data.gskExtra = CopyJSONForNodes(TempSourceNodeItem);
 		data.gskExtra.MaxInputs = 0;
 		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "Sinks") {
@@ -224,28 +225,28 @@ function saveData(data, callback) {
 		data.label = TempFunctionNodeItem.String();
 		data.shape = "image";
 		data.image = TempFunctionNodeItem.Image;
-		data.gskExtra = TempFunctionNodeItem;
+		data.gskExtra = CopyJSONForNodes(TempFunctionNodeItem);
 		data.gskExtra.MaxInputs = 1;
 		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "Operators"){
 		data.label = TempOperatorNodeItem.String();
 		data.shape = "image";
 		data.image = TempOperatorNodeItem.Image;
-		data.gskExtra = TempOperatorNodeItem;
+		data.gskExtra = CopyJSONForNodes(TempOperatorNodeItem);
 		data.gskExtra.MaxInputs = Infinity;
 		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "TransferFunctions"){
 		data.label = TempTransferFunctionNodeItem.String();
 		data.shape = "image";
 		data.image = TempTransferFunctionNodeItem.Image;
-		data.gskExtra = TempTransferFunctionNodeItem;
+		data.gskExtra = CopyJSONForNodes(TempTransferFunctionNodeItem);
 		data.gskExtra.MaxInputs = 1;
 		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "HardwareIOs"){
 		data.label = TempHardwareIONodeItem.String();
 		data.shape = "image";
 		data.image = TempHardwareIONodeItem.Image;
-		data.gskExtra = TempHardwareIONodeItem;
+		data.gskExtra = CopyJSONForNodes(TempHardwareIONodeItem);
 	} else {
 		data.label = "Error: " + n;
 		data.gskExtra = {
@@ -254,6 +255,7 @@ function saveData(data, callback) {
 		}
 	}
 	data.gskExtra.Tab = CurrentTab;
+	data.gskExtra.id = n;
 	clearPopUp();
 	callback(data);
 }
@@ -271,7 +273,8 @@ function init() {
 	$("#SourceSignalType").on("change paste keyup", function () {
 		$("#SourceSingnalParams").empty();
 		var SourceInt = parseInt($("#SourceSignalType").val());
-		TempSourceNodeItem = SourcesForNode.AllSources[SourceInt];
+		TempSourceNodeItem = new Object();
+		TempSourceNodeItem = CopyJSONForNodes(SourcesForNode.AllSources[SourceInt]);
 		for (var i = 0; i < TempSourceNodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempSourceNodeItem.Parameters[i].Name + ', $'+ TempSourceNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempSourceNodeItem.Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
 			$("#SourceSingnalParams").append(TempString);
@@ -296,7 +299,8 @@ function init() {
 	$("#FunctionsName").on("change paste keyup", function () {
 		$("#StaticFunctionParams").empty();
 		var FunctionInt = parseInt($("#FunctionsName").val());
-		TempFunctionNodeItem = StaticMathFunctions.AllFunctions[FunctionInt];
+		TempFunctionNodeItem = new Object();
+		TempFunctionNodeItem = CopyJSONForNodes(StaticMathFunctions.AllFunctions[FunctionInt]);
 		for (var i = 0; i < TempFunctionNodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempFunctionNodeItem.Parameters[i].Name + ', $'+ TempFunctionNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempFunctionNodeItem.Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
 			$("#StaticFunctionParams").append(TempString);
@@ -321,7 +325,8 @@ function init() {
 	$("#OperatorsName").on("change paste keyup", function () {
 		$("#OperatorParams").empty();
 		var OperatorInt = parseInt($("#OperatorsName").val());
-		TempOperatorNodeItem = OperatorsForNode.AllOperators[OperatorInt];
+		TempOperatorNodeItem = new Object();
+		TempOperatorNodeItem = CopyJSONForNodes(OperatorsForNode.AllOperators[OperatorInt]);
 		var TempString = TempOperatorNodeItem.LaTeXString();
 		$("#OperatorsLaTeXRender").empty();
 		$("#OperatorsLaTeXRender").append(TempString);
@@ -338,7 +343,8 @@ function init() {
 	$("#TransferFunctionsName").on("change paste keyup", function () {
 		$("#TransferFunctionsParams").empty();
 		var TransferFunctionInt = parseInt($("#TransferFunctionsName").val());
-		TempTransferFunctionNodeItem = TransferFunctionsForNode.AllTransferFunctions[TransferFunctionInt];
+		TempTransferFunctionNodeItem = new Object();
+		TempTransferFunctionNodeItem = CopyJSONForNodes(TransferFunctionsForNode.AllTransferFunctions[TransferFunctionInt]);
 		for (var i = 0; i < TempTransferFunctionNodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempTransferFunctionNodeItem.Parameters[i].Name + ', $'+ TempTransferFunctionNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" value="' + TempTransferFunctionNodeItem.Parameters[i].Value + '" id="TransferFunctionsParam' + i + '"/></div>';
 			$("#TransferFunctionsParams").append(TempString);
@@ -363,7 +369,8 @@ function init() {
 	$("#HardwareIOsName").on("change paste keyup", function () {
 		$("#HardwareIOsParams").empty();
 		var HardwareIOsInt = parseInt($("#HardwareIOsName").val());
-		TempHardwareIONodeItem = HardwareIOsForNode.AllHardwareIOs[HardwareIOsInt];
+		TempHardwareIONodeItem = new Object();
+		TempHardwareIONodeItem = CopyJSONForNodes(HardwareIOsForNode.AllHardwareIOs[HardwareIOsInt]);
 		for (var i = 0; i < TempHardwareIONodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempHardwareIONodeItem.Parameters[i].Name + ', $'+ TempHardwareIONodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempHardwareIONodeItem.Parameters[i].Value + '" id="HardwareIOsParam' + i + '"/></div>';
 			$("#HardwareIOsParams").append(TempString);
@@ -413,5 +420,13 @@ function ExtractNumberAtEnd (Str) {
 	else return 0;
 }
 
+function CopyJSONForNodes(Source) {
+	var target;
+	target = JSON.parse(JSON.stringify(Source));
+	target.Eval = Source.Eval;
+	target.String = Source.String;
+	target.LaTeXString = Source.LaTeXString;
+	return target;
+}
 //$(".vis-manipulation").css("display", "none")
 //$(".vis-edit-mode").css("display", "none")
