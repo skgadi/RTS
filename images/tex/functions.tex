@@ -70,23 +70,22 @@
 
 \begin{document}
 
-\begin{tikzpicture} [
-	triangle/.style = {line width=5, draw=black, regular polygon, regular polygon sides=3 },
-	node rotated/.style = {rotate=270},
-	]
-	\node[triangle, node rotated]{~~~~~~~~~~~~};
-\end{tikzpicture}
-
-\begin{tikzpicture}
-	\begin{axis}[domain=0:2*pi, tick style={draw=none}, ticks=none, ymax=1.1, ymin=-1.1, xmax=2*pi, xmin=0, line width=5]
-	\addplot [ mark=none]{sin(deg(x))};
+\begin{tikzpicture} 
+	\begin{axis}[domain=-1:1, tick style={draw=none}, ticks=none, ymax=1.1, ymin=-1.1, xmax=1.1, xmin=-1.1, line width=2.5, width=3.5cm, height=2.5cm]
+		\node[] at (axis cs: 0.0,0.0) {\Huge Gain};
 	\end{axis}
 \end{tikzpicture}
 
 \begin{tikzpicture}
-\begin{axis}[domain=0:2*pi, tick style={draw=none}, ticks=none, ymax=1.1, ymin=-1.1, xmax=2*pi, xmin=0, line width=5]
-\addplot [ mark=none]{cos(deg(x))};
-\end{axis}
+	\begin{axis}[domain=0:2*pi, tick style={draw=none}, ticks=none, ymax=1.1, ymin=-1.1, xmax=2*pi, xmin=0, line width=5, width=5cm, height=5cm]
+		\addplot [ mark=none]{sin(deg(x))};
+	\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+	\begin{axis}[domain=0:2*pi, tick style={draw=none}, ticks=none, ymax=1.1, ymin=-1.1, xmax=2*pi, xmin=0, line width=5, width=5cm, height=5cm]
+		\addplot [ mark=none]{cos(deg(x))};
+	\end{axis}
 \end{tikzpicture}
 
 

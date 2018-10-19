@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  18 OCT 2018 11:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  19 OCT 2018 12:14
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1336,18 +1336,20 @@ A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
  ) 
 Here is how much of TeX's memory you used:
- 40030 strings out of 493014
- 1017614 string characters out of 6137015
- 1210470 words of memory out of 5000000
- 43039 multiletter control sequences out of 15000+600000
- 7655 words of font info for 31 fonts, out of 8000000 for 9000
+ 40379 strings out of 493014
+ 1028476 string characters out of 6137015
+ 1211470 words of memory out of 5000000
+ 43386 multiletter control sequences out of 15000+600000
+ 13112 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 63i,8n,84p,10425b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
-<c:/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
-Output written on operators-figure0.pdf (1 page, 8399 bytes).
+ 63i,11n,84p,10425b,1828s stack positions out of 5000i,500n,10000p,200000b,80000s
+<c:/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/tex
+live/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2016
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
+Output written on operators-figure0.pdf (1 page, 24871 bytes).
 PDF statistics:
- 15 PDF objects out of 1000 (max. 8388607)
- 10 compressed objects within 1 object stream
+ 23 PDF objects out of 1000 (max. 8388607)
+ 16 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

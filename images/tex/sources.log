@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  17 OCT 2018 09:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  19 OCT 2018 12:14
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1417,7 +1417,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 {c:/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./sources-figur
 e0.pdf> <./sources-figure1.pdf> <./sources-figure2.pdf> <./sources-figure3.pdf>
-] [2 <./sources-figure4.pdf>] (./sources.aux) ) 
+ <./sources-figure4.pdf>] (./sources.aux) ) 
 Here is how much of TeX's memory you used:
  39996 strings out of 493014
  1016436 string characters out of 6137015
@@ -1426,12 +1426,12 @@ Here is how much of TeX's memory you used:
  6748 words of font info for 28 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,5n,84p,10386b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
-<c:/texlive/2016/texmf-dist/font
-s/type1/public/amsfonts/cm/cmr10.pfb>
-Output written on sources.pdf (2 pages, 13273 bytes).
+<c:/texlive/2016/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr10.pfb>
+Output written on sources.pdf (1 page, 12329 bytes).
 PDF statistics:
- 28 PDF objects out of 1000 (max. 8388607)
- 17 compressed objects within 1 object stream
+ 25 PDF objects out of 1000 (max. 8388607)
+ 15 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  38 words of extra memory for PDF output out of 10000 (max. 10000000)
 

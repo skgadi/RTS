@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  17 OCT 2018 10:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  19 OCT 2018 13:35
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1408,28 +1408,62 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 \c__siunitx_mathtt_int=\count187
 
-===== Image 'functions-figure0' is up-to-date. ======
-===== Image 'functions-figure1' is up-to-date. ======
-===== Image 'functions-figure2' is up-to-date. ======
+===== 'mode=convert with system call': Invoking 'pdflatex -shell-escape -halt-o
+n-error -interaction=batchmode -jobname "functions-figure0" "\def\tikzexternalr
+ealjob{functions}\input{functions}"' ========
+\openout3 = `functions.auxlock'.
+
+runsystem(pdflatex -shell-escape -halt-on-error -interaction=batchmode -jobname
+ "functions-figure0" "\def\tikzexternalrealjob{functions}\input{functions}")...
+executed.
+
+\openout3 = `functions.auxlock'.
+
+\openout3 = `functions-figure1.md5'.
+
+===== 'mode=convert with system call': Invoking 'pdflatex -shell-escape -halt-o
+n-error -interaction=batchmode -jobname "functions-figure1" "\def\tikzexternalr
+ealjob{functions}\input{functions}"' ========
+\openout3 = `functions.auxlock'.
+
+runsystem(pdflatex -shell-escape -halt-on-error -interaction=batchmode -jobname
+ "functions-figure1" "\def\tikzexternalrealjob{functions}\input{functions}")...
+executed.
+
+\openout3 = `functions.auxlock'.
+
+\openout3 = `functions-figure2.md5'.
+
+===== 'mode=convert with system call': Invoking 'pdflatex -shell-escape -halt-o
+n-error -interaction=batchmode -jobname "functions-figure2" "\def\tikzexternalr
+ealjob{functions}\input{functions}"' ========
+\openout3 = `functions.auxlock'.
+
+runsystem(pdflatex -shell-escape -halt-on-error -interaction=batchmode -jobname
+ "functions-figure2" "\def\tikzexternalrealjob{functions}\input{functions}")...
+executed.
+
+\openout3 = `functions.auxlock'.
+
 [1
 
 {c:/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./functions-fig
 ure0.pdf> <./functions-figure1.pdf> <./functions-figure2.pdf>]
 (./functions.aux) ) 
 Here is how much of TeX's memory you used:
- 39994 strings out of 493014
- 1016524 string characters out of 6137015
+ 39997 strings out of 493014
+ 1016537 string characters out of 6137015
  1210503 words of memory out of 5000000
  42999 multiletter control sequences out of 15000+600000
  6748 words of font info for 28 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,5n,84p,10388b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 <c:/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr10.pfb>
-Output written on functions.pdf (1 page, 12105 bytes).
+mr10.pfb><c:/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
+Output written on functions.pdf (1 page, 20182 bytes).
 PDF statistics:
- 21 PDF objects out of 1000 (max. 8388607)
- 13 compressed objects within 1 object stream
+ 27 PDF objects out of 1000 (max. 8388607)
+ 18 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  28 words of extra memory for PDF output out of 10000 (max. 10000000)
 

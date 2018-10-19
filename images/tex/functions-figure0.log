@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  17 OCT 2018 10:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2016.12.20)  19 OCT 2018 13:35
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1331,25 +1331,25 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 [1
 
-]
+{c:/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
 A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
  ) 
 Here is how much of TeX's memory you used:
- 40032 strings out of 493014
- 1017763 string characters out of 6137015
+ 40352 strings out of 493014
+ 1028056 string characters out of 6137015
  1211470 words of memory out of 5000000
- 43044 multiletter control sequences out of 15000+600000
- 7049 words of font info for 29 fonts, out of 8000000 for 9000
+ 43362 multiletter control sequences out of 15000+600000
+ 7348 words of font info for 30 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 63i,8n,84p,10425b,615s stack positions out of 5000i,500n,10000p,200000b,80000s
-
-Output written on functions-figure0.pdf (1 page, 1133 bytes).
+ 63i,11n,84p,10425b,1780s stack positions out of 5000i,500n,10000p,200000b,80000s
+<c:/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
+Output written on functions-figure0.pdf (1 page, 9311 bytes).
 PDF statistics:
- 11 PDF objects out of 1000 (max. 8388607)
- 7 compressed objects within 1 object stream
+ 15 PDF objects out of 1000 (max. 8388607)
+ 10 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
