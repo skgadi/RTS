@@ -96,10 +96,8 @@ function draw() {
 						var Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
 						$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
 						Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
-						for (var i=1; i<Elements.length; i++) {
-							console.log(data.gskExtra.Parameters[i-1].Value);
+						for (var i=1; i<Elements.length; i++)
 							$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value).change();
-						}
 					} else if (data.gskExtra.Tab == "Sinks") {
 						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
 						$("#SinksLineType").val(data.gskExtra.SinksLineType);
@@ -422,11 +420,80 @@ function ExtractNumberAtEnd (Str) {
 
 function CopyJSONForNodes(Source) {
 	var target;
-	target = JSON.parse(JSON.stringify(Source));
+	target = JSON.parse2(JSON.stringify2(Source));
 	target.Eval = Source.Eval;
 	target.String = Source.String;
 	target.LaTeXString = Source.LaTeXString;
 	return target;
 }
+
+// Taken from https://gist.github.com/kaustubh-karkare/6065251
+JSON.stringify2 = function(obj,replacer){
+	if(typeof(reviver)!=="function") replacer = undefined;
+	var reference = [], replace = {};
+	(function(obj){
+		if(typeof(obj)==="function" || obj===undefined) return;
+		var i;
+		// if this element is already in the reference array, return the index
+		if((i=reference.indexOf(obj))!==-1) return i;
+		// or else, push this element, and save the index, to be returned later
+		else i = reference.push(obj)-1;
+		// if this is an object (exceptions: RegExp & null)
+		if(obj && typeof(obj)==="object" && !(obj instanceof RegExp)){
+			var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
+			// recursively process this object
+			for(var key in obj)
+				if(typeof(obj[key])!=="function" && obj[key]!==undefined)
+					obj2[key] = arguments.callee(obj[key]);
+			// mark the original object for replacement later
+			replace[i] = obj2;
+		}
+		return i;
+	})(obj);
+	// replace the original objects in the reference array
+	for(var i in replace) reference[i] = replace[i];
+	return JSON.stringify(reference,function(key,value){
+		value = ( replacer ? replacer(key,value) : value );
+		if(typeof(value)==="string") return "S"+value;
+		else if(value!==value) return "N"; // NaN
+		else if(value===Infinity) return "I";
+		else if(value===-Infinity) return "i";
+		else if(value instanceof RegExp)
+			return "R"+value.lastIndex+"/"+(value.ignoreCase?"i":"")+
+				(value.global?"g":"")+(value.multiline?"m":"")+"/"+value.source;
+		else return value;
+	});
+};
+
+JSON.parse2 = function(obj_str,reviver){
+	if(typeof(reviver)!=="function") reviver = undefined;
+	var replace = {};
+	var reference = JSON.parse(obj_str,function(key,value){
+		var result;
+		if(typeof(value)!=="string") result = value;
+		else if(value[0]==="R"){
+			var i = value.indexOf("/"), j = value.indexOf("/",i+1);
+				k = new RegExp(value.substr(j+1), value.substr(i+1,j-i-1));
+			k.lastIndex = parseInt(value.substr(1,i-1));
+			result = k;
+		} else if(value[0]==="i") result = -Infinity;
+		else if(value[0]==="I") result = Infinity;
+		else if(value[0]==="N") result = NaN;
+		else if(value[0]==="S") result = value.substr(1);
+		else throw new Error("Invalid Item");
+		return ( reviver ? reviver(key,result) : result );
+	});
+	return (function(obj){
+		// if the item is not an object or an array, return immediately
+		if(!obj || typeof(obj)!=="object" || obj instanceof RegExp) return obj;
+		var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
+		// save a reference to new object corresponding to the index of the old one
+		replace[reference.indexOf(obj)] = obj2;
+		// if the item has not already been encountered, recursively process its components
+		for(var key in obj) obj2[key] = replace[obj[key]] || arguments.callee(reference[obj[key]]);
+		return obj2;
+	})(reference[0]);
+};
+
 //$(".vis-manipulation").css("display", "none")
 //$(".vis-edit-mode").css("display", "none")

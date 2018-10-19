@@ -24,7 +24,7 @@ var TransferFunctionsForNode = {
 			return 1;
 		},
 		String: function () {
-			return this.Parameters[0].Value + "/" + this.Parameters[1].Value;
+			return "(" + this.Parameters[0].Value + ") / (" + this.Parameters[1].Value + ")";
 		},
 		LaTeXString: function () {
 			var N = this.Parameters[0].Value;
@@ -81,7 +81,7 @@ var TransferFunctionsForNode = {
 			return 1;
 		},
 		String: function () {
-			return this.Parameters[0].Value + "/" + this.Parameters[1].Value;
+			return "(" + this.Parameters[0].Value + ") / (" + this.Parameters[1].Value + ")";
 		},
 		LaTeXString: function () {
 			var N = this.Parameters[0].Value;

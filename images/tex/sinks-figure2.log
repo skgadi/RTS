@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  18 OCT 2018 16:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  18 OCT 2018 21:48
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1072,14 +1072,14 @@ isable this.
  ) 
 Here is how much of TeX's memory you used:
  42571 strings out of 492649
- 1096801 string characters out of 6133400
+ 1096788 string characters out of 6133400
  1312418 words of memory out of 5000000
  45935 multiletter control sequences out of 15000+600000
  533681 words of font info for 37 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 80i,6n,136p,10417b,1611s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 80i,6n,136p,10417b,1613s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on sinks-figure2.pdf (1 page, 1566 bytes).
+Output written on sinks-figure2.pdf (1 page, 1361 bytes).
 PDF statistics:
  11 PDF objects out of 1000 (max. 8388607)
  7 compressed objects within 1 object stream
