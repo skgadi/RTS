@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  18 OCT 2018 15:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  19 OCT 2018 18:34
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1491,7 +1491,7 @@ isable this.
 \openout4 = `icons-figure5.dpth'.
 
 LaTeX Font Info:    Try loading font information for U+fontawesomeone on input 
-line 97.
+line 109.
 (c:/texlive/2018/texmf-dist/tex/latex/fontawesome/ufontawesomeone.fd
 File: ufontawesomeone.fd 2016/05/22 Font definitions for U/fontawesomeone.
 ) [1
@@ -1520,17 +1520,17 @@ Non-PDF special ignored!
 <special> ps:tx@Dict begin  gsave STV CP T /ps@rot 0 def grestore  end
 {c:/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] ) 
 Here is how much of TeX's memory you used:
- 49043 strings out of 492649
- 1186629 string characters out of 6133400
+ 49290 strings out of 492649
+ 1194622 string characters out of 6133400
  1459448 words of memory out of 5000000
- 52257 multiletter control sequences out of 15000+600000
+ 52504 multiletter control sequences out of 15000+600000
  539401 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 80i,8n,136p,10417b,680s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 80i,11n,136p,10417b,1858s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/20
 18/texmf-dist/fonts/enc/dvips/fontawesome/fontawesomeone.enc}<c:/texlive/2018/t
 exmf-dist/fonts/type1/public/fontawesome/FontAwesome.pfb>
-Output written on icons-figure5.pdf (1 page, 8197 bytes).
+Output written on icons-figure5.pdf (1 page, 8245 bytes).
 PDF statistics:
  16 PDF objects out of 1000 (max. 8388607)
  8 compressed objects within 1 object stream

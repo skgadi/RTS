@@ -7,6 +7,7 @@ var seed = 2;
 var dialog;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
+var OrderOfExecution=[];
 
 function setDefaultLocale() {
 	var defaultLocal = navigator.language;
@@ -99,6 +100,7 @@ function draw() {
 						for (var i=1; i<Elements.length; i++)
 							$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value).change();
 					} else if (data.gskExtra.Tab == "Sinks") {
+						$("#SinksLabel").val(data.label);
 						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
 						$("#SinksLineType").val(data.gskExtra.SinksLineType);
 						$("#SinksXAxisType").val(data.gskExtra.SinksXAxisType);
@@ -118,7 +120,7 @@ function draw() {
 								cancelEdit(callback);
 							}
 						},
-						//close : function () {}
+						close : function () {}
 					}).dialog("open");
 			},
 			addEdge : function (data, callback) {
@@ -207,7 +209,7 @@ function saveData(data, callback) {
 		else TempImgId0 = 1;
 		if ($("#SinksYAxisType").val() == "LINEAR" ) TempImgId1 = 0;
 		else TempImgId1 = 1;
-		data.label = $("#SinksPlotType option:selected").text();
+		data.label = $("#SinksLabel").val();
 		data.shape = "image";
 		data.image = "images/tex/sinks-figure"+(TempImgId0*2+TempImgId1)+".png";
 		data.gskExtra = {
@@ -497,3 +499,31 @@ JSON.parse2 = function(obj_str,reviver){
 
 //$(".vis-manipulation").css("display", "none")
 //$(".vis-edit-mode").css("display", "none")
+
+function GetOrderOfExecution() {
+	if (network != null) {
+		OrderOfExecution = [];
+		for (var TempEdge in network.body.edges) {
+			if (
+			(OrderOfExecution.indexOf(network.body.edges[TempEdge].toId) <0) &&
+			(network.body.nodes[network.body.edges[TempEdge].toId].options.gskExtra.MaxOutputs == 0)
+			) OrderOfExecution.push(network.body.edges[TempEdge].toId);
+		}
+		var TempIndex = 0;
+		if (OrderOfExecution.length>0) {
+			while (true) {
+				for (var TempEdge in network.body.edges) {
+					if (
+					(OrderOfExecution.indexOf(network.body.edges[TempEdge].fromId) < 0) &&
+					(network.body.edges[TempEdge].toId == OrderOfExecution[TempIndex])
+					) OrderOfExecution.push(network.body.edges[TempEdge].fromId);
+				}
+				TempIndex++;
+				if (TempIndex >= OrderOfExecution.length) break;
+			}
+		}
+	}
+	OrderOfExecution.forEach(function(TempNode) {
+		console.log(network.body.nodes[TempNode].options.label);
+	});
+}

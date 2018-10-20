@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  18 OCT 2018 15:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  19 OCT 2018 18:34
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1517,17 +1517,17 @@ A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
  ) 
 Here is how much of TeX's memory you used:
- 49094 strings out of 492649
- 1187099 string characters out of 6133400
+ 49327 strings out of 492649
+ 1195049 string characters out of 6133400
  1459448 words of memory out of 5000000
- 52287 multiletter control sequences out of 15000+600000
- 548962 words of font info for 89 fonts, out of 8000000 for 9000
+ 52534 multiletter control sequences out of 15000+600000
+ 548968 words of font info for 89 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 80i,9n,136p,10417b,703s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 80i,12n,136p,10417b,1881s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2018/texmf-dist/fonts/enc/dvips/mnsymbol/MnSymbolE.enc}<c:/texliv
-e/2018/texmf-dist/fonts/type1/public/mnsymbol/MnSymbol8.pfb><c:/texlive/2018/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb>
-Output written on icons-figure4.pdf (1 page, 11267 bytes).
+e/2018/texmf-dist/fonts/type1/public/mnsymbol/MnSymbol12.pfb><c:/texlive/2018/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb>
+Output written on icons-figure4.pdf (1 page, 11257 bytes).
 PDF statistics:
  20 PDF objects out of 1000 (max. 8388607)
  11 compressed objects within 1 object stream
