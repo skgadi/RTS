@@ -10,6 +10,8 @@ var StaticMathFunctions = {
 			Value: 1
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return this.Parameters[0].Value*x;
 		},
@@ -45,6 +47,8 @@ var StaticMathFunctions = {
 			Value: 0
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			var A = this.Parameters[0].Value;
 			var f = this.Parameters[1].Value;
@@ -98,6 +102,8 @@ var StaticMathFunctions = {
 			Value: 0
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			var A = this.Parameters[0].Value;
 			var f = this.Parameters[1].Value;

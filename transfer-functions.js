@@ -20,6 +20,8 @@ var TransferFunctionsForNode = {
 			Value: "0, 0"
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return 1;
 		},
@@ -77,6 +79,8 @@ var TransferFunctionsForNode = {
 			Value: "0, 0"
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return 1;
 		},

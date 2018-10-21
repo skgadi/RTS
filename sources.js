@@ -20,6 +20,8 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return 1;
 		},
@@ -95,6 +97,8 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return 1;
 		},
@@ -168,6 +172,8 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return 1;
 		},
@@ -219,6 +225,8 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return 1;
 		},
@@ -263,6 +271,8 @@ var SourcesForNode = {
 			Value: 0.5
 		},
 		],
+		Init: function () {
+		},
 		Eval: function (x) {
 			return 1;
 		},

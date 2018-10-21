@@ -7,7 +7,8 @@ var seed = 2;
 var dialog;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
-var OrderOfExecution=[];
+var OrderOfExecution = [];
+var SimulationState="Loading";
 
 function setDefaultLocale() {
 	var defaultLocal = navigator.language;
@@ -38,17 +39,17 @@ function draw() {
 	var options = {
 		nodes : {
 			shape : 'box',
-			color :{
-				border: '#000000',
-				background: "#ffffff",
+			color : {
+				border : '#000000',
+				background : "#ffffff",
 			},
-			font: {
-				color: '#000000',
+			font : {
+				color : '#000000',
 			},
 		},
 		edges : {
-			color: {
-				color: '#000000',
+			color : {
+				color : '#000000',
 			},
 			arrows : {
 				to : {
@@ -70,11 +71,11 @@ function draw() {
 			},
 		},
 		manipulation : {
-			initiallyActive: true,
+			initiallyActive : true,
 			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
-						closeOnEscape: false,
+						closeOnEscape : false,
 						autoOpen : false,
 						height : 350,
 						width : 500,
@@ -87,18 +88,22 @@ function draw() {
 							}
 						},
 						close : function () {}
-					}).dialog("open");
+					});
+					$(".ui-dialog-titlebar-close").css("display", "none");
+					dialog.dialog("open");
 			},
 			editNode : function (data, callback) {
-				if (data.gskExtra === 'undefined') {
-				} else {
-					$("#btn"+data.gskExtra.Tab)[0].click();
+				if (data.gskExtra === 'undefined') {}
+				else {
+					$("#btn" + data.gskExtra.Tab)[0].click();
 					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions" || data.gskExtra.Tab == "Operators" || data.gskExtra.Tab == "TransferFunctions" || data.gskExtra.Tab == "HardwareIOs") {
-						var Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
-						$(Elements[0]).val( $(Elements[0]).children().filter(function () { return $(this).html() == data.gskExtra.Name; }).val()).change();
-						Elements = $("#"+data.gskExtra.Tab).find(".w3-input");
-						for (var i=1; i<Elements.length; i++)
-							$(Elements[i]).val(data.gskExtra.Parameters[i-1].Value).change();
+						var Elements = $("#" + data.gskExtra.Tab).find(".w3-input");
+						$(Elements[0]).val($(Elements[0]).children().filter(function () {
+								return $(this).html() == data.gskExtra.Name;
+							}).val()).change();
+						Elements = $("#" + data.gskExtra.Tab).find(".w3-input");
+						for (var i = 1; i < Elements.length; i++)
+							$(Elements[i]).val(data.gskExtra.Parameters[i - 1].Value).change();
 					} else if (data.gskExtra.Tab == "Sinks") {
 						$("#SinksLabel").val(data.label);
 						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
@@ -108,7 +113,7 @@ function draw() {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
-						closeOnEscape: false,
+						closeOnEscape : false,
 						autoOpen : false,
 						height : 350,
 						width : 500,
@@ -121,39 +126,45 @@ function draw() {
 							}
 						},
 						close : function () {}
-					}).dialog("open");
+					});
+					$(".ui-dialog-titlebar-close").css("display", "none");
+					dialog.dialog("open");
 			},
 			addEdge : function (data, callback) {
-				var NoOfOutputs=0;
-				var NoOfInputs=0;
-				for(var element in network.body.edges) {
-					if (data.from == network.body.edges[element].fromId) NoOfOutputs++;
-					if (data.to == network.body.edges[element].toId) NoOfInputs++;
+				var NoOfOutputs = 0;
+				var NoOfInputs = 0;
+				for (var element in network.body.edges) {
+					if (data.from == network.body.edges[element].fromId)
+						NoOfOutputs++;
+					if (data.to == network.body.edges[element].toId)
+						NoOfInputs++;
 				};
 				if (
-				(network.body.nodes[data.from].options.gskExtra.MaxOutputs>NoOfOutputs)
-				&&
-				(network.body.nodes[data.to].options.gskExtra.MaxInputs>NoOfInputs)
-				) callback(data);
+					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
+					 &&
+					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs))
+					callback(data);
 				else {
 					$.notify("This connection is not allowed", "warn");
 					callback(null);
 				}
 			},
 			editEdge : function (data, callback) {
-				var NoOfOutputs=0;
-				var NoOfInputs=0;
-				for(var element in network.body.edges) {
+				var NoOfOutputs = 0;
+				var NoOfInputs = 0;
+				for (var element in network.body.edges) {
 					if (network.body.edges[element].id != data.id) {
-						if (data.from == network.body.edges[element].fromId) NoOfOutputs++;
-						if (data.to == network.body.edges[element].toId) NoOfInputs++;
+						if (data.from == network.body.edges[element].fromId)
+							NoOfOutputs++;
+						if (data.to == network.body.edges[element].toId)
+							NoOfInputs++;
 					}
 				};
 				if (
-				(network.body.nodes[data.from].options.gskExtra.MaxOutputs>NoOfOutputs)
-				&&
-				(network.body.nodes[data.to].options.gskExtra.MaxInputs>NoOfInputs)
-				) callback(data);
+					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
+					 &&
+					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs))
+					callback(data);
 				else {
 					$.notify("This connection is not allowed", "warn");
 					callback(null);
@@ -162,6 +173,15 @@ function draw() {
 		}
 	};
 	network = new vis.Network(container, data, options);
+	network.on('doubleClick', function (properties) {
+		//console.log(properties);
+		network.editNode();
+		network.editEdgeMode();
+		if (SimulationState == "Running")
+			if (properties.nodes.length == 1)
+				if (network.body.nodes[properties.nodes[0]].options.gskExtra.Tab == "Sinks")
+					network.body.nodes[properties.nodes[0]].options.gskExtra.Init();
+	});
 }
 
 function clearPopUp() {
@@ -170,26 +190,32 @@ function clearPopUp() {
 
 function cancelEdit(callback) {
 	clearPopUp();
+	$(".ui-dialog-titlebar-close").css("display", "inline-block");
 	callback(null);
 }
 
 function saveDataAndCheckEdges(data, callback) {
 	saveData(data, callback);
-	var NoOfOutputs=0;
-	var NoOfInputs=0;
+	var NoOfOutputs = 0;
+	var NoOfInputs = 0;
 	var RemoveElement = false;
-	for(var element in network.body.edges) {
+	for (var element in network.body.edges) {
 		RemoveElement = false;
 		if (network.body.edges[element].fromId == data.id) {
 			NoOfOutputs++;
-			if (NoOfOutputs>data.gskExtra.MaxOutputs) RemoveElement = true;
+			if (NoOfOutputs > data.gskExtra.MaxOutputs)
+				RemoveElement = true;
 		}
 		if (network.body.edges[element].toId == data.id) {
 			NoOfInputs++;
-			if (NoOfInputs>data.gskExtra.MaxInputs) RemoveElement = true;
+			if (NoOfInputs > data.gskExtra.MaxInputs)
+				RemoveElement = true;
 		}
-		if (RemoveElement) network.body.data.edges.remove ({id: element});
-	};	
+		if (RemoveElement)
+			network.body.data.edges.remove({
+				id : element
+			});
+	};
 }
 
 function saveData(data, callback) {
@@ -204,23 +230,70 @@ function saveData(data, callback) {
 		data.gskExtra.MaxInputs = 0;
 		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "Sinks") {
-		var TempImgId0, TempImgId1;
-		if ($("#SinksXAxisType").val() == "LINEAR" ) TempImgId0 = 0;
-		else TempImgId0 = 1;
-		if ($("#SinksYAxisType").val() == "LINEAR" ) TempImgId1 = 0;
-		else TempImgId1 = 1;
-		data.label = $("#SinksLabel").val();
-		data.shape = "image";
-		data.image = "images/tex/sinks-figure"+(TempImgId0*2+TempImgId1)+".png";
+		$("#Node" + data.id).remove();
+		$("#SinksDialogs").append("<div id='Node_" + data.id + "' style='padding: 0px;' title='" + $("#SinksLabel").val() + "'><div id='Chart_" + data.id + "'></div></div>");
+		var TempImgId0,
+		TempImgId1;
+		if ($("#SinksXAxisType").val() == "LINEAR")
+			TempImgId0 = 0;
+		else
+			TempImgId0 = 1;
+		if ($("#SinksYAxisType").val() == "LINEAR")
+			TempImgId1 = 0;
+		else
+			TempImgId1 = 1;
 		data.gskExtra = {
-			SinksPlotType: $("#SinksPlotType").val(),
-			SinksLineType: $("#SinksLineType").val(),
-			SinksXAxisType: $("#SinksXAxisType").val(),
-			SinksYAxisType: $("#SinksYAxisType").val(),
-			MaxOutputs: 0,
+			Name : $("#SinksLabel").val(),
+			Image : "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
+			SinksPlotType : $("#SinksPlotType").val(),
+			SinksLineType : $("#SinksLineType").val(),
+			SinksXAxisType : $("#SinksXAxisType").val(),
+			SinksYAxisType : $("#SinksYAxisType").val(),
+			MaxOutputs : 0,
+			DialogDiv : "Node_" + data.id,
+			ChartDiv : "Chart_" + data.id,
+			DialogID : "",
+			ChartID : "",
+			ChartData : "",
+			String : function () {
+				return SinksLabel;
+			},
+			Init : function () {
+				this.DialogID = $("#" + this.DialogDiv).dialog({
+						closeOnEscape : true,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : false,
+						resizable : false,
+					}).dialog("open");
+				//Chart Initialization
+				var options = {
+					legend : "none",
+					chartArea : {
+						height : ($("#" + this.DialogDiv).height()-50),
+						width : ($("#" + this.DialogDiv).width()-100),
+					},
+					height : $("#" + this.DialogDiv).height()-7,
+					width : $("#" + this.DialogDiv).width(),
+				};
+				this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
+				this.ChartData = new google.visualization.DataTable();
+				this.ChartData.addColumn('number', 'Time');
+				this.ChartData.addColumn('number', this.Name);
+				this.ChartID.draw(this.ChartData, options);
+			},
+			Eval : function (x) {
+				return 1;
+			},
 		};
-		if ($("#SinksPlotType").val() == "XYGRAPH") data.gskExtra.MaxInputs = 2;
-		else data.gskExtra.MaxInputs = 1;
+		if ($("#SinksPlotType").val() == "XYGRAPH")
+			data.gskExtra.MaxInputs = 2;
+		else
+			data.gskExtra.MaxInputs = 1;
+		data.label = data.gskExtra.Name;
+		data.shape = "image";
+		data.image = data.gskExtra.Image;
 	} else if (CurrentTab == "Functions") {
 		data.label = TempFunctionNodeItem.String();
 		data.shape = "image";
@@ -228,21 +301,21 @@ function saveData(data, callback) {
 		data.gskExtra = CopyJSONForNodes(TempFunctionNodeItem);
 		data.gskExtra.MaxInputs = 1;
 		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "Operators"){
+	} else if (CurrentTab == "Operators") {
 		data.label = TempOperatorNodeItem.String();
 		data.shape = "image";
 		data.image = TempOperatorNodeItem.Image;
 		data.gskExtra = CopyJSONForNodes(TempOperatorNodeItem);
 		data.gskExtra.MaxInputs = Infinity;
 		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "TransferFunctions"){
+	} else if (CurrentTab == "TransferFunctions") {
 		data.label = TempTransferFunctionNodeItem.String();
 		data.shape = "image";
 		data.image = TempTransferFunctionNodeItem.Image;
 		data.gskExtra = CopyJSONForNodes(TempTransferFunctionNodeItem);
 		data.gskExtra.MaxInputs = 1;
 		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "HardwareIOs"){
+	} else if (CurrentTab == "HardwareIOs") {
 		data.label = TempHardwareIONodeItem.String();
 		data.shape = "image";
 		data.image = TempHardwareIONodeItem.Image;
@@ -250,8 +323,8 @@ function saveData(data, callback) {
 	} else {
 		data.label = "Error: " + n;
 		data.gskExtra = {
-			MaxInputs: 1,
-			MaxOutputs: Infinity,			
+			MaxInputs : 1,
+			MaxOutputs : Infinity,
 		}
 	}
 	data.gskExtra.Tab = CurrentTab;
@@ -276,14 +349,14 @@ function init() {
 		TempSourceNodeItem = new Object();
 		TempSourceNodeItem = CopyJSONForNodes(SourcesForNode.AllSources[SourceInt]);
 		for (var i = 0; i < TempSourceNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempSourceNodeItem.Parameters[i].Name + ', $'+ TempSourceNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempSourceNodeItem.Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempSourceNodeItem.Parameters[i].Name + ', $' + TempSourceNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempSourceNodeItem.Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
 			$("#SourceSingnalParams").append(TempString);
-			$("#SourceSingnalParam"+i).on("change paste keyup", function () {
+			$("#SourceSingnalParam" + i).on("change paste keyup", function () {
 				TempSourceNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
 				$("#SourcesLaTeXRender").empty();
 				var TempString = TempSourceNodeItem.LaTeXString();
 				$("#SourcesLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 			});
 		}
 		$("#SourceSingnalParam0").change();
@@ -302,14 +375,14 @@ function init() {
 		TempFunctionNodeItem = new Object();
 		TempFunctionNodeItem = CopyJSONForNodes(StaticMathFunctions.AllFunctions[FunctionInt]);
 		for (var i = 0; i < TempFunctionNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempFunctionNodeItem.Parameters[i].Name + ', $'+ TempFunctionNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempFunctionNodeItem.Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempFunctionNodeItem.Parameters[i].Name + ', $' + TempFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempFunctionNodeItem.Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
 			$("#StaticFunctionParams").append(TempString);
-			$("#FunctionsParam"+i).on("change paste keyup", function () {
+			$("#FunctionsParam" + i).on("change paste keyup", function () {
 				TempFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
 				$("#FunctionsLaTeXRender").empty();
 				var TempString = TempFunctionNodeItem.LaTeXString();
 				$("#FunctionsLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 			});
 		}
 		$("#FunctionsParam0").change();
@@ -330,7 +403,7 @@ function init() {
 		var TempString = TempOperatorNodeItem.LaTeXString();
 		$("#OperatorsLaTeXRender").empty();
 		$("#OperatorsLaTeXRender").append(TempString);
-		MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 	}).change();
 	// set TransferFunctions Tab
 	var TempSelect = document.getElementById("TransferFunctionsName");
@@ -346,14 +419,14 @@ function init() {
 		TempTransferFunctionNodeItem = new Object();
 		TempTransferFunctionNodeItem = CopyJSONForNodes(TransferFunctionsForNode.AllTransferFunctions[TransferFunctionInt]);
 		for (var i = 0; i < TempTransferFunctionNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempTransferFunctionNodeItem.Parameters[i].Name + ', $'+ TempTransferFunctionNodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" value="' + TempTransferFunctionNodeItem.Parameters[i].Value + '" id="TransferFunctionsParam' + i + '"/></div>';
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempTransferFunctionNodeItem.Parameters[i].Name + ', $' + TempTransferFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" value="' + TempTransferFunctionNodeItem.Parameters[i].Value + '" id="TransferFunctionsParam' + i + '"/></div>';
 			$("#TransferFunctionsParams").append(TempString);
-			$("#TransferFunctionsParam"+i).on("change paste keyup", function () {
+			$("#TransferFunctionsParam" + i).on("change paste keyup", function () {
 				TempTransferFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
 				$("#TransferFunctionsLaTeXRender").empty();
 				var TempString = TempTransferFunctionNodeItem.LaTeXString();
 				$("#TransferFunctionsLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 			});
 		}
 		$("#TransferFunctionsParam0").change();
@@ -372,18 +445,22 @@ function init() {
 		TempHardwareIONodeItem = new Object();
 		TempHardwareIONodeItem = CopyJSONForNodes(HardwareIOsForNode.AllHardwareIOs[HardwareIOsInt]);
 		for (var i = 0; i < TempHardwareIONodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempHardwareIONodeItem.Parameters[i].Name + ', $'+ TempHardwareIONodeItem.Parameters[i].LaTeX +'$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempHardwareIONodeItem.Parameters[i].Value + '" id="HardwareIOsParam' + i + '"/></div>';
+			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempHardwareIONodeItem.Parameters[i].Name + ', $' + TempHardwareIONodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempHardwareIONodeItem.Parameters[i].Value + '" id="HardwareIOsParam' + i + '"/></div>';
 			$("#HardwareIOsParams").append(TempString);
-			$("#HardwareIOsParam"+i).on("change paste keyup", function () {
+			$("#HardwareIOsParam" + i).on("change paste keyup", function () {
 				TempHardwareIONodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
 				$("#HardwareIOsNameLaTeXRender").empty();
 				var TempString = TempHardwareIONodeItem.LaTeXString();
 				$("#HardwareIOsNameLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 			});
 		}
 		$("#HardwareIOsParam0").change();
 	}).change();
+	google.charts.load('current', {
+		'packages' : ['corechart']
+	});
+	//google.charts.setOnLoadCallback(drawChart);
 }
 
 $(document).ready(function () {
@@ -414,10 +491,12 @@ function OpenSelectNodeType(evt, TabId) {
 	CurrentTab = TabId;
 }
 
-function ExtractNumberAtEnd (Str) {
-    var matches = Str.match(/\d+$/);
-	if (matches) return matches[0];
-	else return 0;
+function ExtractNumberAtEnd(Str) {
+	var matches = Str.match(/\d+$/);
+	if (matches)
+		return matches[0];
+	else
+		return 0;
 }
 
 function CopyJSONForNodes(Source) {
@@ -430,22 +509,27 @@ function CopyJSONForNodes(Source) {
 }
 
 // Taken from https://gist.github.com/kaustubh-karkare/6065251
-JSON.stringify2 = function(obj,replacer){
-	if(typeof(reviver)!=="function") replacer = undefined;
-	var reference = [], replace = {};
-	(function(obj){
-		if(typeof(obj)==="function" || obj===undefined) return;
+JSON.stringify2 = function (obj, replacer) {
+	if (typeof(reviver) !== "function")
+		replacer = undefined;
+	var reference = [],
+	replace = {};
+	(function (obj) {
+		if (typeof(obj) === "function" || obj === undefined)
+			return;
 		var i;
 		// if this element is already in the reference array, return the index
-		if((i=reference.indexOf(obj))!==-1) return i;
+		if ((i = reference.indexOf(obj)) !== -1)
+			return i;
 		// or else, push this element, and save the index, to be returned later
-		else i = reference.push(obj)-1;
+		else
+			i = reference.push(obj) - 1;
 		// if this is an object (exceptions: RegExp & null)
-		if(obj && typeof(obj)==="object" && !(obj instanceof RegExp)){
+		if (obj && typeof(obj) === "object" && !(obj instanceof RegExp)) {
 			var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
 			// recursively process this object
-			for(var key in obj)
-				if(typeof(obj[key])!=="function" && obj[key]!==undefined)
+			for (var key in obj)
+				if (typeof(obj[key]) !== "function" && obj[key] !== undefined)
 					obj2[key] = arguments.callee(obj[key]);
 			// mark the original object for replacement later
 			replace[i] = obj2;
@@ -453,46 +537,62 @@ JSON.stringify2 = function(obj,replacer){
 		return i;
 	})(obj);
 	// replace the original objects in the reference array
-	for(var i in replace) reference[i] = replace[i];
-	return JSON.stringify(reference,function(key,value){
-		value = ( replacer ? replacer(key,value) : value );
-		if(typeof(value)==="string") return "S"+value;
-		else if(value!==value) return "N"; // NaN
-		else if(value===Infinity) return "I";
-		else if(value===-Infinity) return "i";
-		else if(value instanceof RegExp)
-			return "R"+value.lastIndex+"/"+(value.ignoreCase?"i":"")+
-				(value.global?"g":"")+(value.multiline?"m":"")+"/"+value.source;
-		else return value;
+	for (var i in replace)
+		reference[i] = replace[i];
+	return JSON.stringify(reference, function (key, value) {
+		value = (replacer ? replacer(key, value) : value);
+		if (typeof(value) === "string")
+			return "S" + value;
+		else if (value !== value)
+			return "N"; // NaN
+		else if (value === Infinity)
+			return "I";
+		else if (value === -Infinity)
+			return "i";
+		else if (value instanceof RegExp)
+			return "R" + value.lastIndex + "/" + (value.ignoreCase ? "i" : "") +
+			(value.global ? "g" : "") + (value.multiline ? "m" : "") + "/" + value.source;
+		else
+			return value;
 	});
 };
 
-JSON.parse2 = function(obj_str,reviver){
-	if(typeof(reviver)!=="function") reviver = undefined;
+JSON.parse2 = function (obj_str, reviver) {
+	if (typeof(reviver) !== "function")
+		reviver = undefined;
 	var replace = {};
-	var reference = JSON.parse(obj_str,function(key,value){
-		var result;
-		if(typeof(value)!=="string") result = value;
-		else if(value[0]==="R"){
-			var i = value.indexOf("/"), j = value.indexOf("/",i+1);
-				k = new RegExp(value.substr(j+1), value.substr(i+1,j-i-1));
-			k.lastIndex = parseInt(value.substr(1,i-1));
-			result = k;
-		} else if(value[0]==="i") result = -Infinity;
-		else if(value[0]==="I") result = Infinity;
-		else if(value[0]==="N") result = NaN;
-		else if(value[0]==="S") result = value.substr(1);
-		else throw new Error("Invalid Item");
-		return ( reviver ? reviver(key,result) : result );
-	});
-	return (function(obj){
+	var reference = JSON.parse(obj_str, function (key, value) {
+			var result;
+			if (typeof(value) !== "string")
+				result = value;
+			else if (value[0] === "R") {
+				var i = value.indexOf("/"),
+				j = value.indexOf("/", i + 1);
+				k = new RegExp(value.substr(j + 1), value.substr(i + 1, j - i - 1));
+				k.lastIndex = parseInt(value.substr(1, i - 1));
+				result = k;
+			} else if (value[0] === "i")
+				result = -Infinity;
+			else if (value[0] === "I")
+				result = Infinity;
+			else if (value[0] === "N")
+				result = NaN;
+			else if (value[0] === "S")
+				result = value.substr(1);
+			else
+				throw new Error("Invalid Item");
+			return (reviver ? reviver(key, result) : result);
+		});
+	return (function (obj) {
 		// if the item is not an object or an array, return immediately
-		if(!obj || typeof(obj)!=="object" || obj instanceof RegExp) return obj;
+		if (!obj || typeof(obj) !== "object" || obj instanceof RegExp)
+			return obj;
 		var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
 		// save a reference to new object corresponding to the index of the old one
 		replace[reference.indexOf(obj)] = obj2;
 		// if the item has not already been encountered, recursively process its components
-		for(var key in obj) obj2[key] = replace[obj[key]] || arguments.callee(reference[obj[key]]);
+		for (var key in obj)
+			obj2[key] = replace[obj[key]] || arguments.callee(reference[obj[key]]);
 		return obj2;
 	})(reference[0]);
 };
@@ -505,25 +605,27 @@ function GetOrderOfExecution() {
 		OrderOfExecution = [];
 		for (var TempEdge in network.body.edges) {
 			if (
-			(OrderOfExecution.indexOf(network.body.edges[TempEdge].toId) <0) &&
-			(network.body.nodes[network.body.edges[TempEdge].toId].options.gskExtra.MaxOutputs == 0)
-			) OrderOfExecution.push(network.body.edges[TempEdge].toId);
+				(OrderOfExecution.indexOf(network.body.edges[TempEdge].toId) < 0) &&
+				(network.body.nodes[network.body.edges[TempEdge].toId].options.gskExtra.MaxOutputs == 0))
+				OrderOfExecution.push(network.body.edges[TempEdge].toId);
 		}
 		var TempIndex = 0;
-		if (OrderOfExecution.length>0) {
+		if (OrderOfExecution.length > 0) {
 			while (true) {
 				for (var TempEdge in network.body.edges) {
 					if (
-					(OrderOfExecution.indexOf(network.body.edges[TempEdge].fromId) < 0) &&
-					(network.body.edges[TempEdge].toId == OrderOfExecution[TempIndex])
-					) OrderOfExecution.push(network.body.edges[TempEdge].fromId);
+						(OrderOfExecution.indexOf(network.body.edges[TempEdge].fromId) < 0) &&
+						(network.body.edges[TempEdge].toId == OrderOfExecution[TempIndex]))
+						OrderOfExecution.push(network.body.edges[TempEdge].fromId);
 				}
 				TempIndex++;
-				if (TempIndex >= OrderOfExecution.length) break;
+				if (TempIndex >= OrderOfExecution.length)
+					break;
 			}
 		}
 	}
-	OrderOfExecution.forEach(function(TempNode) {
+	OrderOfExecution.reverse();
+	OrderOfExecution.forEach(function (TempNode) {
 		console.log(network.body.nodes[TempNode].options.label);
 	});
 }
