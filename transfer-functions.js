@@ -20,10 +20,11 @@ var TransferFunctionsForNode = {
 			Value: "0, 0"
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "(" + this.Parameters[0].Value + ") / (" + this.Parameters[1].Value + ")";
@@ -79,10 +80,11 @@ var TransferFunctionsForNode = {
 			Value: "0, 0"
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "(" + this.Parameters[0].Value + ") / (" + this.Parameters[1].Value + ")";

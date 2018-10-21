@@ -20,10 +20,11 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
@@ -97,10 +98,11 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
@@ -172,10 +174,11 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "Triangular wave";
@@ -225,10 +228,11 @@ var SourcesForNode = {
 			Value: 0
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "Sawtooth wave";
@@ -271,10 +275,11 @@ var SourcesForNode = {
 			Value: 0.5
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "Rectangular wave";

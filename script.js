@@ -9,6 +9,7 @@ var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransfer
 var CurrentTab = "Sources";
 var OrderOfExecution = [];
 var SimulationState="Loading";
+var SimulateAtInterval;
 
 function setDefaultLocale() {
 	var defaultLocal = navigator.language;
@@ -75,22 +76,22 @@ function draw() {
 			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
-						closeOnEscape : false,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : true,
-						resizable : false,
-						buttons : {
-							"Add node" : saveData.bind(this, data, callback),
-							Cancel : function () {
-								cancelEdit(callback);
-							}
-						},
-						close : function () {}
-					});
-					$(".ui-dialog-titlebar-close").css("display", "none");
-					dialog.dialog("open");
+					closeOnEscape : false,
+					autoOpen : false,
+					height : 350,
+					width : 500,
+					modal : true,
+					resizable : false,
+					buttons : {
+						"Add node" : saveData.bind(this, data, callback),
+						Cancel : function () {
+							cancelEdit(callback);
+						}
+					},
+					close : function () {}
+				});
+				$(".ui-dialog-titlebar-close").css("display", "none");
+				dialog.dialog("open");
 			},
 			editNode : function (data, callback) {
 				if (data.gskExtra === 'undefined') {}
@@ -113,22 +114,28 @@ function draw() {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
-						closeOnEscape : false,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : true,
-						resizable : false,
-						buttons : {
-							"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
-							Cancel : function () {
-								cancelEdit(callback);
-							}
-						},
-						close : function () {}
-					});
-					$(".ui-dialog-titlebar-close").css("display", "none");
-					dialog.dialog("open");
+					closeOnEscape : false,
+					autoOpen : false,
+					height : 350,
+					width : 500,
+					modal : true,
+					resizable : false,
+					buttons : {
+						"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
+						Cancel : function () {
+							cancelEdit(callback);
+						}
+					},
+					close : function () {}
+				});
+				$(".ui-dialog-titlebar-close").css("display", "none");
+				dialog.dialog("open");
+			},
+			deleteNode : function (data, callback) {
+				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
+					$("#Node_" + data.nodes[0]).remove();
+				console.log(data.nodes[0]);
+				callback(data);
 			},
 			addEdge : function (data, callback) {
 				var NoOfOutputs = 0;
@@ -175,8 +182,11 @@ function draw() {
 	network = new vis.Network(container, data, options);
 	network.on('doubleClick', function (properties) {
 		//console.log(properties);
-		network.editNode();
-		network.editEdgeMode();
+		if (SimulationState == "Design") {
+			if (properties.nodes.length == 1) network.editNode();
+			else if (properties.edges.length == 1) network.editEdgeMode();
+			else network.addNodeMode();
+		}
 		if (SimulationState == "Running")
 			if (properties.nodes.length == 1)
 				if (network.body.nodes[properties.nodes[0]].options.gskExtra.Tab == "Sinks")
@@ -230,7 +240,7 @@ function saveData(data, callback) {
 		data.gskExtra.MaxInputs = 0;
 		data.gskExtra.MaxOutputs = Infinity;
 	} else if (CurrentTab == "Sinks") {
-		$("#Node" + data.id).remove();
+		$("#Node_" + data.id).remove();
 		$("#SinksDialogs").append("<div id='Node_" + data.id + "' style='padding: 0px;' title='" + $("#SinksLabel").val() + "'><div id='Chart_" + data.id + "'></div></div>");
 		var TempImgId0,
 		TempImgId1;
@@ -260,13 +270,13 @@ function saveData(data, callback) {
 			},
 			Init : function () {
 				this.DialogID = $("#" + this.DialogDiv).dialog({
-						closeOnEscape : true,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : false,
-						resizable : false,
-					}).dialog("open");
+					closeOnEscape : true,
+					autoOpen : false,
+					height : 350,
+					width : 500,
+					modal : false,
+					resizable : false,
+				}).dialog("open");
 				//Chart Initialization
 				var options = {
 					legend : "none",
@@ -460,7 +470,7 @@ function init() {
 	google.charts.load('current', {
 		'packages' : ['corechart']
 	});
-	//google.charts.setOnLoadCallback(drawChart);
+	google.charts.setOnLoadCallback(SetViewAsLoaded);
 }
 
 $(document).ready(function () {
@@ -469,6 +479,16 @@ $(document).ready(function () {
 		jax : ["input/TeX", "output/HTML-CSS"],
 		tex2jax : {
 			inlineMath : [["$", "$"], ["\\(", "\\)"]]
+		}
+	});
+	$("#Simulate").click(function () {
+		if (SimulationState=="Running") {
+			if (SimulateAtInterval != undefined)
+				clearInterval(SimulateAtInterval);
+			SetViewAsLoaded();
+		} else if (SimulationState=="Design") {
+			SetViewAsSimulating();
+			RunSimulation();
 		}
 	});
 	init();
@@ -502,6 +522,7 @@ function ExtractNumberAtEnd(Str) {
 function CopyJSONForNodes(Source) {
 	var target;
 	target = JSON.parse2(JSON.stringify2(Source));
+	target.Init = Source.Init;
 	target.Eval = Source.Eval;
 	target.String = Source.String;
 	target.LaTeXString = Source.LaTeXString;
@@ -625,7 +646,58 @@ function GetOrderOfExecution() {
 		}
 	}
 	OrderOfExecution.reverse();
-	OrderOfExecution.forEach(function (TempNode) {
+	/*OrderOfExecution.forEach(function (TempNode) {
 		console.log(network.body.nodes[TempNode].options.label);
-	});
+	});*/
+}
+
+function SetProperView() {
+	if (SimulationState=="Loading") {
+		$(".GSKShowWhenLoading").css("display", "block");
+		$(".GSKShowWhenLoaded").css("display", "none");
+	}
+	if (SimulationState=="Design") {
+		$(".GSKShowWhenLoading").css("display", "none");
+		$(".GSKShowWhenLoaded").css("display", "block");
+		$("#Simulate").html("<i class='fas fa-play'></i>");
+		network.enableEditMode()
+		$(".vis-edit-mode").css("display", "block");
+	}
+	if (SimulationState=="Running") {
+		$(".GSKShowWhenLoading").css("display", "none");
+		$(".GSKShowWhenLoaded").css("display", "block");
+		$("#Simulate").html("<i class='fas fa-stop'></i>");
+		network.disableEditMode();
+		$(".vis-edit-mode").css("display", "none");
+	}
+}
+
+function SetViewAsLoaded() {
+	SimulationState="Design";
+	SetProperView();
+}
+
+function SetViewAsSimulating() {
+	SimulationState="Running";
+	SetProperView();
+}
+
+function RunSimulation () {
+	GetOrderOfExecution();
+	if (OrderOfExecution.length>0) {
+		for (var i=0; i<OrderOfExecution.length; i++) {
+			//console.log(network.body.nodes[OrderOfExecution[i]]);
+			network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
+		}
+		SimulateAtInterval = setInterval(ExecuteFunctions, 1000);
+	} else {
+		$.notify("There is nothing to simulate", "warn");
+		SetViewAsLoaded();
+	}
+}
+
+function ExecuteFunctions() {
+	/*for (var i=0; i<OrderOfExecution.length; i++) {
+		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Eval();
+	}*/	
 }

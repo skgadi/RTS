@@ -3,10 +3,11 @@ var OperatorsForNode = {
 	{
 		Name: "Sum",
 		Image: "images/tex/operators-figure0.png",
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return '';
@@ -18,10 +19,11 @@ var OperatorsForNode = {
 	{
 		Name: "Product",
 		Image: "images/tex/operators-figure1.png",
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return '';

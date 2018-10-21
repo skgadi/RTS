@@ -12,10 +12,11 @@ var HardwareIOsForNode = {
 			Value: "2"
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "Port: " + this.Parameters[0].Value;
@@ -36,10 +37,11 @@ var HardwareIOsForNode = {
 			Value: "3"
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "Port: " + this.Parameters[0].Value;
@@ -60,10 +62,11 @@ var HardwareIOsForNode = {
 			Value: "5"
 		},
 		],
+		PresentOut: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return 1;
+			return [1];
 		},
 		String: function () {
 			return "Port: " + this.Parameters[0].Value;
