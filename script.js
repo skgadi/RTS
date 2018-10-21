@@ -79,6 +79,7 @@ function draw() {
 			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
+					dialogClass: 'noTitleStuff',
 					closeOnEscape : false,
 					autoOpen : false,
 					height : 350,
@@ -92,9 +93,7 @@ function draw() {
 						}
 					},
 					close : function () {}
-				});
-				$(".ui-dialog-titlebar-close").css("display", "none");
-				dialog.dialog("open");
+				}).dialog("open");
 			},
 			editNode : function (data, callback) {
 				if (data.gskExtra === 'undefined') {}
@@ -117,6 +116,7 @@ function draw() {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
+					dialogClass: 'noTitleStuff',
 					closeOnEscape : false,
 					autoOpen : false,
 					height : 350,
@@ -130,9 +130,7 @@ function draw() {
 						}
 					},
 					close : function () {}
-				});
-				$(".ui-dialog-titlebar-close").css("display", "none");
-				dialog.dialog("open");
+				}).dialog("open");
 			},
 			deleteNode : function (data, callback) {
 				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
@@ -152,7 +150,10 @@ function draw() {
 				if (
 					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
 					 &&
-					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs))
+					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs)
+					&&
+					data.from != data.to
+					)
 					callback(data);
 				else {
 					$.notify("This connection is not allowed", "warn");
@@ -203,7 +204,6 @@ function clearPopUp() {
 
 function cancelEdit(callback) {
 	clearPopUp();
-	$(".ui-dialog-titlebar-close").css("display", "inline-block");
 	callback(null);
 }
 

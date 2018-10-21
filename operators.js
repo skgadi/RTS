@@ -6,9 +6,14 @@ var OperatorsForNode = {
 		PresentOut: [0],
 		InputParams: [0],
 		Init: function () {
+			this.InputParams = [0];
 		},
-		Eval: function (x) {
-			return [1];
+		Eval: function () {
+			var Sum=0;
+			this.InputParams.forEach(function (Param) {
+				Sum += parseFloat(Param);
+			});
+			return [Sum];
 		},
 		String: function () {
 			return '';
@@ -23,9 +28,14 @@ var OperatorsForNode = {
 		PresentOut: [0],
 		InputParams: [0],
 		Init: function () {
+			this.InputParams = [0];
 		},
-		Eval: function (x) {
-			return [1];
+		Eval: function () {
+			var Prod=1;
+			this.InputParams.forEach(function (Param) {
+				Prod = Prod*parseFloat(Param);
+			});
+			return [Prod];
 		},
 		String: function () {
 			return '';

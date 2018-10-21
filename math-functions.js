@@ -13,9 +13,10 @@ var StaticMathFunctions = {
 		PresentOut: [0],
 		InputParams: [0],
 		Init: function () {
+			this.InputParams = [0];
 		},
-		Eval: function (x) {
-			return [this.Parameters[0].Value*x];
+		Eval: function () {
+			return [this.Parameters[0].Value*this.InputParams[0]];
 		},
 		String: function () {
 			return this.Parameters[0].Value+"u";
@@ -52,12 +53,13 @@ var StaticMathFunctions = {
 		PresentOut: [0],
 		InputParams: [0],
 		Init: function () {
+			this.InputParams = [0];
 		},
-		Eval: function (x) {
+		Eval: function () {
 			var A = this.Parameters[0].Value;
 			var f = this.Parameters[1].Value;
 			var Phi = this.Parameters[2].Value;
-			return [A*Math.sin(2*f*x+Phi)];
+			return [A*Math.sin(2*f*this.InputParams[0]+Phi)];
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
@@ -109,12 +111,13 @@ var StaticMathFunctions = {
 		PresentOut: [0],
 		InputParams: [0],
 		Init: function () {
+			this.InputParams = [0];
 		},
-		Eval: function (x) {
+		Eval: function () {
 			var A = this.Parameters[0].Value;
 			var f = this.Parameters[1].Value;
 			var Phi = this.Parameters[2].Value;
-			return [A*Math.cos(2*f*x+Phi)];
+			return [A*Math.cos(2*f*this.InputParams[0]+Phi)];
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
