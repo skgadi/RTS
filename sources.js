@@ -21,10 +21,15 @@ var SourcesForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
-		Eval: function (x) {
-			return [1];
+		Eval: function () {
+			var A = parseFloat(this.Parameters[0].Value);
+			var t_0 = parseFloat(this.Parameters[1].Value);
+			var O = parseFloat(this.Parameters[2].Value);
+			if (SimulationTime>=t_0) return [A+O];
+			else return [O];
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
@@ -99,10 +104,15 @@ var SourcesForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
-		Eval: function (x) {
-			return [1];
+		Eval: function () {
+			var A = parseFloat(this.Parameters[0].Value);
+			var f = parseFloat(this.Parameters[1].Value);
+			var Phi = parseFloat(this.Parameters[2].Value);
+			var O = parseFloat(this.Parameters[3].Value);
+			return [Math.sin(2*Math.PI*f*SimulationTime) + O];
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
@@ -175,10 +185,15 @@ var SourcesForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return [1];
+			var A = parseFloat(this.Parameters[0].Value);
+			var f = parseFloat(this.Parameters[1].Value);
+			var Phi = parseFloat(this.Parameters[2].Value);
+			var O = parseFloat(this.Parameters[3].Value);
+			return [A*Math.asin(Math.sin(2*Math.PI*f*SimulationTime))*2/Math.PI + O];
 		},
 		String: function () {
 			return "Triangular wave";
@@ -229,10 +244,15 @@ var SourcesForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
-			return [1];
+			var A = parseFloat(this.Parameters[0].Value);
+			var f = parseFloat(this.Parameters[1].Value);
+			var Phi = parseFloat(this.Parameters[2].Value);
+			var O = parseFloat(this.Parameters[3].Value);
+			return [(((SimulationTime)%(1/f))*2*A*f - A) + O];
 		},
 		String: function () {
 			return "Sawtooth wave";
@@ -260,11 +280,6 @@ var SourcesForNode = {
 			Value: 1
 		},
 		{
-			Name: "Phase",
-			LaTeX: "\\phi",
-			Value: 0
-		},
-		{
 			Name: "Offset",
 			LaTeX: "O",
 			Value: 0
@@ -276,10 +291,18 @@ var SourcesForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
-		Eval: function (x) {
-			return [1];
+		Eval: function () {
+			var A = parseFloat(this.Parameters[0].Value);
+			var f = parseFloat(this.Parameters[1].Value);
+			var O = parseFloat(this.Parameters[2].Value);
+			var D = parseFloat(this.Parameters[3].Value);
+			if (((SimulationTime)%(1/f))<(1/f)*(D))
+				return [A + O];
+			else
+				return [-A + O];
 		},
 		String: function () {
 			return "Rectangular wave";

@@ -21,6 +21,7 @@ var TransferFunctionsForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
@@ -81,6 +82,7 @@ var TransferFunctionsForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {

@@ -11,6 +11,7 @@ var StaticMathFunctions = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
@@ -49,6 +50,7 @@ var StaticMathFunctions = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
@@ -105,6 +107,7 @@ var StaticMathFunctions = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {

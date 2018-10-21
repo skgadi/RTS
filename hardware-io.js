@@ -13,6 +13,7 @@ var HardwareIOsForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
@@ -38,6 +39,7 @@ var HardwareIOsForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
@@ -63,6 +65,7 @@ var HardwareIOsForNode = {
 		},
 		],
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {

@@ -10,6 +10,9 @@ var CurrentTab = "Sources";
 var OrderOfExecution = [];
 var SimulationState="Loading";
 var SimulateAtInterval;
+var SimulationTime;
+var SamplingTimeMs=10;
+var RefreshGraphsMS = 1000;
 
 function setDefaultLocale() {
 	var defaultLocal = navigator.language;
@@ -134,7 +137,7 @@ function draw() {
 			deleteNode : function (data, callback) {
 				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
 					$("#Node_" + data.nodes[0]).remove();
-				console.log(data.nodes[0]);
+				//console.log(data.nodes[0]);
 				callback(data);
 			},
 			addEdge : function (data, callback) {
@@ -265,6 +268,8 @@ function saveData(data, callback) {
 			DialogID : "",
 			ChartID : "",
 			ChartData : "",
+			InputParams: [0],
+			PresentOut: [0],
 			String : function () {
 				return SinksLabel;
 			},
@@ -275,7 +280,7 @@ function saveData(data, callback) {
 					height : 350,
 					width : 500,
 					modal : false,
-					resizable : false,
+					resizable : true,
 				}).dialog("open");
 				//Chart Initialization
 				var options = {
@@ -293,8 +298,21 @@ function saveData(data, callback) {
 				this.ChartData.addColumn('number', this.Name);
 				this.ChartID.draw(this.ChartData, options);
 			},
-			Eval : function (x) {
-				return 1;
+			Eval : function () {
+				var options = {
+					legend : "none",
+					chartArea : {
+						height : ($("#" + this.DialogDiv).height()-50),
+						width : ($("#" + this.DialogDiv).width()-100),
+					},
+					height : $("#" + this.DialogDiv).height()-7,
+					width : $("#" + this.DialogDiv).width(),
+				};
+				//console.log(this.InputParams);
+				this.ChartData.addRow([SimulationTime, this.InputParams[0]]);
+				if ((SimulationTime*1000)%RefreshGraphsMS == 0)
+					this.ChartID.draw(this.ChartData, options);
+				return [0];
 			},
 		};
 		if ($("#SinksPlotType").val() == "XYGRAPH")
@@ -689,7 +707,8 @@ function RunSimulation () {
 			//console.log(network.body.nodes[OrderOfExecution[i]]);
 			network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
 		}
-		SimulateAtInterval = setInterval(ExecuteFunctions, 1000);
+		SimulationTime=0;
+		SimulateAtInterval = setInterval(ExecuteFunctions, SamplingTimeMs);
 	} else {
 		$.notify("There is nothing to simulate", "warn");
 		SetViewAsLoaded();
@@ -697,7 +716,15 @@ function RunSimulation () {
 }
 
 function ExecuteFunctions() {
-	/*for (var i=0; i<OrderOfExecution.length; i++) {
-		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Eval();
-	}*/	
+	for (var i=0; i<OrderOfExecution.length; i++) {
+		var TempArrayIndex=0;
+		network.body.nodes[OrderOfExecution[i]].edges.forEach(function(TempEdge) {
+			if (TempEdge.toId == OrderOfExecution[i]){
+				network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams[TempArrayIndex] = network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut;
+				TempArrayIndex++;
+			}
+		});
+		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = parseFloat(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Eval());
+	}
+	SimulationTime=parseFloat((SimulationTime+SamplingTimeMs/1000).toFixed(3))
 }

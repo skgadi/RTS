@@ -4,6 +4,7 @@ var OperatorsForNode = {
 		Name: "Sum",
 		Image: "images/tex/operators-figure0.png",
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
@@ -20,6 +21,7 @@ var OperatorsForNode = {
 		Name: "Product",
 		Image: "images/tex/operators-figure1.png",
 		PresentOut: [0],
+		InputParams: [0],
 		Init: function () {
 		},
 		Eval: function (x) {
