@@ -8,10 +8,10 @@ var dialog;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
 var OrderOfExecution = [];
-var SimulationState="Loading";
+var SimulationState = "Loading";
 var SimulateAtInterval;
 var SimulationTime;
-var SamplingTimeMs=10;
+var SamplingTimeMs = 10;
 var RefreshGraphsMS = 1000;
 
 function setDefaultLocale() {
@@ -79,21 +79,21 @@ function draw() {
 			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
-					dialogClass: 'noTitleStuff',
-					closeOnEscape : false,
-					autoOpen : false,
-					height : 350,
-					width : 500,
-					modal : true,
-					resizable : false,
-					buttons : {
-						"Add node" : saveData.bind(this, data, callback),
-						Cancel : function () {
-							cancelEdit(callback);
-						}
-					},
-					close : function () {}
-				}).dialog("open");
+						dialogClass : 'noTitleStuff',
+						closeOnEscape : false,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : true,
+						resizable : false,
+						buttons : {
+							"Add node" : saveData.bind(this, data, callback),
+							Cancel : function () {
+								cancelEdit(callback);
+							}
+						},
+						close : function () {}
+					}).dialog("open");
 			},
 			editNode : function (data, callback) {
 				if (data.gskExtra === 'undefined') {}
@@ -110,27 +110,28 @@ function draw() {
 					} else if (data.gskExtra.Tab == "Sinks") {
 						$("#SinksLabel").val(data.label);
 						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
+						$("#SinksLineColor").val(data.gskExtra.SinksLineColor);
 						$("#SinksLineType").val(data.gskExtra.SinksLineType);
 						$("#SinksXAxisType").val(data.gskExtra.SinksXAxisType);
 						$("#SinksYAxisType").val(data.gskExtra.SinksYAxisType);
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
-					dialogClass: 'noTitleStuff',
-					closeOnEscape : false,
-					autoOpen : false,
-					height : 350,
-					width : 500,
-					modal : true,
-					resizable : false,
-					buttons : {
-						"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
-						Cancel : function () {
-							cancelEdit(callback);
-						}
-					},
-					close : function () {}
-				}).dialog("open");
+						dialogClass : 'noTitleStuff',
+						closeOnEscape : false,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : true,
+						resizable : false,
+						buttons : {
+							"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
+							Cancel : function () {
+								cancelEdit(callback);
+							}
+						},
+						close : function () {}
+					}).dialog("open");
 			},
 			deleteNode : function (data, callback) {
 				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
@@ -151,9 +152,8 @@ function draw() {
 					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
 					 &&
 					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs)
-					&&
-					data.from != data.to
-					)
+					 &&
+					data.from != data.to)
 					callback(data);
 				else {
 					$.notify("This connection is not allowed", "warn");
@@ -187,9 +187,12 @@ function draw() {
 	network.on('doubleClick', function (properties) {
 		//console.log(properties);
 		if (SimulationState == "Design") {
-			if (properties.nodes.length == 1) network.editNode();
-			else if (properties.edges.length == 1) network.editEdgeMode();
-			else network.addNodeMode();
+			if (properties.nodes.length == 1)
+				network.editNode();
+			else if (properties.edges.length == 1)
+				network.editEdgeMode();
+			else
+				network.addNodeMode();
 		}
 		if (SimulationState == "Running")
 			if (properties.nodes.length == 1)
@@ -259,6 +262,7 @@ function saveData(data, callback) {
 			Name : $("#SinksLabel").val(),
 			Image : "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
 			SinksPlotType : $("#SinksPlotType").val(),
+			SinksLineColor : $("#SinksLineColor").val(),
 			SinksLineType : $("#SinksLineType").val(),
 			SinksXAxisType : $("#SinksXAxisType").val(),
 			SinksYAxisType : $("#SinksYAxisType").val(),
@@ -268,28 +272,28 @@ function saveData(data, callback) {
 			DialogID : "",
 			ChartID : "",
 			ChartData : "",
-			InputParams: [0],
-			PresentOut: [0],
+			InputParams : [0],
+			PresentOut : [0],
 			String : function () {
 				return SinksLabel;
 			},
 			Init : function () {
 				this.DialogID = $("#" + this.DialogDiv).dialog({
-					closeOnEscape : true,
-					autoOpen : false,
-					height : 350,
-					width : 500,
-					modal : false,
-					resizable : true,
-				}).dialog("open");
+						closeOnEscape : true,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : false,
+						resizable : true,
+					}).dialog("open");
 				//Chart Initialization
 				var options = {
 					legend : "none",
 					chartArea : {
-						height : ($("#" + this.DialogDiv).height()-50),
-						width : ($("#" + this.DialogDiv).width()-100),
+						height : ($("#" + this.DialogDiv).height() - 50),
+						width : ($("#" + this.DialogDiv).width() - 100),
 					},
-					height : $("#" + this.DialogDiv).height()-7,
+					height : $("#" + this.DialogDiv).height() - 7,
 					width : $("#" + this.DialogDiv).width(),
 				};
 				this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
@@ -299,18 +303,41 @@ function saveData(data, callback) {
 				this.ChartID.draw(this.ChartData, options);
 			},
 			Eval : function () {
+				var hAxis,
+				vAxis;
+				var LineStyle=[];
+				if (this.SinksXAxisType == "LOGARITHMIC") hAxis = 'log';
+				else hAxis = 'linear';
+				if (this.SinksYAxisType == "LOGARITHMIC") vAxis = 'log';
+				else vAxis = 'linear';
+				if (this.SinksLineType == "DASHED") LineStyle = [10, 2];
+				else if (this.SinksLineType == "DOTTED") LineStyle = [4, 4];
+				else LineStyle = [0];
 				var options = {
 					legend : "none",
 					chartArea : {
-						height : ($("#" + this.DialogDiv).height()-50),
-						width : ($("#" + this.DialogDiv).width()-100),
+						height : ($("#" + this.DialogDiv).height() - 50),
+						width : ($("#" + this.DialogDiv).width() - 100),
 					},
-					height : $("#" + this.DialogDiv).height()-7,
+					series : {
+						0 : {
+							lineDashStyle : LineStyle,
+						}
+					},
+					colors : [this.SinksLineColor],
+					vAxis : {
+						scaleType : vAxis
+					},
+					hAxis : {
+						scaleType : hAxis
+					},
+					height : $("#" + this.DialogDiv).height() - 7,
 					width : $("#" + this.DialogDiv).width(),
 				};
 				//console.log(this.InputParams);
-				this.ChartData.addRow([SimulationTime, this.InputParams[0]]);
-				if ((SimulationTime*1000)%RefreshGraphsMS == 0)
+				if (this.SinksPlotType == "XYGRAPH") this.ChartData.addRow([this.InputParams[0], this.InputParams[1]]);
+				else this.ChartData.addRow([SimulationTime, this.InputParams[0]]);
+				if ((SimulationTime * 1000) % RefreshGraphsMS == 0)
 					this.ChartID.draw(this.ChartData, options);
 				return [0];
 			},
@@ -500,11 +527,11 @@ $(document).ready(function () {
 		}
 	});
 	$("#Simulate").click(function () {
-		if (SimulationState=="Running") {
+		if (SimulationState == "Running") {
 			if (SimulateAtInterval != undefined)
 				clearInterval(SimulateAtInterval);
 			SetViewAsLoaded();
-		} else if (SimulationState=="Design") {
+		} else if (SimulationState == "Design") {
 			SetViewAsSimulating();
 			RunSimulation();
 		}
@@ -665,23 +692,23 @@ function GetOrderOfExecution() {
 	}
 	OrderOfExecution.reverse();
 	/*OrderOfExecution.forEach(function (TempNode) {
-		console.log(network.body.nodes[TempNode].options.label);
+	console.log(network.body.nodes[TempNode].options.label);
 	});*/
 }
 
 function SetProperView() {
-	if (SimulationState=="Loading") {
+	if (SimulationState == "Loading") {
 		$(".GSKShowWhenLoading").css("display", "block");
 		$(".GSKShowWhenLoaded").css("display", "none");
 	}
-	if (SimulationState=="Design") {
+	if (SimulationState == "Design") {
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
 		$("#Simulate").html("<i class='fas fa-play'></i>");
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
 	}
-	if (SimulationState=="Running") {
+	if (SimulationState == "Running") {
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
 		$("#Simulate").html("<i class='fas fa-stop'></i>");
@@ -691,23 +718,23 @@ function SetProperView() {
 }
 
 function SetViewAsLoaded() {
-	SimulationState="Design";
+	SimulationState = "Design";
 	SetProperView();
 }
 
 function SetViewAsSimulating() {
-	SimulationState="Running";
+	SimulationState = "Running";
 	SetProperView();
 }
 
-function RunSimulation () {
+function RunSimulation() {
 	GetOrderOfExecution();
-	if (OrderOfExecution.length>0) {
-		for (var i=0; i<OrderOfExecution.length; i++) {
+	if (OrderOfExecution.length > 0) {
+		for (var i = 0; i < OrderOfExecution.length; i++) {
 			//console.log(network.body.nodes[OrderOfExecution[i]]);
 			network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
 		}
-		SimulationTime=0;
+		SimulationTime = 0;
 		SimulateAtInterval = setInterval(ExecuteFunctions, SamplingTimeMs);
 	} else {
 		$.notify("There is nothing to simulate", "warn");
@@ -716,15 +743,15 @@ function RunSimulation () {
 }
 
 function ExecuteFunctions() {
-	for (var i=0; i<OrderOfExecution.length; i++) {
-		var TempArrayIndex=0;
-		network.body.nodes[OrderOfExecution[i]].edges.forEach(function(TempEdge) {
-			if (TempEdge.toId == OrderOfExecution[i]){
+	for (var i = 0; i < OrderOfExecution.length; i++) {
+		var TempArrayIndex = 0;
+		network.body.nodes[OrderOfExecution[i]].edges.forEach(function (TempEdge) {
+			if (TempEdge.toId == OrderOfExecution[i]) {
 				network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams[TempArrayIndex] = network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut;
 				TempArrayIndex++;
 			}
 		});
 		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = parseFloat(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Eval());
 	}
-	SimulationTime=parseFloat((SimulationTime+SamplingTimeMs/1000).toFixed(3))
+	SimulationTime = parseFloat((SimulationTime + SamplingTimeMs / 1000).toFixed(3))
 }

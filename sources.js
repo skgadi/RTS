@@ -114,7 +114,7 @@ var SourcesForNode = {
 			var f = parseFloat(this.Parameters[1].Value);
 			var Phi = parseFloat(this.Parameters[2].Value);
 			var O = parseFloat(this.Parameters[3].Value);
-			return [Math.sin(2*Math.PI*f*SimulationTime) + O];
+			return [Math.sin(2*Math.PI*f*SimulationTime + Phi) + O];
 		},
 		String: function () {
 			var A = this.Parameters[0].Value;
