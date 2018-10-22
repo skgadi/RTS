@@ -173,26 +173,17 @@
 <div id="SinksDialogs"></div>
 <div id="mynetwork"></div>
 <div class="w3-bar w3-theme" style="position: absolute; bottom: 0; border: 0; left: 0;">
-	<button class="w3-bar-item w3-button" id="Settings"><i class="fas fa-cogs"></i></button>
-	<button class="w3-bar-item w3-button" id="Simulate"><i class="fas fa-play"></i></button>
-	<div style="position: absolute; bottom: 0; border: 0; right: 0; padding: 0px;" aria-hidden="true">
-		<p style="padding: 0px; margin: 0px; opacity: 0.25;">Real-time simulation</p>
-	</div>
+	<button class="FileHandling w3-bar-item w3-button" id="NewNetwork"><i class="fas fa-file"></i></button>
+	<button class="FileHandling w3-bar-item w3-button" id="SaveNetwork"><i class="fas fa-save"></i></button>
+	<button class="FileHandling w3-bar-item w3-button" id="OpenNetwork"><i class="fas fa-folder-open"></i></button>
+	<button class="w3-bar-item w3-button w3-right" id="Simulate"><i class="fas fa-play"></i></button>
+	<button class="w3-bar-item w3-button w3-right" id="Settings"><i class="fas fa-cogs"></i></button>
 </div>
 </div>
-<!--div class="w3-bar w3-theme" style="position: absolute; top: 0; border: 0; left: 0;" aria-hidden="true">
-  <button class="w3-bar-item w3-button"><i class="fas fa-plus"></i></button>
-  <button class="w3-bar-item w3-button"><i class="fas fa-pencil-alt"></i></button>
-  <button class="w3-bar-item w3-button"><i class="fas fa-minus"></i></button>
-  <button class="w3-bar-item w3-button"><i class="fas fa-link"></i></button>
-  <button class="w3-bar-item w3-button"><i class="fas fa-unlink"></i></button>
-  <button class="w3-bar-item w3-button"><i class="fas fa-arrows-alt"></i></button>
-  <button class="w3-bar-item w3-button w3-right"><i class="fab fa-usb"></i></button>
-  <button class="w3-bar-item w3-button w3-right"><i class="fas fa-cogs"></i></button>
-  <button class="w3-bar-item w3-button w3-right"><i class="fas fa-stop"></i></button>
-  <button class="w3-bar-item w3-button w3-right"><i class="fas fa-pause"></i></button>
-  <button class="w3-bar-item w3-button w3-right"><i class="fas fa-play"></i></button>
-</div-->
-
+<div style="display: none;">
+<div id="ConfirmRemoveNetwork" title="Delete this network?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This network will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>
+</div>
 </body>
 </html>
