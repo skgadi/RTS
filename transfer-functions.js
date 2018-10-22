@@ -24,6 +24,7 @@ var TransferFunctionsForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			return [1];
@@ -86,6 +87,7 @@ var TransferFunctionsForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			return [1];

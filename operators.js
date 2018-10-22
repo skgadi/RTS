@@ -7,6 +7,7 @@ var OperatorsForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			var Sum=0;
@@ -29,6 +30,7 @@ var OperatorsForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			var Prod=1;

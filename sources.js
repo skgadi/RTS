@@ -24,6 +24,7 @@ var SourcesForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			var A = parseFloat(this.Parameters[0].Value);
@@ -108,6 +109,7 @@ var SourcesForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			var A = parseFloat(this.Parameters[0].Value);
@@ -190,6 +192,7 @@ var SourcesForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function (x) {
 			var A = parseFloat(this.Parameters[0].Value);
@@ -250,6 +253,7 @@ var SourcesForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function (x) {
 			var A = parseFloat(this.Parameters[0].Value);
@@ -298,6 +302,7 @@ var SourcesForNode = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			var A = parseFloat(this.Parameters[0].Value);

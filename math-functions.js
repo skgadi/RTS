@@ -14,6 +14,7 @@ var StaticMathFunctions = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			return [this.Parameters[0].Value*this.InputParams[0]];
@@ -54,6 +55,7 @@ var StaticMathFunctions = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			var A = this.Parameters[0].Value;
@@ -112,6 +114,7 @@ var StaticMathFunctions = {
 		InputParams: [0],
 		Init: function () {
 			this.InputParams = [0];
+			this.PresentOut = [0];
 		},
 		Eval: function () {
 			var A = this.Parameters[0].Value;
