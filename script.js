@@ -13,6 +13,7 @@ var SimulateAtInterval;
 var SimulationTime;
 var SamplingTimeMs = 10;
 var RefreshGraphsMS = 1000;
+var MaximumNoOfPointsToShow = 300;
 
 function setDefaultLocale() {
 	var defaultLocal = navigator.language;
@@ -354,6 +355,8 @@ function saveData(data, callback) {
 					width: $("#" + this.DialogDiv).width(),
 				};
 				//console.log(this.InputParams);
+				if (this.ChartData.getNumberOfRows() >= MaximumNoOfPointsToShow)
+					this.ChartData.removeRow(0);
 				if (this.SinksPlotType == "XYGRAPH")
 					this.ChartData.addRow([this.InputParams[0], this.InputParams[1]]);
 				else
