@@ -1,7 +1,6 @@
-var nodes = null;
-var edges = null;
 var network = null;
-var data;
+var options;
+var container;
 var dialog;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
@@ -13,7 +12,7 @@ var SamplingTimeMs = 10;
 var RefreshGraphsMS = 1000;
 var MaximumNoOfPointsToShow = 300;
 
-function setDefaultLocale() {
+/*function setDefaultLocale() {
 	var defaultLocal = navigator.language;
 	var select = document.getElementById('locale');
 	select.selectedIndex = 0; // set fallback value
@@ -23,7 +22,7 @@ function setDefaultLocale() {
 			break;
 		}
 	}
-}
+}*/
 
 function destroy() {
 	if (network !== null) {
@@ -35,15 +34,15 @@ function destroy() {
 		network = null;
 	}
 }
-
-function draw() {
+function ResetNetwork () {
 	destroy();
-	nodes = [];
-	edges = [];
-
+	var data;
+	draw(data);
+}
+function draw(data) {
 	// create a network
-	var container = document.getElementById('mynetwork');
-	var options = {
+	container = document.getElementById('mynetwork');
+	options = {
 		nodes: {
 			shape: 'box',
 			color: {
@@ -411,7 +410,7 @@ function saveData(data, callback) {
 }
 
 function init() {
-	draw();
+	ResetNetwork();
 	// set Sources Tab
 	var TempSelect = document.getElementById("SourceSignalType");
 	for (var TempSource in SourcesForNode) {
@@ -546,7 +545,7 @@ $(document).ready(function () {
 			modal: true,
 			buttons: {
 				"Delete this network": function () {
-					draw();
+					ResetNetwork();
 					$(this).dialog("close");
 				},
 				Cancel: function () {
@@ -554,6 +553,9 @@ $(document).ready(function () {
 				}
 			}
 		}).dialog("open");
+	});
+	$("#SaveNetwork").click(function () {
+		PrepareNetworkToDownload ();
 	});
 	$("#OpenNetwork").click(function () {
 		$("#ConfirmRemoveNetwork").dialog({
@@ -802,4 +804,9 @@ function ExecuteFunctions() {
 		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = parseFloat(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Eval());
 	}
 	SimulationTime = parseFloat((SimulationTime + SamplingTimeMs / 1000).toFixed(3))
+}
+
+function PrepareNetworkToDownload () {
+	var blob = new Blob([JSONfn.stringify(network.body.data)], {type: "application/json"});
+    saveAs(blob, "hello world.JSON");
 }
