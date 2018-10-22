@@ -1,6 +1,5 @@
 var TransferFunctionsForNode = {
-	"AllTransferFunctions": [
-	{
+	Laplace: {
 		Name: "Laplace",
 		Image: "images/tex/transfer-functions-figure0.png",
 		Parameters: [
@@ -63,7 +62,7 @@ var TransferFunctionsForNode = {
 			return "$$\\frac{Y(s)}{U(s)}=\\frac{"+ NumOut +"}{"+ DenOut +"}$$";
 		},
 	},
-	{
+	ZTransform: {
 		Name: "Z-Transform",
 		Image: "images/tex/transfer-functions-figure1.png",
 		Parameters: [
@@ -126,5 +125,4 @@ var TransferFunctionsForNode = {
 			return "$$\\frac{Y(z)}{U(z)}=\\frac{"+ NumOut +"}{"+ DenOut +"}$$";
 		},
 	},
-	]
 };

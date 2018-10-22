@@ -1,9 +1,7 @@
 var nodes = null;
 var edges = null;
 var network = null;
-// randomly create some nodes and edges
-var data; // = getScaleFreeNetwork(25);
-var seed = 2;
+var data;
 var dialog;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
@@ -416,17 +414,15 @@ function init() {
 	draw();
 	// set Sources Tab
 	var TempSelect = document.getElementById("SourceSignalType");
-	var TempIndex = 0;
-	for (var i = 0; i < SourcesForNode.AllSources.length; i++) {
+	for (var TempSource in SourcesForNode) {
 		TempSelect.options[TempSelect.options.length] = new Option(
-				SourcesForNode.AllSources[i].Name, TempIndex);
-		TempIndex++;
+				SourcesForNode[TempSource].Name, TempSource);
 	}
 	$("#SourceSignalType").on("change paste keyup", function () {
 		$("#SourceSingnalParams").empty();
-		var SourceInt = parseInt($("#SourceSignalType").val());
+		var SelectedSource = $("#SourceSignalType").val();
 		TempSourceNodeItem = new Object();
-		TempSourceNodeItem = CopyJSONForNodes(SourcesForNode.AllSources[SourceInt]);
+		TempSourceNodeItem = CopyJSONForNodes(SourcesForNode[SelectedSource]);
 		for (var i = 0; i < TempSourceNodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempSourceNodeItem.Parameters[i].Name + ', $' + TempSourceNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempSourceNodeItem.Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
 			$("#SourceSingnalParams").append(TempString);
@@ -441,18 +437,16 @@ function init() {
 		$("#SourceSingnalParam0").change();
 	}).change();
 	// set Functions Tab
-	var TempSelect = document.getElementById("FunctionsName");
-	var TempIndex = 0;
-	for (var i = 0; i < StaticMathFunctions.AllFunctions.length; i++) {
+	TempSelect = document.getElementById("FunctionsName");
+	for (var TempSFunctions in StaticMathFunctions) {
 		TempSelect.options[TempSelect.options.length] = new Option(
-				StaticMathFunctions.AllFunctions[i].Name, TempIndex);
-		TempIndex++;
+				StaticMathFunctions[TempSFunctions].Name, TempSFunctions);
 	}
 	$("#FunctionsName").on("change paste keyup", function () {
 		$("#StaticFunctionParams").empty();
-		var FunctionInt = parseInt($("#FunctionsName").val());
+		var FunctionInt = $("#FunctionsName").val();
 		TempFunctionNodeItem = new Object();
-		TempFunctionNodeItem = CopyJSONForNodes(StaticMathFunctions.AllFunctions[FunctionInt]);
+		TempFunctionNodeItem = CopyJSONForNodes(StaticMathFunctions[FunctionInt]);
 		for (var i = 0; i < TempFunctionNodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempFunctionNodeItem.Parameters[i].Name + ', $' + TempFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempFunctionNodeItem.Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
 			$("#StaticFunctionParams").append(TempString);
@@ -468,17 +462,15 @@ function init() {
 	}).change();
 	// set Operators Tab
 	var TempSelect = document.getElementById("OperatorsName");
-	var TempIndex = 0;
-	for (var i = 0; i < OperatorsForNode.AllOperators.length; i++) {
+	for (var TempOperators in OperatorsForNode) {
 		TempSelect.options[TempSelect.options.length] = new Option(
-				OperatorsForNode.AllOperators[i].Name, TempIndex);
-		TempIndex++;
+				OperatorsForNode[TempOperators].Name, TempOperators);
 	}
 	$("#OperatorsName").on("change paste keyup", function () {
 		$("#OperatorParams").empty();
-		var OperatorInt = parseInt($("#OperatorsName").val());
+		var OperatorInt = $("#OperatorsName").val();
 		TempOperatorNodeItem = new Object();
-		TempOperatorNodeItem = CopyJSONForNodes(OperatorsForNode.AllOperators[OperatorInt]);
+		TempOperatorNodeItem = CopyJSONForNodes(OperatorsForNode[OperatorInt]);
 		var TempString = TempOperatorNodeItem.LaTeXString();
 		$("#OperatorsLaTeXRender").empty();
 		$("#OperatorsLaTeXRender").append(TempString);
@@ -486,17 +478,15 @@ function init() {
 	}).change();
 	// set TransferFunctions Tab
 	var TempSelect = document.getElementById("TransferFunctionsName");
-	var TempIndex = 0;
-	for (var i = 0; i < TransferFunctionsForNode.AllTransferFunctions.length; i++) {
+	for (var TempTransferFunctions in TransferFunctionsForNode) {
 		TempSelect.options[TempSelect.options.length] = new Option(
-				TransferFunctionsForNode.AllTransferFunctions[i].Name, TempIndex);
-		TempIndex++;
+				TransferFunctionsForNode[TempTransferFunctions].Name, TempTransferFunctions);
 	}
 	$("#TransferFunctionsName").on("change paste keyup", function () {
 		$("#TransferFunctionsParams").empty();
-		var TransferFunctionInt = parseInt($("#TransferFunctionsName").val());
+		var TransferFunctionInt = $("#TransferFunctionsName").val();
 		TempTransferFunctionNodeItem = new Object();
-		TempTransferFunctionNodeItem = CopyJSONForNodes(TransferFunctionsForNode.AllTransferFunctions[TransferFunctionInt]);
+		TempTransferFunctionNodeItem = CopyJSONForNodes(TransferFunctionsForNode[TransferFunctionInt]);
 		for (var i = 0; i < TempTransferFunctionNodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempTransferFunctionNodeItem.Parameters[i].Name + ', $' + TempTransferFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" value="' + TempTransferFunctionNodeItem.Parameters[i].Value + '" id="TransferFunctionsParam' + i + '"/></div>';
 			$("#TransferFunctionsParams").append(TempString);
@@ -512,17 +502,15 @@ function init() {
 	}).change();
 	// set HardwareIOs Tab
 	var TempSelect = document.getElementById("HardwareIOsName");
-	var TempIndex = 0;
-	for (var i = 0; i < HardwareIOsForNode.AllHardwareIOs.length; i++) {
+	for (var TempHardwareIOs in HardwareIOsForNode) {
 		TempSelect.options[TempSelect.options.length] = new Option(
-				HardwareIOsForNode.AllHardwareIOs[i].Name, TempIndex);
-		TempIndex++;
+				HardwareIOsForNode[TempHardwareIOs].Name, TempHardwareIOs);
 	}
 	$("#HardwareIOsName").on("change paste keyup", function () {
 		$("#HardwareIOsParams").empty();
-		var HardwareIOsInt = parseInt($("#HardwareIOsName").val());
+		var HardwareIOsInt = $("#HardwareIOsName").val();
 		TempHardwareIONodeItem = new Object();
-		TempHardwareIONodeItem = CopyJSONForNodes(HardwareIOsForNode.AllHardwareIOs[HardwareIOsInt]);
+		TempHardwareIONodeItem = CopyJSONForNodes(HardwareIOsForNode[HardwareIOsInt]);
 		for (var i = 0; i < TempHardwareIONodeItem.Parameters.length; i++) {
 			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempHardwareIONodeItem.Parameters[i].Name + ', $' + TempHardwareIONodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempHardwareIONodeItem.Parameters[i].Value + '" id="HardwareIOsParam' + i + '"/></div>';
 			$("#HardwareIOsParams").append(TempString);
