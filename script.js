@@ -11,17 +11,17 @@ var SimulationTime;
 var SamplingTimeMs = 10;
 var RefreshGraphsMS = 1000;
 var MaximumNoOfPointsToShow = 300;
-
+var MaximumFileSize = 2 * 1024 * 1024;
 /*function setDefaultLocale() {
-	var defaultLocal = navigator.language;
-	var select = document.getElementById('locale');
-	select.selectedIndex = 0; // set fallback value
-	for (var i = 0, j = select.options.length; i < j; ++i) {
-		if (select.options[i].getAttribute('value') === defaultLocal) {
-			select.selectedIndex = i;
-			break;
-		}
-	}
+var defaultLocal = navigator.language;
+var select = document.getElementById('locale');
+select.selectedIndex = 0; // set fallback value
+for (var i = 0, j = select.options.length; i < j; ++i) {
+if (select.options[i].getAttribute('value') === defaultLocal) {
+select.selectedIndex = i;
+break;
+}
+}
 }*/
 
 function destroy() {
@@ -34,7 +34,7 @@ function destroy() {
 		network = null;
 	}
 }
-function ResetNetwork () {
+function ResetNetwork() {
 	destroy();
 	var data;
 	draw(data);
@@ -43,69 +43,69 @@ function draw(data) {
 	// create a network
 	container = document.getElementById('mynetwork');
 	options = {
-		nodes: {
-			shape: 'box',
-			color: {
-				border: '#000000',
-				background: "#ffffff",
+		nodes : {
+			shape : 'box',
+			color : {
+				border : '#000000',
+				background : "#ffffff",
 			},
-			font: {
-				color: '#000000',
+			font : {
+				color : '#000000',
 			},
 		},
-		edges: {
-			color: {
-				color: '#000000',
+		edges : {
+			color : {
+				color : '#000000',
 			},
-			arrows: {
-				to: {
-					enabled: true,
-					scaleFactor: 1,
-					type: 'arrow'
+			arrows : {
+				to : {
+					enabled : true,
+					scaleFactor : 1,
+					type : 'arrow'
 				}
 			},
 		},
-		physics: {
-			enabled: true,
-			solver: 'barnesHut',
-			barnesHut: {
-				centralGravity: 0,
-				springLength: 150,
-				avoidOverlap: 1,
-				damping: 1,
-				springConstant: 0.001,
-				gravitationalConstant: -1,
+		physics : {
+			enabled : true,
+			solver : 'barnesHut',
+			barnesHut : {
+				centralGravity : 0,
+				springLength : 0,
+				avoidOverlap : 1,
+				damping : 1,
+				springConstant : 0.00,
+				gravitationalConstant : -1,
 			},
-			forceAtlas2Based: {
-				springLength: 50,
-				springConstant: 0,
-				avoidOverlap: 1,
-				centralGravity: 0.00,
-				gravitationalConstant: -1
+			forceAtlas2Based : {
+				springLength : 50,
+				springConstant : 0,
+				avoidOverlap : 1,
+				centralGravity : 0.00,
+				gravitationalConstant : -1
 			},
 		},
-		manipulation: {
-			initiallyActive: true,
-			addNode: function (data, callback) {
+		manipulation : {
+			initiallyActive : true,
+			addNode : function (data, callback) {
 				// filling in the popup DOM elements
 				dialog = $("#NodeEditor").dialog({
-						dialogClass: 'noTitleStuff',
-						closeOnEscape: false,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: true,
-						resizable: false,
-						buttons: {
-							"Add node": saveData.bind(this, data, callback),
-							Cancel: function () {
+						dialogClass : 'noTitleStuff',
+						closeOnEscape : false,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : true,
+						resizable : false,
+						buttons : {
+							"Add node" : saveData.bind(this, data, callback),
+							Cancel : function () {
 								cancelEdit(callback);
 							}
 						},
-						close: function () {}
+						close : function () {}
 					}).dialog("open");
 			},
-			editNode: function (data, callback) {
+			editNode : function (data, callback) {
 				if (data.gskExtra === 'undefined') {}
 				else {
 					$("#btn" + data.gskExtra.Tab)[0].click();
@@ -127,29 +127,29 @@ function draw(data) {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
-						dialogClass: 'noTitleStuff',
-						closeOnEscape: false,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: true,
-						resizable: false,
-						buttons: {
-							"Save node": saveDataAndCheckEdges.bind(this, data, callback),
-							Cancel: function () {
+						dialogClass : 'noTitleStuff',
+						closeOnEscape : false,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : true,
+						resizable : false,
+						buttons : {
+							"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
+							Cancel : function () {
 								cancelEdit(callback);
 							}
 						},
-						close: function () {}
+						close : function () {}
 					}).dialog("open");
 			},
-			deleteNode: function (data, callback) {
+			deleteNode : function (data, callback) {
 				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
 					$("#Node_" + data.nodes[0]).remove();
 				//console.log(data.nodes[0]);
 				callback(data);
 			},
-			addEdge: function (data, callback) {
+			addEdge : function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -170,7 +170,7 @@ function draw(data) {
 					callback(null);
 				}
 			},
-			editEdge: function (data, callback) {
+			editEdge : function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -239,7 +239,7 @@ function saveDataAndCheckEdges(data, callback) {
 		}
 		if (RemoveElement)
 			network.body.data.edges.remove({
-				id: element
+				id : element
 			});
 	};
 }
@@ -269,42 +269,42 @@ function saveData(data, callback) {
 		else
 			TempImgId1 = 1;
 		data.gskExtra = {
-			Name: $("#SinksLabel").val(),
-			Image: "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
-			SinksPlotType: $("#SinksPlotType").val(),
-			SinksLineColor: $("#SinksLineColor").val(),
-			SinksLineType: $("#SinksLineType").val(),
-			SinksXAxisType: $("#SinksXAxisType").val(),
-			SinksYAxisType: $("#SinksYAxisType").val(),
-			MaxOutputs: 0,
-			DialogDiv: "Node_" + data.id,
-			ChartDiv: "Chart_" + data.id,
-			DialogID: "",
-			ChartID: "",
-			ChartData: "",
-			InputParams: [0],
-			PresentOut: [0],
-			String: function () {
+			Name : $("#SinksLabel").val(),
+			Image : "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
+			SinksPlotType : $("#SinksPlotType").val(),
+			SinksLineColor : $("#SinksLineColor").val(),
+			SinksLineType : $("#SinksLineType").val(),
+			SinksXAxisType : $("#SinksXAxisType").val(),
+			SinksYAxisType : $("#SinksYAxisType").val(),
+			MaxOutputs : 0,
+			DialogDiv : "Node_" + data.id,
+			ChartDiv : "Chart_" + data.id,
+			DialogID : "",
+			ChartID : "",
+			ChartData : "",
+			InputParams : [0],
+			PresentOut : [0],
+			String : function () {
 				return SinksLabel;
 			},
-			Init: function () {
+			Init : function () {
 				this.DialogID = $("#" + this.DialogDiv).dialog({
-						closeOnEscape: true,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: false,
-						resizable: true,
+						closeOnEscape : true,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : false,
+						resizable : true,
 					}).dialog("open");
 				//Chart Initialization
 				var options = {
-					legend: "none",
-					chartArea: {
-						height: ($("#" + this.DialogDiv).height() - 50),
-						width: ($("#" + this.DialogDiv).width() - 100),
+					legend : "none",
+					chartArea : {
+						height : ($("#" + this.DialogDiv).height() - 50),
+						width : ($("#" + this.DialogDiv).width() - 100),
 					},
-					height: $("#" + this.DialogDiv).height() - 7,
-					width: $("#" + this.DialogDiv).width(),
+					height : $("#" + this.DialogDiv).height() - 7,
+					width : $("#" + this.DialogDiv).width(),
 				};
 				this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
 				this.ChartData = new google.visualization.DataTable();
@@ -312,7 +312,7 @@ function saveData(data, callback) {
 				this.ChartData.addColumn('number', this.Name);
 				this.ChartID.draw(this.ChartData, options);
 			},
-			Eval: function () {
+			Eval : function () {
 				var hAxis,
 				vAxis;
 				var LineStyle = [];
@@ -331,25 +331,25 @@ function saveData(data, callback) {
 				else
 					LineStyle = [0];
 				var options = {
-					legend: "none",
-					chartArea: {
-						height: ($("#" + this.DialogDiv).height() - 50),
-						width: ($("#" + this.DialogDiv).width() - 100),
+					legend : "none",
+					chartArea : {
+						height : ($("#" + this.DialogDiv).height() - 50),
+						width : ($("#" + this.DialogDiv).width() - 100),
 					},
-					series: {
-						0: {
-							lineDashStyle: LineStyle,
+					series : {
+						0 : {
+							lineDashStyle : LineStyle,
 						}
 					},
-					colors: [this.SinksLineColor],
-					vAxis: {
-						scaleType: vAxis
+					colors : [this.SinksLineColor],
+					vAxis : {
+						scaleType : vAxis
 					},
-					hAxis: {
-						scaleType: hAxis
+					hAxis : {
+						scaleType : hAxis
 					},
-					height: $("#" + this.DialogDiv).height() - 7,
-					width: $("#" + this.DialogDiv).width(),
+					height : $("#" + this.DialogDiv).height() - 7,
+					width : $("#" + this.DialogDiv).width(),
 				};
 				//console.log(this.InputParams);
 				if (this.ChartData.getNumberOfRows() >= MaximumNoOfPointsToShow)
@@ -399,8 +399,8 @@ function saveData(data, callback) {
 	} else {
 		data.label = "Error: " + n;
 		data.gskExtra = {
-			MaxInputs: 1,
-			MaxOutputs: Infinity,
+			MaxInputs : 1,
+			MaxOutputs : Infinity,
 		}
 	}
 	data.gskExtra.Tab = CurrentTab;
@@ -524,54 +524,85 @@ function init() {
 		$("#HardwareIOsParam0").change();
 	}).change();
 	google.charts.load('current', {
-		'packages': ['corechart']
+		'packages' : ['corechart']
 	});
 	google.charts.setOnLoadCallback(SetViewAsLoaded);
 }
 
 $(document).ready(function () {
 	MathJax.Hub.Config({
-		extensions: ["tex2jax.js"],
-		jax: ["input/TeX", "output/HTML-CSS"],
-		tex2jax: {
-			inlineMath: [["$", "$"], ["\\(", "\\)"]]
+		extensions : ["tex2jax.js"],
+		jax : ["input/TeX", "output/HTML-CSS"],
+		tex2jax : {
+			inlineMath : [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
 	$("#NewNetwork").click(function () {
 		$("#ConfirmRemoveNetwork").dialog({
-			resizable: false,
-			height: "auto",
-			width: 400,
-			modal: true,
-			buttons: {
-				"Delete this network": function () {
+			resizable : false,
+			height : "auto",
+			width : 400,
+			modal : true,
+			buttons : {
+				"Delete this network" : function () {
 					ResetNetwork();
 					$(this).dialog("close");
 				},
-				Cancel: function () {
+				Cancel : function () {
 					$(this).dialog("close");
 				}
 			}
 		}).dialog("open");
 	});
 	$("#SaveNetwork").click(function () {
-		PrepareNetworkToDownload ();
+		PrepareNetworkToDownload();
+	});
+	$('form input').change(function (event) {
+		$('form p').html("Loading the file<br/><b><i>" + this.files[0].name + "</i></b>.<br/>Please wait ...");
+		if (this.files[0].size > MaximumFileSize)
+			$('form p').html($('form p').html() + "<br/>This file is too big, select another file.");
+		else {
+			readFileContent(this.files[0]).then(content => {
+				var TempData = JSON.parse2(content);
+				var TempNodes=[];
+				var TempEdges=[];
+				for (var TempNode in TempData.nodes._data)
+					TempNodes[TempNodes.length] = JSON.parse2(JSON.stringify2(TempData.nodes._data[TempNode]));
+				for (var TempEdge in TempData.edges._data)
+					TempEdges[TempEdges.length] = JSON.parse2(JSON.stringify2(TempData.edges._data[TempEdge]));
+				console.log(TempNodes);
+				console.log(TempEdges);
+				var NewData = {
+					nodes: new vis.DataSet(TempNodes),
+					edges: new vis.DataSet(TempEdges),
+				};
+				console.log(NewData);
+				draw(NewData);
+				$("#OpenFileDialog").dialog("close");
+			}).catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."))
+		}
+		$('form input').val("");
+		/*$('form input').val("");
+		if
+		$("#OpenFileDialog").dialog("close");*/
 	});
 	$("#OpenNetwork").click(function () {
-		$("#ConfirmRemoveNetwork").dialog({
-			resizable: false,
-			height: "auto",
-			width: 400,
-			modal: true,
-			buttons: {
-				"Delete this network": function () {
-					$(this).dialog("close");
-				},
-				Cancel: function () {
-					$(this).dialog("close");
-				}
+		$("#OpenFileDialog").dialog({
+			height : "auto",
+			height : 300,
+			width : 400,
+			modal : true,
+			/*buttons : {
+			"Open selected" : function () {
+
+			$(this).dialog("close");
+			},
+			Cancel : function () {
+			$(this).dialog("close");
 			}
+			}*/
 		}).dialog("open");
+		$('form p').text("Drag your file here or click in this area.");
 	});
 	$("#Simulate").click(function () {
 		if (SimulationState == "Running") {
@@ -611,6 +642,12 @@ function ExtractNumberAtEnd(Str) {
 		return 0;
 }
 
+function GenJSONFuncsForNodes(TabName, ItemName) {
+	/*switch(TabName) {
+		case "Sources":{}
+	}
+	Source.Init = */
+}
 function CopyJSONForNodes(Source) {
 	var target;
 	target = JSON.parse2(JSON.stringify2(Source));
@@ -763,7 +800,7 @@ function SetProperView() {
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
 		$(".FileHandling").css("display", "none");
-		
+
 	}
 }
 
@@ -806,7 +843,18 @@ function ExecuteFunctions() {
 	SimulationTime = parseFloat((SimulationTime + SamplingTimeMs / 1000).toFixed(3))
 }
 
-function PrepareNetworkToDownload () {
-	var blob = new Blob([JSONfn.stringify(network.body.data)], {type: "application/json"});
-    saveAs(blob, "hello world.JSON");
+function PrepareNetworkToDownload() {
+	var blob = new Blob([JSON.stringify2(network.body.data)], {
+			type : "application/json"
+		});
+	saveAs(blob, "hello world.JSON");
+}
+
+function readFileContent(file) {
+	const reader = new FileReader()
+		return new Promise((resolve, reject) => {
+			reader.onload = event => resolve(event.target.result)
+				reader.onerror = error => reject(error)
+				reader.readAsText(file)
+		})
 }
