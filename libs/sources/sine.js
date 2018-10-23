@@ -1,25 +1,25 @@
-{
+gsk_libs_sources_sine = {
 	Name: "Sine",
 	Image: "images/tex/sources-figure1.png",
 	Parameters: [{
 			Name: "Amplitude",
 			LaTeX: "$A$",
-			type: "Number"
+			type: "Number",
 			Value: 1
 		}, {
 			Name: "Frequency",
 			LaTeX: "$f$",
-			type: "Number"
+			type: "Number",
 			Value: 1
 		}, {
 			Name: "Phase",
 			LaTeX: "$\\phi$",
-			type: "Number"
+			type: "Number",
 			Value: 0
 		}, {
 			Name: "Offset",
 			LaTeX: "$O$",
-			type: "Number"
+			type: "Number",
 			Value: 0
 		},
 	],

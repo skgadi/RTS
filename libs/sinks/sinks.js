@@ -1,4 +1,6 @@
 {
 	[
+	"scope",
+	//"xygraph"
 	]
 }
