@@ -1,0 +1,9 @@
+{
+	[
+		"step",
+		"sine",
+		"triangular",
+		"sawtooth",
+		"rectangular"
+	]
+}

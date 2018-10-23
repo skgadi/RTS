@@ -1,0 +1,7 @@
+{
+	[
+		"arduinoai",
+		"arduinoao",
+		"arduinoencoder"
+	]
+}

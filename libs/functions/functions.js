@@ -1,0 +1,7 @@
+{
+	[
+		"gain",
+		"sine",
+		"cosine"
+	]
+}
