@@ -1,25 +1,21 @@
 gsk_libs_sources_sine = {
 	Name: "Sine",
-	Image: "images/tex/sources-figure1.png",
+	Icon: "images/tex/sources-figure1.png",
 	Parameters: [{
-			Name: "Amplitude",
-			LaTeX: "$A$",
-			type: "Number",
+			Name: "Amplitude ($A$)",
+			Type: "Number",
 			Value: 1
 		}, {
-			Name: "Frequency",
-			LaTeX: "$f$",
-			type: "Number",
+			Name: "Frequency ($f$)",
+			Type: "Number",
 			Value: 1
 		}, {
-			Name: "Phase",
-			LaTeX: "$\\phi$",
-			type: "Number",
+			Name: "Phase ($\\phi$)",
+			Type: "Number",
 			Value: 0
 		}, {
-			Name: "Offset",
-			LaTeX: "$O$",
-			type: "Number",
+			Name: "Offset ($O$)",
+			Type: "Number",
 			Value: 0
 		},
 	],
@@ -36,7 +32,7 @@ gsk_libs_sources_sine = {
 		var O = parseFloat(this.Parameters[3].Value);
 		return [Math.sin(2 * Math.PI * f * SimulationTime + Phi) + O];
 	},
-	String: function () {
+	Label: function () {
 		var A = this.Parameters[0].Value;
 		var f = Math.round(Math.PI * this.Parameters[1].Value * 2 * 1000) / 1000;
 		var phi = this.Parameters[2].Value;
