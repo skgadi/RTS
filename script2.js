@@ -3,6 +3,7 @@ var options;
 var container;
 var dialog;
 var LibraryDialog;
+var GSK_Data, GSK_Callback;
 var SelectedLibraryBlock;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
@@ -15,6 +16,18 @@ var RefreshGraphsMS = 1000;
 var MaximumNoOfPointsToShow = 300;
 var MaximumFileSize = 2 * 1024 * 1024;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
+
+var GSK_Mandatory_Items = {
+	"Name": "string",
+	"Icon": "string",
+	"MaxInTerminals": "number",
+	"MaxOutTerminals": "number",
+	"Const": "function",
+	"Init": "function",
+	"Eval": "function",
+	"Label": "function",
+	"Details": "function",
+};
 /*function setDefaultLocale() {
 var defaultLocal = navigator.language;
 var select = document.getElementById('locale');
@@ -46,87 +59,73 @@ function draw(data) {
 	// create a network
 	container = document.getElementById('mynetwork');
 	options = {
-		locale : "gsk",
-		locales : {
-			"gsk" : {
-				edit : 'Edit',
-				del : 'Delete selected',
-				back : 'Back',
-				addNode : 'Add block',
-				addEdge : 'New connection',
-				editNode : 'Edit block',
-				editEdge : 'Edit connection',
-				addDescription : 'Click in an empty space to place a new block.',
-				edgeDescription : 'Click on a block and drag the connection to another block to connect them.',
-				editEdgeDescription : 'Click on the control points and drag them to a block to connect to it.',
-				createEdgeError : 'Cannot connect to a cluster.',
-				deleteClusterError : 'Clusters cannot be deleted.',
-				editClusterError : 'Clusters cannot be edited.'
+		locale: "gsk",
+		locales: {
+			"gsk": {
+				edit: 'Edit',
+				del: 'Delete selected',
+				back: 'Back',
+				addNode: 'Add block',
+				addEdge: 'New connection',
+				editNode: 'Edit block',
+				editEdge: 'Edit connection',
+				addDescription: 'Click in an empty space to place a new block.',
+				edgeDescription: 'Click on a block and drag the connection to another block to connect them.',
+				editEdgeDescription: 'Click on the control points and drag them to a block to connect to it.',
+				createEdgeError: 'Cannot connect to a cluster.',
+				deleteClusterError: 'Clusters cannot be deleted.',
+				editClusterError: 'Clusters cannot be edited.'
 			}
 		},
-		nodes : {
-			shape : 'box',
-			color : {
-				border : '#000000',
-				background : "#ffffff",
+		nodes: {
+			shape: 'box',
+			color: {
+				border: '#000000',
+				background: "#ffffff",
 			},
-			font : {
-				color : '#000000',
+			font: {
+				color: '#000000',
 			},
 		},
-		edges : {
-			color : {
-				color : '#000000',
+		edges: {
+			color: {
+				color: '#000000',
 			},
-			arrows : {
-				to : {
-					enabled : true,
-					scaleFactor : 1,
-					type : 'arrow'
+			arrows: {
+				to: {
+					enabled: true,
+					scaleFactor: 1,
+					type: 'arrow'
 				}
 			},
 		},
-		physics : {
-			enabled : true,
-			solver : 'barnesHut',
-			barnesHut : {
-				centralGravity : 0,
-				springLength : 0,
-				avoidOverlap : 1,
-				damping : 1,
-				springConstant : 0.00,
-				gravitationalConstant : -1,
+		physics: {
+			enabled: true,
+			solver: 'barnesHut',
+			barnesHut: {
+				centralGravity: 0,
+				springLength: 0,
+				avoidOverlap: 1,
+				damping: 1,
+				springConstant: 0.00,
+				gravitationalConstant: -1,
 			},
-			forceAtlas2Based : {
-				springLength : 50,
-				springConstant : 0,
-				avoidOverlap : 1,
-				centralGravity : 0.00,
-				gravitationalConstant : -1
+			forceAtlas2Based: {
+				springLength: 50,
+				springConstant: 0,
+				avoidOverlap: 1,
+				centralGravity: 0.00,
+				gravitationalConstant: -1
 			},
 		},
-		manipulation : {
-			initiallyActive : true,
-			addNode : function (data, callback) {
-				// filling in the popup DOM elements
-				dialog = $("#NodeEditor").dialog({
-						dialogClass : 'noTitleStuff',
-						closeOnEscape : false,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : true,
-						resizable : false,
-						buttons : {
-							"Add node" : saveData.bind(this, data, callback),
-							Cancel : function () {
-								cancelEdit(callback);
-							}
-						},
-						close : function () {}
-					}).dialog("open");
+		manipulation: {
+			initiallyActive: true,
+			addNode: function (data, callback) {
+				GSK_Data = data;
+				GSK_Callback = callback;
+				LibraryDialog.dialog("open");
 			},
-			editNode : function (data, callback) {
+			editNode: function (data, callback) {
 				if (data.gskExtra === 'undefined') {}
 				else {
 					$("#btn" + data.gskExtra.Tab)[0].click();
@@ -148,29 +147,29 @@ function draw(data) {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
-						dialogClass : 'noTitleStuff',
-						closeOnEscape : false,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : true,
-						resizable : false,
-						buttons : {
-							"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
-							Cancel : function () {
+						dialogClass: 'noTitleStuff',
+						closeOnEscape: false,
+						autoOpen: false,
+						height: 350,
+						width: 500,
+						modal: true,
+						resizable: false,
+						buttons: {
+							"Save node": saveDataAndCheckEdges.bind(this, data, callback),
+							Cancel: function () {
 								cancelEdit(callback);
 							}
 						},
-						close : function () {}
+						close: function () {}
 					}).dialog("open");
 			},
-			deleteNode : function (data, callback) {
+			deleteNode: function (data, callback) {
 				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
 					$("#Node_" + data.nodes[0]).remove();
 				//console.log(data.nodes[0]);
 				callback(data);
 			},
-			addEdge : function (data, callback) {
+			addEdge: function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -191,7 +190,7 @@ function draw(data) {
 					callback(null);
 				}
 			},
-			editEdge : function (data, callback) {
+			editEdge: function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -260,7 +259,7 @@ function saveDataAndCheckEdges(data, callback) {
 		}
 		if (RemoveElement)
 			network.body.data.edges.remove({
-				id : element
+				id: element
 			});
 	};
 }
@@ -290,42 +289,42 @@ function saveData(data, callback) {
 		else
 			TempImgId1 = 1;
 		data.gskExtra = {
-			Name : $("#SinksLabel").val(),
-			Image : "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
-			SinksPlotType : $("#SinksPlotType").val(),
-			SinksLineColor : $("#SinksLineColor").val(),
-			SinksLineType : $("#SinksLineType").val(),
-			SinksXAxisType : $("#SinksXAxisType").val(),
-			SinksYAxisType : $("#SinksYAxisType").val(),
-			MaxOutputs : 0,
-			DialogDiv : "Node_" + data.id,
-			ChartDiv : "Chart_" + data.id,
-			DialogID : "",
-			ChartID : "",
-			ChartData : "",
-			InputParams : [0],
-			PresentOut : [0],
-			String : function () {
+			Name: $("#SinksLabel").val(),
+			Image: "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
+			SinksPlotType: $("#SinksPlotType").val(),
+			SinksLineColor: $("#SinksLineColor").val(),
+			SinksLineType: $("#SinksLineType").val(),
+			SinksXAxisType: $("#SinksXAxisType").val(),
+			SinksYAxisType: $("#SinksYAxisType").val(),
+			MaxOutputs: 0,
+			DialogDiv: "Node_" + data.id,
+			ChartDiv: "Chart_" + data.id,
+			DialogID: "",
+			ChartID: "",
+			ChartData: "",
+			InputParams: [0],
+			PresentOut: [0],
+			String: function () {
 				return SinksLabel;
 			},
-			Init : function () {
+			Init: function () {
 				this.DialogID = $("#" + this.DialogDiv).dialog({
-						closeOnEscape : true,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : false,
-						resizable : true,
+						closeOnEscape: true,
+						autoOpen: false,
+						height: 350,
+						width: 500,
+						modal: false,
+						resizable: true,
 					}).dialog("open");
 				//Chart Initialization
 				var options = {
-					legend : "none",
-					chartArea : {
-						height : ($("#" + this.DialogDiv).height() - 50),
-						width : ($("#" + this.DialogDiv).width() - 100),
+					legend: "none",
+					chartArea: {
+						height: ($("#" + this.DialogDiv).height() - 50),
+						width: ($("#" + this.DialogDiv).width() - 100),
 					},
-					height : $("#" + this.DialogDiv).height() - 7,
-					width : $("#" + this.DialogDiv).width(),
+					height: $("#" + this.DialogDiv).height() - 7,
+					width: $("#" + this.DialogDiv).width(),
 				};
 				this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
 				this.ChartData = new google.visualization.DataTable();
@@ -333,7 +332,7 @@ function saveData(data, callback) {
 				this.ChartData.addColumn('number', this.Name);
 				this.ChartID.draw(this.ChartData, options);
 			},
-			Eval : function () {
+			Eval: function () {
 				var hAxis,
 				vAxis;
 				var LineStyle = [];
@@ -352,25 +351,25 @@ function saveData(data, callback) {
 				else
 					LineStyle = [0];
 				var options = {
-					legend : "none",
-					chartArea : {
-						height : ($("#" + this.DialogDiv).height() - 50),
-						width : ($("#" + this.DialogDiv).width() - 100),
+					legend: "none",
+					chartArea: {
+						height: ($("#" + this.DialogDiv).height() - 50),
+						width: ($("#" + this.DialogDiv).width() - 100),
 					},
-					series : {
-						0 : {
-							lineDashStyle : LineStyle,
+					series: {
+						0: {
+							lineDashStyle: LineStyle,
 						}
 					},
-					colors : [this.SinksLineColor],
-					vAxis : {
-						scaleType : vAxis
+					colors: [this.SinksLineColor],
+					vAxis: {
+						scaleType: vAxis
 					},
-					hAxis : {
-						scaleType : hAxis
+					hAxis: {
+						scaleType: hAxis
 					},
-					height : $("#" + this.DialogDiv).height() - 7,
-					width : $("#" + this.DialogDiv).width(),
+					height: $("#" + this.DialogDiv).height() - 7,
+					width: $("#" + this.DialogDiv).width(),
 				};
 				//console.log(this.InputParams);
 				if (this.ChartData.getNumberOfRows() >= MaximumNoOfPointsToShow)
@@ -420,8 +419,8 @@ function saveData(data, callback) {
 	} else {
 		data.label = "Error: " + n;
 		data.gskExtra = {
-			MaxInputs : 1,
-			MaxOutputs : Infinity,
+			MaxInputs: 1,
+			MaxOutputs: Infinity,
 		}
 	}
 	data.gskExtra.Tab = CurrentTab;
@@ -438,19 +437,21 @@ function init() {
 				$("#GSK_Lib_Head").append("<button style='width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \" title='" + gsk_libs[TempTabs].Name + "'> <img src='" + gsk_libs[TempTabs].Icon + "' style='width: 100%;'/></button>");
 			}
 			LibraryDialog = $("#GSK_Library").dialog({
-					dialogClass : 'noTitleStuff',
-					closeOnEscape : false,
-					autoOpen : false,
-					height : 400,
-					width : 500,
-					modal : true,
-					resizable : false,
-					open : function () {
+					closeOnEscape: true,
+					autoOpen: false,
+					height: 400,
+					width: 500,
+					modal: true,
+					resizable: false,
+					open: function () {
 						$(".ui-dialog").css("padding", "0px");
 						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
 						SetGUIState("DisableLibraryAddButton");
 					},
-				}).dialog("open");
+					close: function (event, ui) {
+						GSK_Callback(null);
+					}
+				});
 		} catch (err) {
 			$("#GSKShowInitProgress").append("<p>Error in resolving <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
 		}
@@ -459,161 +460,26 @@ function init() {
 		$("#GSKShowInitProgress").append("<p>Error in loading <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
 		return;
 	});
-	asdf();
 	ResetNetwork();
-	// set Sources Tab
-	var TempSelect = document.getElementById("SourceSignalType");
-	for (var TempSource in SourcesForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				SourcesForNode[TempSource].Name, TempSource);
-	}
-	$("#SourceSignalType").on("change paste keyup", function () {
-		$("#SourceSingnalParams").empty();
-		var SelectedSource = $("#SourceSignalType").val();
-		TempSourceNodeItem = new Object();
-		TempSourceNodeItem = CopyJSONForNodes(SourcesForNode[SelectedSource]);
-		for (var i = 0; i < TempSourceNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempSourceNodeItem.Parameters[i].Name + ', $' + TempSourceNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempSourceNodeItem.Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
-			$("#SourceSingnalParams").append(TempString);
-			$("#SourceSingnalParam" + i).on("change paste keyup", function () {
-				TempSourceNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#SourcesLaTeXRender").empty();
-				var TempString = TempSourceNodeItem.LaTeXString();
-				$("#SourcesLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#SourceSingnalParam0").change();
-	}).change();
-	// set Functions Tab
-	TempSelect = document.getElementById("FunctionsName");
-	for (var TempSFunctions in StaticMathFunctions) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				StaticMathFunctions[TempSFunctions].Name, TempSFunctions);
-	}
-	$("#FunctionsName").on("change paste keyup", function () {
-		$("#StaticFunctionParams").empty();
-		var FunctionInt = $("#FunctionsName").val();
-		TempFunctionNodeItem = new Object();
-		TempFunctionNodeItem = CopyJSONForNodes(StaticMathFunctions[FunctionInt]);
-		for (var i = 0; i < TempFunctionNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempFunctionNodeItem.Parameters[i].Name + ', $' + TempFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempFunctionNodeItem.Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
-			$("#StaticFunctionParams").append(TempString);
-			$("#FunctionsParam" + i).on("change paste keyup", function () {
-				TempFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#FunctionsLaTeXRender").empty();
-				var TempString = TempFunctionNodeItem.LaTeXString();
-				$("#FunctionsLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#FunctionsParam0").change();
-	}).change();
-	// set Operators Tab
-	var TempSelect = document.getElementById("OperatorsName");
-	for (var TempOperators in OperatorsForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				OperatorsForNode[TempOperators].Name, TempOperators);
-	}
-	$("#OperatorsName").on("change paste keyup", function () {
-		$("#OperatorParams").empty();
-		var OperatorInt = $("#OperatorsName").val();
-		TempOperatorNodeItem = new Object();
-		TempOperatorNodeItem = CopyJSONForNodes(OperatorsForNode[OperatorInt]);
-		var TempString = TempOperatorNodeItem.LaTeXString();
-		$("#OperatorsLaTeXRender").empty();
-		$("#OperatorsLaTeXRender").append(TempString);
-		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-	}).change();
-	// set TransferFunctions Tab
-	var TempSelect = document.getElementById("TransferFunctionsName");
-	for (var TempTransferFunctions in TransferFunctionsForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				TransferFunctionsForNode[TempTransferFunctions].Name, TempTransferFunctions);
-	}
-	$("#TransferFunctionsName").on("change paste keyup", function () {
-		$("#TransferFunctionsParams").empty();
-		var TransferFunctionInt = $("#TransferFunctionsName").val();
-		TempTransferFunctionNodeItem = new Object();
-		TempTransferFunctionNodeItem = CopyJSONForNodes(TransferFunctionsForNode[TransferFunctionInt]);
-		for (var i = 0; i < TempTransferFunctionNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempTransferFunctionNodeItem.Parameters[i].Name + ', $' + TempTransferFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" value="' + TempTransferFunctionNodeItem.Parameters[i].Value + '" id="TransferFunctionsParam' + i + '"/></div>';
-			$("#TransferFunctionsParams").append(TempString);
-			$("#TransferFunctionsParam" + i).on("change paste keyup", function () {
-				TempTransferFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#TransferFunctionsLaTeXRender").empty();
-				var TempString = TempTransferFunctionNodeItem.LaTeXString();
-				$("#TransferFunctionsLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#TransferFunctionsParam0").change();
-	}).change();
-	// set HardwareIOs Tab
-	var TempSelect = document.getElementById("HardwareIOsName");
-	for (var TempHardwareIOs in HardwareIOsForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				HardwareIOsForNode[TempHardwareIOs].Name, TempHardwareIOs);
-	}
-	$("#HardwareIOsName").on("change paste keyup", function () {
-		$("#HardwareIOsParams").empty();
-		var HardwareIOsInt = $("#HardwareIOsName").val();
-		TempHardwareIONodeItem = new Object();
-		TempHardwareIONodeItem = CopyJSONForNodes(HardwareIOsForNode[HardwareIOsInt]);
-		for (var i = 0; i < TempHardwareIONodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempHardwareIONodeItem.Parameters[i].Name + ', $' + TempHardwareIONodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempHardwareIONodeItem.Parameters[i].Value + '" id="HardwareIOsParam' + i + '"/></div>';
-			$("#HardwareIOsParams").append(TempString);
-			$("#HardwareIOsParam" + i).on("change paste keyup", function () {
-				TempHardwareIONodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#HardwareIOsNameLaTeXRender").empty();
-				var TempString = TempHardwareIONodeItem.LaTeXString();
-				$("#HardwareIOsNameLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#HardwareIOsParam0").change();
-	}).change();
 	google.charts.load('current', {
-		'packages' : ['corechart']
+		'packages': ['corechart']
 	});
 	google.charts.setOnLoadCallback(SetViewAsLoaded);
 }
 
 $(document).ready(function () {
 	MathJax.Hub.Config({
-		menuSettings : {
-			inTabOrder : false
+		menuSettings: {
+			inTabOrder: false
 		},
-		extensions : ["tex2jax.js"],
-		jax : ["input/TeX", "output/HTML-CSS"],
-		tex2jax : {
-			inlineMath : [["$", "$"], ["\\(", "\\)"]]
+		extensions: ["tex2jax.js"],
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
-	
-	/*window.onbeforeunload = function () {
-	return true;
-	}*/
-	$("#NewNetwork").click(function () {
-		$("#ConfirmRemoveNetwork").dialog({
-			resizable : false,
-			height : "auto",
-			width : 400,
-			modal : true,
-			buttons : {
-				"Delete this network" : function () {
-					ResetNetwork();
-					$(this).dialog("close");
-				},
-				Cancel : function () {
-					$(this).dialog("close");
-				}
-			}
-		}).dialog("open");
-	});
-	$("#SaveNetwork").click(function () {
-		PrepareNetworkToDownload();
-	});
+
+	// Handle loading files to open
 	$('form input').change(function (event) {
 		$('form p').html("Loading the file<br/><b><i>" + this.files[0].name + "</i></b>.<br/>Please wait ...");
 		if (this.files[0].size > MaximumFileSize)
@@ -630,8 +496,8 @@ $(document).ready(function () {
 				console.log(TempNodes);
 				console.log(TempEdges);
 				var NewData = {
-					nodes : new vis.DataSet(TempNodes),
-					edges : new vis.DataSet(TempEdges),
+					nodes: new vis.DataSet(TempNodes),
+					edges: new vis.DataSet(TempEdges),
 				};
 				console.log(NewData);
 				draw(NewData);
@@ -639,40 +505,57 @@ $(document).ready(function () {
 			}).catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."))
 		}
 		$('form input').val("");
-		/*$('form input').val("");
-		if
-		$("#OpenFileDialog").dialog("close");*/
-	});
-	$("#OpenNetwork").click(function () {
-		$("#OpenFileDialog").dialog({
-			height : "auto",
-			height : 300,
-			width : 400,
-			modal : true,
-			/*buttons : {
-			"Open selected" : function () {
-
-			$(this).dialog("close");
-			},
-			Cancel : function () {
-			$(this).dialog("close");
-			}
-			}*/
-		}).dialog("open");
-		$('form p').text("Drag your file here or click in this area.");
-	});
-	$("#Simulate").click(function () {
-		if (SimulationState == "Running") {
-			if (SimulateAtInterval != undefined)
-				clearInterval(SimulateAtInterval);
-			SetViewAsLoaded();
-		} else if (SimulationState == "Design") {
-			SetViewAsSimulating();
-			RunSimulation();
-		}
 	});
 	init();
 });
+
+function CreateNewFile() {
+	$("#ConfirmRemoveNetwork").dialog({
+		resizable: false,
+		height: "auto",
+		width: 400,
+		modal: true,
+		buttons: {
+			"Delete this network": function () {
+				ResetNetwork();
+				$(this).dialog("close");
+			},
+			Cancel: function () {
+				$(this).dialog("close");
+			}
+		}
+	}).dialog("open");
+}
+
+function OpenAFile() {
+	$("#OpenFileDialog").dialog({
+		height: "auto",
+		height: 300,
+		width: 400,
+		modal: true,
+		/*buttons : {
+		"Open selected" : function () {
+
+		$(this).dialog("close");
+		},
+		Cancel : function () {
+		$(this).dialog("close");
+		}
+		}*/
+	}).dialog("open");
+	$('form p').text("Drag your file here or click in this area.");
+}
+
+function SimulateTheNetwork() {
+	if (SimulationState == "Running") {
+		if (SimulateAtInterval != undefined)
+			clearInterval(SimulateAtInterval);
+		SetViewAsLoaded();
+	} else if (SimulationState == "Design") {
+		SetViewAsSimulating();
+		RunSimulation();
+	}
+}
 
 function OpenSelectNodeType(evt, TabId) {
 	var i,
@@ -748,61 +631,73 @@ function SelectLibraryTab(evt, TabId) {
 }
 
 function AddLibraryTabMainSelect(TabId) {
-	for (var TempSource in eval("gsk_libs_" + TabId)) {
-		$("#GSK_Lib_Functions").append("<div class='w3-col s2 m2 l2 w3-padding w3-button' title='" + eval("gsk_libs_" + TabId)[TempSource].Name + "'><img src='" + eval("gsk_libs_" + TabId)[TempSource].Icon + "' style='width:100%'></div>");
+	for (var TempBlock in eval("gsk_libs_" + TabId)) {
+		$("#GSK_Lib_Functions").append("<div class='w3-col s2 m2 l2 w3-padding w3-button' title='" + eval("gsk_libs_" + TabId)[TempBlock].Name + "' GSK_File = 'libs/" + TabId + "/" + TempBlock + ".js' GSK_Var = 'gsk_libs_" + TabId + "_" + TempBlock + "' onclick = 'PrepareAndAddBlock(this)'><img src='" + eval("gsk_libs_" + TabId)[TempBlock].Icon + "' style='width:100%'></div>");
 	}
-	
-	/*
-	$("#LibraryContent").append("<div id='LibraryBlockDetails' class='w3-row'></div>");
-	$("#LibraryBlockDetails").append("<div class='w3-col s11 m11 l11'><label><b>" + gsk_libs[TabId].Name + "</b></label><select class='w3-input w3-select w3-border w3-border-theme' id='TypeOfFunctions'></select></div><div id='TypeOfFunctionsIcon' class='w3-col s1 m1 l1 w3-display-right'></div><div id='LibraryBlockParams'></div>");
-	$("#LibraryMoreInfo").append("<label><b>More information</b></label><div id='LibraryBlockMoreInformation'></div>");
-	var TypeOfFunctions = document.getElementById("TypeOfFunctions");
-	for (var TempSource in eval("gsk_libs_" + TabId)) {
-		TypeOfFunctions.options[TypeOfFunctions.options.length] = new Option(eval("gsk_libs_" + TabId)[TempSource].Name, TabId + "_" + TempSource);
-	}
-	$("#TypeOfFunctions").on("change", function () {
-		$("#LibraryBlockParams").empty();
-		$("#TypeOfFunctionsIcon").empty();
-		$("#LibraryBlockMoreInformation").empty();
-		if (eval("typeof gsk_libs_" + $("#TypeOfFunctions option:selected").val() + " === 'undefined'")) {
-			var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
-			SetGUIState("SuspendGUIDialog");
-			$.getScript('libs/' + TempLibPath[0] + '/' + TempLibPath[1] + '.js')
-			.done(function (script, textStatus, jqxhr) {
-				PrepareLibBlockParams();
-				SetGUIState("ResumeGUIDialog");
-			})
-			.fail(function (jqxhr, settings, exception) {
-				var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
-				$("#LibraryBlockMoreInformation").append("<p>Error in loading <b><i>libs/" + TempLibPath[0] + "/" + TempLibPath[1] + ".js</i></b>.</p>" + ErrorReportingText);
-				SetGUIState("ResumeGUIDialog");
-				return;
-			});
-		} else {
-			PrepareLibBlockParams();
-			SetGUIState("ResumeGUIDialog");
+}
+
+function PrepareAndAddBlock(Block) {
+	if (eval("typeof " + $(Block).attr('GSK_Var')) === 'undefined') {
+		$.getScript($(Block).attr('GSK_File'))
+		.done(function (script, textStatus, jqxhr, TempFileToLoad = $(Block).attr('GSK_File'), TempLoadedVar = $(Block).attr('GSK_Var')) {
+			try {
+				ValidateAndAddBlock(TempLoadedVar);
+			} catch (err) {
+				$.notify("Error in processing " + TempFileToLoad + ".", "error");
+			}
+		})
+		.fail(function (jqxhr, settings, exception, TempFileToLoad = $(Block).attr('GSK_File')) {
+			$.notify("Error in loading " + TempFileToLoad + ".", "error");
+		});
+	} else
+		ValidateAndAddBlock($(Block).attr('GSK_Var'));
+
+}
+
+function ValidateAndAddBlock(BlockInfo) {
+	var IsValid = true;
+	for (TempBlockItem in GSK_Mandatory_Items) {
+		console.log();
+		if (typeof eval(BlockInfo)[TempBlockItem] !== GSK_Mandatory_Items[TempBlockItem]) {
+			console.log('Unable to find ' + TempBlockItem + ' as a ' + GSK_Mandatory_Items[TempBlockItem] + ' in ' + BlockInfo + '.');
+			IsValid = false;
 		}
-	});
-	$("#TypeOfFunctions").change();*/
+	}
+	if (IsValid)
+		AddABlockToNetwork(BlockInfo);
+	else
+		$.notify("Error in validating " + BlockInfo + ".", "error");
+}
+
+function AddABlockToNetwork(BlockInfo) {
+	GSK_Data.gskExtra = CopyJSONForBlocks(eval(BlockInfo));
+	GSK_Data.label = GSK_Data.gskExtra.Label();
+	GSK_Data.shape = "image";
+	GSK_Data.image = GSK_Data.gskExtra.Icon;
+	GSK_Callback(GSK_Data);
+	LibraryDialog.dialog("close");
+
 }
 
 function PrepareLibBlockParams() {
-	try {
-		var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
-		SelectedLibraryBlock = CopyJSONForBlocks(eval("gsk_libs_" + TempLibPath[0] + "_" + TempLibPath[1]));
-		$("#TypeOfFunctionsIcon").append("<label><b>Icon</b></label><img src='" + SelectedLibraryBlock.Icon + "' alt='" + SelectedLibraryBlock.Name + "' style='max-height: 37px; max-width: 100%;'>");
-		for (var i = 0; i < SelectedLibraryBlock.Parameters.length; i++) {
-			if (SelectedLibraryBlock.Parameters[i].Type === "Number") {
-				$("#LibraryBlockParams").append("<div class='w3-col s4 m4 l4'> <label><b>" + SelectedLibraryBlock.Parameters[i].Name + "</b></label> <input class='w3-input w3-border w3-border-theme' GSKParamType='" + SelectedLibraryBlock.Parameters[i].Type + "' GSKValid='true' GSKParamNum='" + i + "' value='" + SelectedLibraryBlock.Parameters[i].Value + "' id='gsk_" + TempLibPath[0] + "_" + TempLibPath[1] + "_" + i + "' onchange='ValidateInputFor(this)'/></div>");
-			}
-		}
-		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-	} catch (err) {
-		var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
-		$("#LibraryBlockMoreInformation").append("<p>Error in resolving <b><i>libs/" + TempLibPath[0] + "/" + TempLibPath[1] + ".js</i></b>.</p>" + ErrorReportingText);
-		SetGUIState("ResumeGUIDialog");
-		console.log(err);
+	/*try {
+	var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
+	SelectedLibraryBlock = CopyJSONForBlocks(eval("gsk_libs_" + TempLibPath[0] + "_" + TempLibPath[1]));
+	$("#TypeOfFunctionsIcon").append("<label><b>Icon</b></label><img src=' " + SelectedLibraryBlock.Icon + " ' alt=' " + SelectedLibraryBlock.Name + " ' style=' max - height: 37px;
+	max - width: 100 % ;
+	'>");
+	for (var i = 0; i < SelectedLibraryBlock.Parameters.length; i++) {
+	if (SelectedLibraryBlock.Parameters[i].Type === "Number") {
+	$("#LibraryBlockParams").append("<div class=' w3 - col s4 m4 l4 '> <label><b>" + SelectedLibraryBlock.Parameters[i].Name + "</b></label> <input class=' w3 - input w3 - border w3 - border - theme ' GSKParamType=' " + SelectedLibraryBlock.Parameters[i].Type + " ' GSKValid=' true ' GSKParamNum=' " + i + " ' value=' " + SelectedLibraryBlock.Parameters[i].Value + " ' id=' gsk_ " + TempLibPath[0] + " _ " + TempLibPath[1] + " _ " + i + " ' onchange=' ValidateInputFor(this)'/></div>");
 	}
+	}
+	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+	} catch (err) {
+	var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
+	$("#LibraryBlockMoreInformation").append("<p>Error in resolving <b><i>libs/" + TempLibPath[0] + "/" + TempLibPath[1] + ".js</i></b>.</p>" + ErrorReportingText);
+	SetGUIState("ResumeGUIDialog");
+	console.log(err);
+	}*/
 }
 
 function ValidateInputFor(InputItem) {
@@ -975,7 +870,7 @@ function SetProperView() {
 	if (SimulationState == "Design") {
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
-		$("#Simulate").html("<i class='fas fa-play'></i>");
+		$("#Simulate").html("<i class=' fas fa - play '></i>");
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
 		$(".FileHandling").css("display", "block");
@@ -983,7 +878,7 @@ function SetProperView() {
 	if (SimulationState == "Running") {
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
-		$("#Simulate").html("<i class='fas fa-stop'></i>");
+		$("#Simulate").html("<i class=' fas fa - stop '></i>");
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
 		$(".FileHandling").css("display", "none");
@@ -1032,7 +927,7 @@ function ExecuteFunctions() {
 
 function PrepareNetworkToDownload() {
 	var blob = new Blob([JSON.stringify2(network.body.data)], {
-			type : "application/json"
+			type: "application/json"
 		});
 	saveAs(blob, "hello world.JSON");
 }

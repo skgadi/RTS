@@ -19,11 +19,15 @@ gsk_libs_sources_sine = {
 			Value: 0
 		},
 	],
+	MaxInTerminals: 1,
+	MaxOutTerminals: Infinity,
 	PresentOut: [0],
 	InputParams: [0],
 	Init: function () {
 		this.InputParams = [0];
 		this.PresentOut = [0];
+	},
+	Const: function () {
 	},
 	Eval: function () {
 		var A = parseFloat(this.Parameters[0].Value);
@@ -58,7 +62,7 @@ gsk_libs_sources_sine = {
 		}
 		return StrOut;
 	},
-	LaTeXString: function () {
+	Details: function () {
 		var A = this.Parameters[0].Value;
 		var f = this.Parameters[1].Value * 2;
 		var phi = this.Parameters[2].Value;
