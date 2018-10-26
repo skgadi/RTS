@@ -435,9 +435,9 @@ function init() {
 	.done(function (script, textStatus, jqxhr) {
 		try {
 			for (var TempTabs in gsk_libs) {
-				$("#LibraryHead").append("<button style='width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' id='Btn_Tab_" + TempTabs + "' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \"> <img src='" + gsk_libs[TempTabs].Icon + "' style='width: 100%;'/></button>");
+				$("#GSK_Lib_Head").append("<button style='width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \" title='" + gsk_libs[TempTabs].Name + "'> <img src='" + gsk_libs[TempTabs].Icon + "' style='width: 100%;'/></button>");
 			}
-			LibraryDialog = $("#Library").dialog({
+			LibraryDialog = $("#GSK_Library").dialog({
 					dialogClass : 'noTitleStuff',
 					closeOnEscape : false,
 					autoOpen : false,
@@ -450,11 +450,6 @@ function init() {
 						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
 						SetGUIState("DisableLibraryAddButton");
 					},
-					buttons : {
-						"Add block" : function () {},
-						Cancel : function () {}
-					},
-					close : function () {}
 				}).dialog("open");
 		} catch (err) {
 			$("#GSKShowInitProgress").append("<p>Error in resolving <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
@@ -586,12 +581,16 @@ function init() {
 
 $(document).ready(function () {
 	MathJax.Hub.Config({
+		menuSettings : {
+			inTabOrder : false
+		},
 		extensions : ["tex2jax.js"],
 		jax : ["input/TeX", "output/HTML-CSS"],
 		tex2jax : {
 			inlineMath : [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
+	
 	/*window.onbeforeunload = function () {
 	return true;
 	}*/
@@ -725,8 +724,7 @@ function SelectLibraryTab(evt, TabId) {
 	}
 	evt.currentTarget.className += " w3-red";
 	//Generating parameters
-	$("#LibraryContent").empty();
-	$("#LibraryMoreInfo").empty();
+	$("#GSK_Lib_Functions").empty();
 	if (gsk_libs[TabId].Loaded != true) {
 		SetGUIState("SuspendGUIDialog");
 		$.getScript('libs/' + TabId + '/' + TabId + '.js')
@@ -750,8 +748,13 @@ function SelectLibraryTab(evt, TabId) {
 }
 
 function AddLibraryTabMainSelect(TabId) {
+	for (var TempSource in eval("gsk_libs_" + TabId)) {
+		$("#GSK_Lib_Functions").append("<div class='w3-col s2 m2 l2 w3-padding w3-button' title='" + eval("gsk_libs_" + TabId)[TempSource].Name + "'><img src='" + eval("gsk_libs_" + TabId)[TempSource].Icon + "' style='width:100%'></div>");
+	}
+	
+	/*
 	$("#LibraryContent").append("<div id='LibraryBlockDetails' class='w3-row'></div>");
-	$("#LibraryBlockDetails").append("<div class='w3-col s11 m11 l11'><label><b>" + gsk_libs[TabId].Name + "</b></label><select class='w3-input w3-select w3-border w3-border-theme' id='TypeOfFunctions'></select></div><label><b>Icon</b></label><div id='TypeOfFunctionsIcon' class='w3-col s1 m1 l1'></div><div id='LibraryBlockParams'></div>");
+	$("#LibraryBlockDetails").append("<div class='w3-col s11 m11 l11'><label><b>" + gsk_libs[TabId].Name + "</b></label><select class='w3-input w3-select w3-border w3-border-theme' id='TypeOfFunctions'></select></div><div id='TypeOfFunctionsIcon' class='w3-col s1 m1 l1 w3-display-right'></div><div id='LibraryBlockParams'></div>");
 	$("#LibraryMoreInfo").append("<label><b>More information</b></label><div id='LibraryBlockMoreInformation'></div>");
 	var TypeOfFunctions = document.getElementById("TypeOfFunctions");
 	for (var TempSource in eval("gsk_libs_" + TabId)) {
@@ -780,17 +783,17 @@ function AddLibraryTabMainSelect(TabId) {
 			SetGUIState("ResumeGUIDialog");
 		}
 	});
-	$("#TypeOfFunctions").change();
+	$("#TypeOfFunctions").change();*/
 }
 
 function PrepareLibBlockParams() {
 	try {
 		var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
 		SelectedLibraryBlock = CopyJSONForBlocks(eval("gsk_libs_" + TempLibPath[0] + "_" + TempLibPath[1]));
-		$("#TypeOfFunctionsIcon").append("<img src='" + SelectedLibraryBlock.Icon + "' alt='" + SelectedLibraryBlock.Name + "' style='max-height: 37px; max-width: 100%;'>");
+		$("#TypeOfFunctionsIcon").append("<label><b>Icon</b></label><img src='" + SelectedLibraryBlock.Icon + "' alt='" + SelectedLibraryBlock.Name + "' style='max-height: 37px; max-width: 100%;'>");
 		for (var i = 0; i < SelectedLibraryBlock.Parameters.length; i++) {
 			if (SelectedLibraryBlock.Parameters[i].Type === "Number") {
-				$("#LibraryBlockParams").append("<div class='w3-col s4 m4 l4'> <label><b>"+SelectedLibraryBlock.Parameters[i].Name+"</b></label> <input class='w3-input w3-border w3-border-theme' type='number' value='Signal' id='gsk_" + TempLibPath[0] + "_" + TempLibPath[1] + "_" + i + "'/></div>");
+				$("#LibraryBlockParams").append("<div class='w3-col s4 m4 l4'> <label><b>" + SelectedLibraryBlock.Parameters[i].Name + "</b></label> <input class='w3-input w3-border w3-border-theme' GSKParamType='" + SelectedLibraryBlock.Parameters[i].Type + "' GSKValid='true' GSKParamNum='" + i + "' value='" + SelectedLibraryBlock.Parameters[i].Value + "' id='gsk_" + TempLibPath[0] + "_" + TempLibPath[1] + "_" + i + "' onchange='ValidateInputFor(this)'/></div>");
 			}
 		}
 		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
@@ -800,6 +803,21 @@ function PrepareLibBlockParams() {
 		SetGUIState("ResumeGUIDialog");
 		console.log(err);
 	}
+}
+
+function ValidateInputFor(InputItem) {
+	InputItem = $(InputItem);
+	var TempValid = "false";
+	switch (InputItem.attr("GSKParamType")) {
+	case "Number":
+		if (!isNaN(InputItem.val())) {
+			TempValid = "true";
+			InputItem.addClass("w3-border-theme").removeClass("w3-border-red");
+		} else
+			InputItem.addClass("w3-border-red").removeClass("w3-border-theme");
+		break;
+	}
+	InputItem.attr("GSKValid", TempValid);
 }
 
 function ExtractNumberAtEnd(Str) {
