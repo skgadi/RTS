@@ -2,8 +2,9 @@ var network = null;
 var options;
 var container;
 var dialog;
-var LibraryDialog;
+var LibraryDialog, ParametersEditorDialog;
 var GSK_Data, GSK_Callback;
+var showInterval = false;
 var SelectedLibraryBlock;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
@@ -18,15 +19,15 @@ var MaximumFileSize = 2 * 1024 * 1024;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
 
 var GSK_Mandatory_Items = {
-	"Name": "string",
-	"Icon": "string",
-	"MaxInTerminals": "number",
-	"MaxOutTerminals": "number",
-	"Const": "function",
-	"Init": "function",
-	"Eval": "function",
-	"Label": "function",
-	"Details": "function",
+	"Name" : "string",
+	"Icon" : "string",
+	"MaxInTerminals" : "number",
+	"MaxOutTerminals" : "number",
+	"Constructor" : "function",
+	"Init" : "function",
+	"Evaluate" : "function",
+	"Label" : "function",
+	"Details" : "function",
 };
 /*function setDefaultLocale() {
 var defaultLocal = navigator.language;
@@ -59,73 +60,79 @@ function draw(data) {
 	// create a network
 	container = document.getElementById('mynetwork');
 	options = {
-		locale: "gsk",
-		locales: {
-			"gsk": {
-				edit: 'Edit',
-				del: 'Delete selected',
-				back: 'Back',
-				addNode: 'Add block',
-				addEdge: 'New connection',
-				editNode: 'Edit block',
-				editEdge: 'Edit connection',
-				addDescription: 'Click in an empty space to place a new block.',
-				edgeDescription: 'Click on a block and drag the connection to another block to connect them.',
-				editEdgeDescription: 'Click on the control points and drag them to a block to connect to it.',
-				createEdgeError: 'Cannot connect to a cluster.',
-				deleteClusterError: 'Clusters cannot be deleted.',
-				editClusterError: 'Clusters cannot be edited.'
+		locale : "gsk",
+		locales : {
+			"gsk" : {
+				edit : 'Edit',
+				del : 'Delete selected',
+				back : 'Back',
+				addNode : 'Add block',
+				addEdge : 'New connection',
+				editNode : 'Edit block',
+				editEdge : 'Edit connection',
+				addDescription : 'Click in an empty space to place a new block.',
+				edgeDescription : 'Click on a block and drag the connection to another block to connect them.',
+				editEdgeDescription : 'Click on the control points and drag them to a block to connect to it.',
+				createEdgeError : 'Cannot connect to a cluster.',
+				deleteClusterError : 'Clusters cannot be deleted.',
+				editClusterError : 'Clusters cannot be edited.'
 			}
 		},
-		nodes: {
-			shape: 'box',
-			color: {
-				border: '#000000',
-				background: "#ffffff",
+		interaction : {
+			navigationButtons : true,
+			keyboard : true
+		},
+		nodes : {
+			shape : 'box',
+			color : {
+				border : '#000000',
+				background : "#ffffff",
 			},
-			font: {
-				color: '#000000',
+			font : {
+				color : '#000000',
 			},
 		},
-		edges: {
-			color: {
-				color: '#000000',
+		edges : {
+			color : {
+				color : '#000000',
 			},
-			arrows: {
-				to: {
-					enabled: true,
-					scaleFactor: 1,
-					type: 'arrow'
+			arrows : {
+				to : {
+					enabled : true,
+					scaleFactor : 1,
+					type : 'arrow'
 				}
 			},
 		},
-		physics: {
-			enabled: true,
-			solver: 'barnesHut',
-			barnesHut: {
-				centralGravity: 0,
-				springLength: 0,
-				avoidOverlap: 1,
-				damping: 1,
-				springConstant: 0.00,
-				gravitationalConstant: -1,
+		physics : {
+			enabled : true,
+			solver : 'barnesHut',
+			barnesHut : {
+				centralGravity : 0,
+				springLength : 0,
+				avoidOverlap : 1,
+				damping : 1,
+				springConstant : 0.00,
+				gravitationalConstant : -1,
 			},
-			forceAtlas2Based: {
-				springLength: 50,
-				springConstant: 0,
-				avoidOverlap: 1,
-				centralGravity: 0.00,
-				gravitationalConstant: -1
+			forceAtlas2Based : {
+				springLength : 50,
+				springConstant : 0,
+				avoidOverlap : 1,
+				centralGravity : 0.00,
+				gravitationalConstant : -1
 			},
 		},
-		manipulation: {
-			initiallyActive: true,
-			addNode: function (data, callback) {
+		manipulation : {
+			initiallyActive : true,
+			addNode : function (data, callback) {
 				GSK_Data = data;
 				GSK_Callback = callback;
 				LibraryDialog.dialog("open");
 			},
-			editNode: function (data, callback) {
+			editNode : function (data, callback) {
+				GSK_Data = data;
+				GSK_Callback = callback;
 				if (data.gskExtra === 'undefined') {}
 				else {
 					$("#btn" + data.gskExtra.Tab)[0].click();
@@ -147,29 +154,29 @@ function draw(data) {
 					}
 				}
 				dialog = $("#NodeEditor").dialog({
-						dialogClass: 'noTitleStuff',
-						closeOnEscape: false,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: true,
-						resizable: false,
-						buttons: {
-							"Save node": saveDataAndCheckEdges.bind(this, data, callback),
-							Cancel: function () {
+						dialogClass : 'noTitleStuff',
+						closeOnEscape : false,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : true,
+						resizable : false,
+						buttons : {
+							"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
+							Cancel : function () {
 								cancelEdit(callback);
 							}
 						},
-						close: function () {}
+						close : function () {}
 					}).dialog("open");
 			},
-			deleteNode: function (data, callback) {
+			deleteNode : function (data, callback) {
 				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
 					$("#Node_" + data.nodes[0]).remove();
 				//console.log(data.nodes[0]);
 				callback(data);
 			},
-			addEdge: function (data, callback) {
+			addEdge : function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -190,7 +197,7 @@ function draw(data) {
 					callback(null);
 				}
 			},
-			editEdge: function (data, callback) {
+			editEdge : function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -216,7 +223,7 @@ function draw(data) {
 	network = new vis.Network(container, data, options);
 	network.on('doubleClick', function (properties) {
 		//console.log(properties);
-		if (SimulationState == "Design") {
+		if (SimulationState === "Design") {
 			if (properties.nodes.length == 1)
 				network.editNode();
 			else if (properties.edges.length == 1)
@@ -224,7 +231,7 @@ function draw(data) {
 			else
 				network.addNodeMode();
 		}
-		if (SimulationState == "Running")
+		if (SimulationState === "Running")
 			if (properties.nodes.length == 1)
 				if (network.body.nodes[properties.nodes[0]].options.gskExtra.Tab == "Sinks")
 					network.body.nodes[properties.nodes[0]].options.gskExtra.Init();
@@ -259,7 +266,7 @@ function saveDataAndCheckEdges(data, callback) {
 		}
 		if (RemoveElement)
 			network.body.data.edges.remove({
-				id: element
+				id : element
 			});
 	};
 }
@@ -289,42 +296,42 @@ function saveData(data, callback) {
 		else
 			TempImgId1 = 1;
 		data.gskExtra = {
-			Name: $("#SinksLabel").val(),
-			Image: "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
-			SinksPlotType: $("#SinksPlotType").val(),
-			SinksLineColor: $("#SinksLineColor").val(),
-			SinksLineType: $("#SinksLineType").val(),
-			SinksXAxisType: $("#SinksXAxisType").val(),
-			SinksYAxisType: $("#SinksYAxisType").val(),
-			MaxOutputs: 0,
-			DialogDiv: "Node_" + data.id,
-			ChartDiv: "Chart_" + data.id,
-			DialogID: "",
-			ChartID: "",
-			ChartData: "",
-			InputParams: [0],
-			PresentOut: [0],
-			String: function () {
+			Name : $("#SinksLabel").val(),
+			Image : "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
+			SinksPlotType : $("#SinksPlotType").val(),
+			SinksLineColor : $("#SinksLineColor").val(),
+			SinksLineType : $("#SinksLineType").val(),
+			SinksXAxisType : $("#SinksXAxisType").val(),
+			SinksYAxisType : $("#SinksYAxisType").val(),
+			MaxOutputs : 0,
+			DialogDiv : "Node_" + data.id,
+			ChartDiv : "Chart_" + data.id,
+			DialogID : "",
+			ChartID : "",
+			ChartData : "",
+			InputParams : [0],
+			PresentOut : [0],
+			String : function () {
 				return SinksLabel;
 			},
-			Init: function () {
+			Init : function () {
 				this.DialogID = $("#" + this.DialogDiv).dialog({
-						closeOnEscape: true,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: false,
-						resizable: true,
+						closeOnEscape : true,
+						autoOpen : false,
+						height : 350,
+						width : 500,
+						modal : false,
+						resizable : true,
 					}).dialog("open");
 				//Chart Initialization
 				var options = {
-					legend: "none",
-					chartArea: {
-						height: ($("#" + this.DialogDiv).height() - 50),
-						width: ($("#" + this.DialogDiv).width() - 100),
+					legend : "none",
+					chartArea : {
+						height : ($("#" + this.DialogDiv).height() - 50),
+						width : ($("#" + this.DialogDiv).width() - 100),
 					},
-					height: $("#" + this.DialogDiv).height() - 7,
-					width: $("#" + this.DialogDiv).width(),
+					height : $("#" + this.DialogDiv).height() - 7,
+					width : $("#" + this.DialogDiv).width(),
 				};
 				this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
 				this.ChartData = new google.visualization.DataTable();
@@ -332,7 +339,7 @@ function saveData(data, callback) {
 				this.ChartData.addColumn('number', this.Name);
 				this.ChartID.draw(this.ChartData, options);
 			},
-			Eval: function () {
+			Eval : function () {
 				var hAxis,
 				vAxis;
 				var LineStyle = [];
@@ -351,25 +358,25 @@ function saveData(data, callback) {
 				else
 					LineStyle = [0];
 				var options = {
-					legend: "none",
-					chartArea: {
-						height: ($("#" + this.DialogDiv).height() - 50),
-						width: ($("#" + this.DialogDiv).width() - 100),
+					legend : "none",
+					chartArea : {
+						height : ($("#" + this.DialogDiv).height() - 50),
+						width : ($("#" + this.DialogDiv).width() - 100),
 					},
-					series: {
-						0: {
-							lineDashStyle: LineStyle,
+					series : {
+						0 : {
+							lineDashStyle : LineStyle,
 						}
 					},
-					colors: [this.SinksLineColor],
-					vAxis: {
-						scaleType: vAxis
+					colors : [this.SinksLineColor],
+					vAxis : {
+						scaleType : vAxis
 					},
-					hAxis: {
-						scaleType: hAxis
+					hAxis : {
+						scaleType : hAxis
 					},
-					height: $("#" + this.DialogDiv).height() - 7,
-					width: $("#" + this.DialogDiv).width(),
+					height : $("#" + this.DialogDiv).height() - 7,
+					width : $("#" + this.DialogDiv).width(),
 				};
 				//console.log(this.InputParams);
 				if (this.ChartData.getNumberOfRows() >= MaximumNoOfPointsToShow)
@@ -419,8 +426,8 @@ function saveData(data, callback) {
 	} else {
 		data.label = "Error: " + n;
 		data.gskExtra = {
-			MaxInputs: 1,
-			MaxOutputs: Infinity,
+			MaxInputs : 1,
+			MaxOutputs : Infinity,
 		}
 	}
 	data.gskExtra.Tab = CurrentTab;
@@ -437,21 +444,45 @@ function init() {
 				$("#GSK_Lib_Head").append("<button style='width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \" title='" + gsk_libs[TempTabs].Name + "'> <img src='" + gsk_libs[TempTabs].Icon + "' style='width: 100%;'/></button>");
 			}
 			LibraryDialog = $("#GSK_Library").dialog({
-					closeOnEscape: true,
-					autoOpen: false,
-					height: 400,
-					width: 500,
-					modal: true,
-					resizable: false,
-					open: function () {
+					closeOnEscape : true,
+					autoOpen : false,
+					height : 400,
+					width : 500,
+					modal : true,
+					resizable : false,
+					open : function () {
 						$(".ui-dialog").css("padding", "0px");
 						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
 						SetGUIState("DisableLibraryAddButton");
 					},
-					close: function (event, ui) {
+					close : function (event, ui) {
 						GSK_Callback(null);
 					}
 				});
+			ParametersEditorDialog = $("#GSK_Params_Editor").dialog({
+					closeOnEscape : true,
+					autoOpen : false,
+					height : 400,
+					width : 500,
+					modal : true,
+					resizable : false,
+					open : function () {
+						$(".ui-dialog").css("padding", "0px");
+						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
+						SetGUIState("DisableLibraryAddButton");
+					},
+					buttons : {
+						"Update block" : function () {
+							
+						},
+						Cancel : function () {
+							GSK_Callback(null);
+						}
+					},
+					close : function (event, ui) {
+						GSK_Callback(null);
+					}
+				}).dialog("open");
 		} catch (err) {
 			$("#GSKShowInitProgress").append("<p>Error in resolving <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
 		}
@@ -462,20 +493,20 @@ function init() {
 	});
 	ResetNetwork();
 	google.charts.load('current', {
-		'packages': ['corechart']
+		'packages' : ['corechart']
 	});
 	google.charts.setOnLoadCallback(SetViewAsLoaded);
 }
 
 $(document).ready(function () {
 	MathJax.Hub.Config({
-		menuSettings: {
-			inTabOrder: false
+		menuSettings : {
+			inTabOrder : false
 		},
-		extensions: ["tex2jax.js"],
-		jax: ["input/TeX", "output/HTML-CSS"],
-		tex2jax: {
-			inlineMath: [["$", "$"], ["\\(", "\\)"]]
+		extensions : ["tex2jax.js"],
+		jax : ["input/TeX", "output/HTML-CSS"],
+		tex2jax : {
+			inlineMath : [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
 
@@ -496,8 +527,8 @@ $(document).ready(function () {
 				console.log(TempNodes);
 				console.log(TempEdges);
 				var NewData = {
-					nodes: new vis.DataSet(TempNodes),
-					edges: new vis.DataSet(TempEdges),
+					nodes : new vis.DataSet(TempNodes),
+					edges : new vis.DataSet(TempEdges),
 				};
 				console.log(NewData);
 				draw(NewData);
@@ -506,21 +537,26 @@ $(document).ready(function () {
 		}
 		$('form input').val("");
 	});
+	$("#ToolbarDragging").draggable({
+		handle : ".ToolbarDraggingHandle",
+		snap : "body",
+		containment : "body"
+	});
 	init();
 });
 
 function CreateNewFile() {
 	$("#ConfirmRemoveNetwork").dialog({
-		resizable: false,
-		height: "auto",
-		width: 400,
-		modal: true,
-		buttons: {
-			"Delete this network": function () {
+		resizable : false,
+		height : "auto",
+		width : 400,
+		modal : true,
+		buttons : {
+			"Delete this network" : function () {
 				ResetNetwork();
 				$(this).dialog("close");
 			},
-			Cancel: function () {
+			Cancel : function () {
 				$(this).dialog("close");
 			}
 		}
@@ -529,10 +565,10 @@ function CreateNewFile() {
 
 function OpenAFile() {
 	$("#OpenFileDialog").dialog({
-		height: "auto",
-		height: 300,
-		width: 400,
-		modal: true,
+		height : "auto",
+		height : 300,
+		width : 400,
+		modal : true,
 		/*buttons : {
 		"Open selected" : function () {
 
@@ -611,18 +647,18 @@ function SelectLibraryTab(evt, TabId) {
 	if (gsk_libs[TabId].Loaded != true) {
 		SetGUIState("SuspendGUIDialog");
 		$.getScript('libs/' + TabId + '/' + TabId + '.js')
-		.done(function (script, textStatus, jqxhr) {
+		.done(function (script, textStatus, jqxhr,  TempTabId = TabId) {
 			try {
-				gsk_libs[TabId].Loaded = true;
-				AddLibraryTabMainSelect(TabId);
+				gsk_libs[TempTabId].Loaded = true;
+				AddLibraryTabMainSelect(TempTabId);
 				SetGUIState("ResumeGUIDialog");
 			} catch (err) {
-				$("#LibraryContent").append("<p>Error in resolving <b><i>libs/" + TabId + "/" + TabId + ".js</i></b>.</p>" + ErrorReportingText);
+				$("#LibraryContent").append("<p>Error in resolving <b><i>libs/" + TempTabId + "/" + TempTabId + ".js</i></b>.</p>" + ErrorReportingText);
 				SetGUIState("ResumeGUIDialog");
 			}
 		})
 		.fail(function (jqxhr, settings, exception, TempTabId = TabId) {
-			$("#LibraryContent").append("<p>Error in loading <b><i>libs/" + TabId + "/" + TabId + ".js</i></b>.</p>" + ErrorReportingText);
+			$("#LibraryContent").append("<p>Error in loading <b><i>libs/" + TempTabId + "/" + TempTabId + ".js</i></b>.</p>" + ErrorReportingText);
 			SetGUIState("ResumeGUIDialog");
 			return;
 		});
@@ -634,46 +670,50 @@ function AddLibraryTabMainSelect(TabId) {
 	for (var TempBlock in eval("gsk_libs_" + TabId)) {
 		$("#GSK_Lib_Functions").append("<div class='w3-col s2 m2 l2 w3-padding w3-button' title='" + eval("gsk_libs_" + TabId)[TempBlock].Name + "' GSK_File = 'libs/" + TabId + "/" + TempBlock + ".js' GSK_Var = 'gsk_libs_" + TabId + "_" + TempBlock + "' onclick = 'PrepareAndAddBlock(this)'><img src='" + eval("gsk_libs_" + TabId)[TempBlock].Icon + "' style='width:100%'></div>");
 	}
+	LibraryDialog.dialog('option', 'title', "Library > " + gsk_libs[TabId].Name);
 }
 
 function PrepareAndAddBlock(Block) {
 	if (eval("typeof " + $(Block).attr('GSK_Var')) === 'undefined') {
 		$.getScript($(Block).attr('GSK_File'))
-		.done(function (script, textStatus, jqxhr, TempFileToLoad = $(Block).attr('GSK_File'), TempLoadedVar = $(Block).attr('GSK_Var')) {
-			try {
-				ValidateAndAddBlock(TempLoadedVar);
-			} catch (err) {
-				$.notify("Error in processing " + TempFileToLoad + ".", "error");
-			}
+		.done(function (script, textStatus, jqxhr, TempBlock = Block) {
+			ValidateAndAddBlock(TempBlock);
 		})
 		.fail(function (jqxhr, settings, exception, TempFileToLoad = $(Block).attr('GSK_File')) {
 			$.notify("Error in loading " + TempFileToLoad + ".", "error");
 		});
 	} else
-		ValidateAndAddBlock($(Block).attr('GSK_Var'));
+		ValidateAndAddBlock(Block);
 
 }
 
-function ValidateAndAddBlock(BlockInfo) {
-	var IsValid = true;
-	for (TempBlockItem in GSK_Mandatory_Items) {
-		console.log();
-		if (typeof eval(BlockInfo)[TempBlockItem] !== GSK_Mandatory_Items[TempBlockItem]) {
-			console.log('Unable to find ' + TempBlockItem + ' as a ' + GSK_Mandatory_Items[TempBlockItem] + ' in ' + BlockInfo + '.');
-			IsValid = false;
+function ValidateAndAddBlock(Block) {
+	try {
+		var IsValid = true;
+		for (TempBlockItem in GSK_Mandatory_Items) {
+			console.log();
+			if (typeof eval($(Block).attr('GSK_Var'))[TempBlockItem] !== GSK_Mandatory_Items[TempBlockItem]) {
+				console.log('Unable to find ' + TempBlockItem + ' as a ' + GSK_Mandatory_Items[TempBlockItem] + ' in ' + $(Block).attr('GSK_Var') + '.');
+				IsValid = false;
+			}
 		}
+		if (IsValid)
+			AddABlockToNetwork(Block);
+		else
+			$.notify("Error in validating " + $(Block).attr('GSK_Var') + ".", "error");
+	} catch (err) {
+		$.notify("Error in processing " + $(Block).attr('GSK_Var') + ".", "error");
 	}
-	if (IsValid)
-		AddABlockToNetwork(BlockInfo);
-	else
-		$.notify("Error in validating " + BlockInfo + ".", "error");
 }
 
-function AddABlockToNetwork(BlockInfo) {
-	GSK_Data.gskExtra = CopyJSONForBlocks(eval(BlockInfo));
+function AddABlockToNetwork(Block) {
+	GSK_Data.gskExtra = CopyJSONForBlocks(eval($(Block).attr('GSK_Var')));
 	GSK_Data.label = GSK_Data.gskExtra.Label();
 	GSK_Data.shape = "image";
 	GSK_Data.image = GSK_Data.gskExtra.Icon;
+	GSK_Data.gskFile = $(Block).attr('GSK_File');
+	GSK_Data.gskVariable = $(Block).attr('GSK_Var');
+	GSK_Data.gskExtra.Constructor();
 	GSK_Callback(GSK_Data);
 	LibraryDialog.dialog("close");
 
@@ -927,7 +967,7 @@ function ExecuteFunctions() {
 
 function PrepareNetworkToDownload() {
 	var blob = new Blob([JSON.stringify2(network.body.data)], {
-			type: "application/json"
+			type : "application/json"
 		});
 	saveAs(blob, "hello world.JSON");
 }
@@ -940,3 +980,42 @@ function readFileContent(file) {
 				reader.readAsText(file)
 		})
 }
+/*
+function FocusAllNodes() {
+for (var TempNode in network.body.data.nodes._data) {
+FocusANode(TempNode);
+}
+if (showInterval !== false) {
+showInterval = false;
+network.fit();
+} else {
+focusRandom();
+setTimeout(doTheShow, duration);
+showInterval = true;
+}
+}
+
+function FocusANode(nodeId) {
+var options = {
+// position: {x:positionx,y:positiony}, // this is not relevant when focusing on nodes
+scale : 1,
+offset : {
+x : 0,
+y : 0
+},
+animation : {
+duration : 1000,
+easingFunction : "easeInOutQuad"
+}
+};
+network.focus(nodeId, options);
+}
+
+function GetNextNode(db, key) {
+for (var i = 0; i < db.length; i++) {
+if (db[i].key === key) {
+return db[i + 1] && db[i + 1].value;
+}
+}
+};
+*/

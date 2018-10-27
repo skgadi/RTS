@@ -27,9 +27,9 @@ gsk_libs_sources_sine = {
 		this.InputParams = [0];
 		this.PresentOut = [0];
 	},
-	Const: function () {
+	Constructor: function () {
 	},
-	Eval: function () {
+	Evaluate: function () {
 		var A = parseFloat(this.Parameters[0].Value);
 		var f = parseFloat(this.Parameters[1].Value);
 		var Phi = parseFloat(this.Parameters[2].Value);
