@@ -80,7 +80,7 @@ function draw(data) {
 		},
 		interaction : {
 			navigationButtons : true,
-			keyboard : true
+			keyboard : false,
 		},
 		nodes : {
 			shape : 'box',
@@ -133,42 +133,7 @@ function draw(data) {
 			editNode : function (data, callback) {
 				GSK_Data = data;
 				GSK_Callback = callback;
-				if (data.gskExtra === 'undefined') {}
-				else {
-					$("#btn" + data.gskExtra.Tab)[0].click();
-					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions" || data.gskExtra.Tab == "Operators" || data.gskExtra.Tab == "TransferFunctions" || data.gskExtra.Tab == "HardwareIOs") {
-						var Elements = $("#" + data.gskExtra.Tab).find(".w3-input");
-						$(Elements[0]).val($(Elements[0]).children().filter(function () {
-								return $(this).html() == data.gskExtra.Name;
-							}).val()).change();
-						Elements = $("#" + data.gskExtra.Tab).find(".w3-input");
-						for (var i = 1; i < Elements.length; i++)
-							$(Elements[i]).val(data.gskExtra.Parameters[i - 1].Value).change();
-					} else if (data.gskExtra.Tab == "Sinks") {
-						$("#SinksLabel").val(data.label);
-						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
-						$("#SinksLineColor").val(data.gskExtra.SinksLineColor);
-						$("#SinksLineType").val(data.gskExtra.SinksLineType);
-						$("#SinksXAxisType").val(data.gskExtra.SinksXAxisType);
-						$("#SinksYAxisType").val(data.gskExtra.SinksYAxisType);
-					}
-				}
-				dialog = $("#NodeEditor").dialog({
-						dialogClass : 'noTitleStuff',
-						closeOnEscape : false,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : true,
-						resizable : false,
-						buttons : {
-							"Save node" : saveDataAndCheckEdges.bind(this, data, callback),
-							Cancel : function () {
-								cancelEdit(callback);
-							}
-						},
-						close : function () {}
-					}).dialog("open");
+				PrepareParamsEditor();
 			},
 			deleteNode : function (data, callback) {
 				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
@@ -472,9 +437,7 @@ function init() {
 						SetGUIState("DisableLibraryAddButton");
 					},
 					buttons : {
-						"Update block" : function () {
-							
-						},
+						"Update block" : function () {},
 						Cancel : function () {
 							GSK_Callback(null);
 						}
@@ -482,7 +445,7 @@ function init() {
 					close : function (event, ui) {
 						GSK_Callback(null);
 					}
-				}).dialog("open");
+				});
 		} catch (err) {
 			$("#GSKShowInitProgress").append("<p>Error in resolving <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
 		}
@@ -647,7 +610,7 @@ function SelectLibraryTab(evt, TabId) {
 	if (gsk_libs[TabId].Loaded != true) {
 		SetGUIState("SuspendGUIDialog");
 		$.getScript('libs/' + TabId + '/' + TabId + '.js')
-		.done(function (script, textStatus, jqxhr,  TempTabId = TabId) {
+		.done(function (script, textStatus, jqxhr, TempTabId = TabId) {
 			try {
 				gsk_libs[TempTabId].Loaded = true;
 				AddLibraryTabMainSelect(TempTabId);
@@ -711,15 +674,36 @@ function AddABlockToNetwork(Block) {
 	GSK_Data.label = GSK_Data.gskExtra.Label();
 	GSK_Data.shape = "image";
 	GSK_Data.image = GSK_Data.gskExtra.Icon;
-	GSK_Data.gskFile = $(Block).attr('GSK_File');
-	GSK_Data.gskVariable = $(Block).attr('GSK_Var');
+	/*GSK_Data.gskFile = $(Block).attr('GSK_File');
+	GSK_Data.gskVariable = $(Block).attr('GSK_Var');*/
 	GSK_Data.gskExtra.Constructor();
 	GSK_Callback(GSK_Data);
 	LibraryDialog.dialog("close");
 
 }
 
-function PrepareLibBlockParams() {
+function PrepareParamsEditor() {
+	try {
+		ParametersEditorDialog.dialog({autoOpen: false}).dialog('widget').find('.ui-dialog-title').html("<img style='height: 2em;' src='" + GSK_Data.gskExtra.Icon + "'/> " + GSK_Data.gskExtra.Label());
+
+		$("#GSK_Params_Items").empty();
+		$("#GSK_Params_Edt_Details").empty();
+		console.log(GSK_Data);
+		GSK_Callback(null);
+		for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++) {
+			switch (GSK_Data.gskExtra.Parameters[i].Type) {
+			case "Number":
+				$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4 '> <label><b>" + GSK_Data.gskExtra.Parameters[i].Name + "</b></label> <input class=' w3-input w3-border w3-border-theme' GSKParamType='" + GSK_Data.gskExtra.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' value='" + GSK_Data.gskExtra.Parameters[i].Value + "' id='GSK_Blk_Edt_Param_" + i + "' onchange=' ValidateInputFor(this)'/></div>");
+				break;
+			}
+		}
+		$("#GSK_Params_Edt_Details").append("<img src>");
+		$("#GSK_Params_Edt_Details").append(GSK_Data.gskExtra.Details());
+		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+		ParametersEditorDialog.dialog("open");
+	} catch (err) {
+		$.notify("Unable to prepare this block for editing.\n Recommendation: Delete this block and report author(s) of this block.", "error");
+	}
 	/*try {
 	var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
 	SelectedLibraryBlock = CopyJSONForBlocks(eval("gsk_libs_" + TempLibPath[0] + "_" + TempLibPath[1]));
@@ -742,6 +726,7 @@ function PrepareLibBlockParams() {
 
 function ValidateInputFor(InputItem) {
 	InputItem = $(InputItem);
+	console.log(InputItem);
 	var TempValid = "false";
 	switch (InputItem.attr("GSKParamType")) {
 	case "Number":
