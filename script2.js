@@ -3,6 +3,7 @@ var options;
 var container;
 var dialog;
 var LibraryDialog, ParametersEditorDialog;
+var GSK_MatrixEditor;
 var GSK_Data, GSK_Callback;
 var showInterval = false;
 var SelectedLibraryBlock;
@@ -18,6 +19,44 @@ var MaximumNoOfPointsToShow = 300;
 var MaximumFileSize = 2 * 1024 * 1024;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
 
+var GSK_Parameter_Types = {
+	"ConstNatural" : {
+		"Size" : "Constant",
+		"Type" : "Natural",
+	},
+	"ConstReal" : {
+		"Size" : "Constant",
+		"Type" : "Real",
+	},
+	"ConstComplex" : {
+		"Size" : "Constant",
+		"Type" : "Complex",
+	},
+	"VectNatural" : {
+		"Size" : "Vector",
+		"Type" : "Natural",
+	},
+	"VectReal" : {
+		"Size" : "Vector",
+		"Type" : "Real",
+	},
+	"VectComplex" : {
+		"Size" : "Vector",
+		"Type" : "Complex",
+	},
+	"MatNatural" : {
+		"Size" : "Matrix",
+		"Type" : "Natural",
+	},
+	"MatReal" : {
+		"Size" : "Matrix",
+		"Type" : "Real",
+	},
+	"MatComplex" : {
+		"Size" : "Matrix",
+		"Type" : "Complex",
+	},
+};
 var GSK_Mandatory_Items = {
 	"Name" : "string",
 	"Icon" : "string",
@@ -462,6 +501,7 @@ function init() {
 }
 
 $(document).ready(function () {
+	//MathJax setup
 	MathJax.Hub.Config({
 		menuSettings : {
 			inTabOrder : false
@@ -472,7 +512,36 @@ $(document).ready(function () {
 			inlineMath : [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
-
+	//Handsontable validator for complex number
+	(function (Handsontable) {
+		function GSK_Cell_ValidateNatural(query, callback) {
+			try {
+				console.log(math.eval(query).type);
+				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+			} catch (err) {
+				callback(false);
+			}
+		}
+		function GSK_Cell_ValidateReal(query, callback) {
+			try {
+				console.log(math.eval(query).type);
+				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+			} catch (err) {
+				callback(false);
+			}
+		}
+		function GSK_Cell_ValidateComplex(query, callback) {
+			try {
+				console.log(math.eval(query).type);
+				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+			} catch (err) {
+				callback(false);
+			}
+		}
+		Handsontable.validators.registerValidator('my.naturalNumber', GSK_Cell_ValidateNatural);
+		Handsontable.validators.registerValidator('my.realNumber', GSK_Cell_ValidateReal);
+		Handsontable.validators.registerValidator('my.complexNumber', GSK_Cell_ValidateComplex);
+	})(Handsontable);
 	// Handle loading files to open
 	$('form input').change(function (event) {
 		$('form p').html("Loading the file<br/><b><i>" + this.files[0].name + "</i></b>.<br/>Please wait ...");
@@ -591,6 +660,15 @@ function SetGUIState(State) {
 		$(".ui-dialog *").attr("disabled", false);
 		$(".LoadingAnimation").css('height', "0px");
 		break;
+	case "SetMatrixEditorForParamsDialog":
+		$("#GSK_Params_Mtx_Editor").css("display", "block");
+		$("#GSK_Params_Items").css("display", "none");
+		$("#GSK_Params_Edt_Details").css("display", "none");
+		break;
+	case "RemoveMatrixEditorForParamsDialog":
+		$("#GSK_Params_Mtx_Editor").css("display", "none");
+		$("#GSK_Params_Items").css("display", "block");
+		$("#GSK_Params_Edt_Details").css("display", "block");
 		break;
 	}
 }
@@ -682,46 +760,88 @@ function AddABlockToNetwork(Block) {
 
 }
 
+function myCallback() {
+	var TempTableData = GSK_MatrixEditor.getData();
+	console.log("ff");
+	console.log(TempTableData);
+	console.log("hh");
+	for (var i = 0; i < TempTableData.length; i++) {
+		for (var j = 0; j < TempTableData[0].length; j++) {
+			GSK_MatrixEditor.setCellMeta(i, j, 'validator', 'my.complexNumber');
+		}
+	}
+}
+
 function PrepareParamsEditor() {
 	try {
-		ParametersEditorDialog.dialog({autoOpen: false}).dialog('widget').find('.ui-dialog-title').html("<img style='height: 2em;' src='" + GSK_Data.gskExtra.Icon + "'/> " + GSK_Data.gskExtra.Label());
 
+		ParametersEditorDialog.dialog({
+			autoOpen : false
+		}).dialog('widget').find('.ui-dialog-title').html("<img style='height: 2em;' src='" + GSK_Data.gskExtra.Icon + "'/> " + GSK_Data.gskExtra.Label());
 		$("#GSK_Params_Items").empty();
 		$("#GSK_Params_Edt_Details").empty();
 		console.log(GSK_Data);
 		GSK_Callback(null);
 		for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++) {
 			switch (GSK_Data.gskExtra.Parameters[i].Type) {
-			case "Number":
-				$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4 '> <label><b>" + GSK_Data.gskExtra.Parameters[i].Name + "</b></label> <input class=' w3-input w3-border w3-border-theme' GSKParamType='" + GSK_Data.gskExtra.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' value='" + GSK_Data.gskExtra.Parameters[i].Value + "' id='GSK_Blk_Edt_Param_" + i + "' onchange=' ValidateInputFor(this)'/></div>");
+			case "ConstNatural":
+			case "VectReal":
+			case "VectComplex":
+			case "MatComplex":
+				if (i % 3 === 0)
+					$("#GSK_Params_Items").append("<div class='w3-row'>");
+				$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data.gskExtra.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data.gskExtra.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
+				if (i % 3 === 0)
+					$("#GSK_Params_Items").append("</div>");
 				break;
 			}
 		}
-		$("#GSK_Params_Edt_Details").append("<img src>");
 		$("#GSK_Params_Edt_Details").append(GSK_Data.gskExtra.Details());
 		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 		ParametersEditorDialog.dialog("open");
 	} catch (err) {
 		$.notify("Unable to prepare this block for editing.\n Recommendation: Delete this block and report author(s) of this block.", "error");
 	}
-	/*try {
-	var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
-	SelectedLibraryBlock = CopyJSONForBlocks(eval("gsk_libs_" + TempLibPath[0] + "_" + TempLibPath[1]));
-	$("#TypeOfFunctionsIcon").append("<label><b>Icon</b></label><img src=' " + SelectedLibraryBlock.Icon + " ' alt=' " + SelectedLibraryBlock.Name + " ' style=' max - height: 37px;
-	max - width: 100 % ;
-	'>");
-	for (var i = 0; i < SelectedLibraryBlock.Parameters.length; i++) {
-	if (SelectedLibraryBlock.Parameters[i].Type === "Number") {
-	$("#LibraryBlockParams").append("<div class=' w3 - col s4 m4 l4 '> <label><b>" + SelectedLibraryBlock.Parameters[i].Name + "</b></label> <input class=' w3 - input w3 - border w3 - border - theme ' GSKParamType=' " + SelectedLibraryBlock.Parameters[i].Type + " ' GSKValid=' true ' GSKParamNum=' " + i + " ' value=' " + SelectedLibraryBlock.Parameters[i].Value + " ' id=' gsk_ " + TempLibPath[0] + " _ " + TempLibPath[1] + " _ " + i + " ' onchange=' ValidateInputFor(this)'/></div>");
-	}
-	}
-	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-	} catch (err) {
-	var TempLibPath = $("#TypeOfFunctions option:selected").val().split("_");
-	$("#LibraryBlockMoreInformation").append("<p>Error in resolving <b><i>libs/" + TempLibPath[0] + "/" + TempLibPath[1] + ".js</i></b>.</p>" + ErrorReportingText);
-	SetGUIState("ResumeGUIDialog");
-	console.log(err);
-	}*/
+}
+
+function PrepareMatrixToEditAParam(InputItem) {
+	$('#GSK_Params_Mtx_Editor').empty();
+	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), {
+			startRows : 8,
+			startCols : 6,
+			rowHeaders : true,
+			colHeaders : function (col) {
+				return (col + 1);
+			},
+			manualRowMove : true,
+			manualColumnMove : true,
+			manualRowResize : true,
+			manualColumnResize : true,
+			contextMenu : true,
+			/*maxCols: 6,
+			maxRows: 6,
+			columns : [{
+			validator : 'my.complexNumber'
+			}
+			],*/
+		});
+	Handsontable.hooks.add('afterRender', myCallback);
+
+	SetGUIState("SetMatrixEditorForParamsDialog");
+	InputItem = $(InputItem);
+	console.log(InputItem);
+	//$("#GSK_Params_Mtx_Editor").empty();
+
+	var myButtons = {
+		"Update" : function () {},
+		"Back" : function () {
+			SetGUIState("RemoveMatrixEditorForParamsDialog");
+		}
+	};
+
+	ParametersEditorDialog.dialog('option', 'buttons', myButtons);
+
+	//SetGUIState("RemoveMatrixEditorForParamsDialog");
 }
 
 function ValidateInputFor(InputItem) {

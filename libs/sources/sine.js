@@ -3,19 +3,19 @@ gsk_libs_sources_sine = {
 	Icon: "images/tex/sources-figure1.png",
 	Parameters: [{
 			Name: "Amplitude $(A)$",
-			Type: "Number",
-			Value: 1
+			Type: "ConstNatural",
+			Value: [[1]]
 		}, {
 			Name: "Frequency $(f)$",
-			Type: "Number",
-			Value: 1
+			Type: "VectReal",
+			Value: [[1]]
 		}, {
 			Name: "Phase $(\\phi)$",
-			Type: "Number",
-			Value: 0
+			Type: "VectComplex",
+			Value: [[1]]
 		}, {
 			Name: "Offset $(O)$",
-			Type: "Number",
+			Type: "MatComplex",
 			Value: 0
 		},
 	],

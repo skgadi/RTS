@@ -4,6 +4,11 @@ html, body, select {
 	height: 100%;
 	margin: 0px;
 }
+
+.MathJax_Display: { 
+	display:"table" 
+}
+
 #mynetwork {
 	position:relative;
 	width: 100%;
