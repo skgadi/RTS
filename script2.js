@@ -20,9 +20,9 @@ var MaximumFileSize = 2 * 1024 * 1024;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
 
 var GSK_Parameter_Types = {
-	"ConstNatural" : {
+	"ConstInteger" : {
 		"Size" : "Constant",
-		"Type" : "Natural",
+		"Type" : "Integer",
 	},
 	"ConstReal" : {
 		"Size" : "Constant",
@@ -32,9 +32,9 @@ var GSK_Parameter_Types = {
 		"Size" : "Constant",
 		"Type" : "Complex",
 	},
-	"VectNatural" : {
+	"VectInteger" : {
 		"Size" : "Vector",
-		"Type" : "Natural",
+		"Type" : "Integer",
 	},
 	"VectReal" : {
 		"Size" : "Vector",
@@ -44,9 +44,9 @@ var GSK_Parameter_Types = {
 		"Size" : "Vector",
 		"Type" : "Complex",
 	},
-	"MatNatural" : {
+	"MatInteger" : {
 		"Size" : "Matrix",
-		"Type" : "Natural",
+		"Type" : "Integer",
 	},
 	"MatReal" : {
 		"Size" : "Matrix",
@@ -514,33 +514,30 @@ $(document).ready(function () {
 	});
 	//Handsontable validator for complex number
 	(function (Handsontable) {
-		function GSK_Cell_ValidateNatural(query, callback) {
+		function GSK_Cell_ValidateInteger(query, callback) {
 			try {
-				console.log(math.eval(query).type);
-				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+				((query === null) || ((typeof math.eval(query) === 'number') && (math.eval(query) % 1 === 0))) ? callback(true) : callback(false);
 			} catch (err) {
 				callback(false);
 			}
 		}
 		function GSK_Cell_ValidateReal(query, callback) {
 			try {
-				console.log(math.eval(query).type);
-				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+				((query === null) || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
 			} catch (err) {
 				callback(false);
 			}
 		}
 		function GSK_Cell_ValidateComplex(query, callback) {
 			try {
-				console.log(math.eval(query).type);
-				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+				((query === null) || (math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
 			} catch (err) {
 				callback(false);
 			}
 		}
-		Handsontable.validators.registerValidator('my.naturalNumber', GSK_Cell_ValidateNatural);
-		Handsontable.validators.registerValidator('my.realNumber', GSK_Cell_ValidateReal);
-		Handsontable.validators.registerValidator('my.complexNumber', GSK_Cell_ValidateComplex);
+		Handsontable.validators.registerValidator('my.Integer', GSK_Cell_ValidateInteger);
+		Handsontable.validators.registerValidator('my.Real', GSK_Cell_ValidateReal);
+		Handsontable.validators.registerValidator('my.Complex', GSK_Cell_ValidateComplex);
 	})(Handsontable);
 	// Handle loading files to open
 	$('form input').change(function (event) {
@@ -760,18 +757,6 @@ function AddABlockToNetwork(Block) {
 
 }
 
-function myCallback() {
-	var TempTableData = GSK_MatrixEditor.getData();
-	console.log("ff");
-	console.log(TempTableData);
-	console.log("hh");
-	for (var i = 0; i < TempTableData.length; i++) {
-		for (var j = 0; j < TempTableData[0].length; j++) {
-			GSK_MatrixEditor.setCellMeta(i, j, 'validator', 'my.complexNumber');
-		}
-	}
-}
-
 function PrepareParamsEditor() {
 	try {
 
@@ -784,7 +769,7 @@ function PrepareParamsEditor() {
 		GSK_Callback(null);
 		for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++) {
 			switch (GSK_Data.gskExtra.Parameters[i].Type) {
-			case "ConstNatural":
+			case "ConstInteger":
 			case "VectReal":
 			case "VectComplex":
 			case "MatComplex":
@@ -805,35 +790,48 @@ function PrepareParamsEditor() {
 }
 
 function PrepareMatrixToEditAParam(InputItem) {
+	InputItem = $(InputItem);
 	$('#GSK_Params_Mtx_Editor').empty();
-	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), {
-			startRows : 8,
-			startCols : 6,
-			rowHeaders : true,
-			colHeaders : function (col) {
-				return (col + 1);
-			},
-			manualRowMove : true,
-			manualColumnMove : true,
-			manualRowResize : true,
-			manualColumnResize : true,
-			contextMenu : true,
-			/*maxCols: 6,
-			maxRows: 6,
-			columns : [{
-			validator : 'my.complexNumber'
-			}
-			],*/
-		});
-	Handsontable.hooks.add('afterRender', myCallback);
+
+	var TempParamItem = GSK_Data.gskExtra.Parameters[parseInt(InputItem.attr("GSKParamNum"))];
+	var TempSpreadSheetSettings = {
+		data : JSON.parse2(JSON.stringify2(TempParamItem.Value)),
+		rowHeaders : true,
+		colHeaders : function (col) {
+			return (col + 1);
+		},
+		manualRowMove : true,
+		manualColumnMove : true,
+		manualRowResize : true,
+		manualColumnResize : true,
+		contextMenu : true,
+		minSpareRows : 2,
+		minSpareCols : 2,
+	};
+	var TempValidatorText = "my." + GSK_Parameter_Types[TempParamItem.Type].Type;
+	switch (GSK_Parameter_Types[TempParamItem.Type].Size) {
+	case "Constant":
+		TempSpreadSheetSettings.maxRows = 1;
+		TempSpreadSheetSettings.maxCols = 1;
+		break;
+	case "Vector":
+		TempSpreadSheetSettings.maxCols = 1;
+		break;
+	}
+	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), TempSpreadSheetSettings);
 
 	SetGUIState("SetMatrixEditorForParamsDialog");
-	InputItem = $(InputItem);
-	console.log(InputItem);
-	//$("#GSK_Params_Mtx_Editor").empty();
 
 	var myButtons = {
-		"Update" : function () {},
+		"Validate" : function () {
+			var TempTableData = GSK_MatrixEditor.getData();
+			for (var i = 0; i < TempTableData.length; i++) {
+				for (var j = 0; j < TempTableData[0].length; j++) {
+					GSK_MatrixEditor.setCellMeta(i, j, 'validator', TempValidatorText);
+				}
+			}
+			GSK_MatrixEditor.validateCells();
+		},
 		"Back" : function () {
 			SetGUIState("RemoveMatrixEditorForParamsDialog");
 		}

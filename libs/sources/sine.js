@@ -3,7 +3,7 @@ gsk_libs_sources_sine = {
 	Icon: "images/tex/sources-figure1.png",
 	Parameters: [{
 			Name: "Amplitude $(A)$",
-			Type: "ConstNatural",
+			Type: "ConstInteger",
 			Value: [[1]]
 		}, {
 			Name: "Frequency $(f)$",
@@ -16,7 +16,7 @@ gsk_libs_sources_sine = {
 		}, {
 			Name: "Offset $(O)$",
 			Type: "MatComplex",
-			Value: 0
+			Value: [[0]]
 		},
 	],
 	MaxInTerminals: 1,
