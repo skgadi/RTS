@@ -476,19 +476,18 @@ function init() {
 						SetGUIState("DisableLibraryAddButton");
 					},
 					close : function (event, ui) {
-						GSK_Callback(null);
+						//GSK_Callback(null);
 					}
 				});
 			GSK_BtnsForParametersEditorDialog = {
 				"Update block" : function () {
 					for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++)
 						GSK_Data.gskExtra.Parameters[i].Value = GSK_Data_ExtrasCopy.Parameters[i].Value;
+					GSK_Data.label = "Hello";
 					GSK_Callback(GSK_Data);
-					//GSK_Data.
 					ParametersEditorDialog.dialog("close");
 				},
 				Cancel : function () {
-					/*GSK_Callback(null);*/
 					ParametersEditorDialog.dialog("close");
 				}
 			}
@@ -681,7 +680,10 @@ function SetGUIState(State) {
 		$("#GSK_Params_Items").css("display", "block");
 		$("#GSK_Params_Edt_Details").css("display", "block");
 		ParametersEditorDialog.dialog('option', 'buttons', GSK_BtnsForParametersEditorDialog);
-		ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon === 'string') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label())
+		ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon === 'string') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label());
+		$("#GSK_Params_Edt_Details").empty();
+		$("#GSK_Params_Edt_Details").append("<label><b>Details</b></label>");
+		$("#GSK_Params_Edt_Details").append("<div>" + GSK_Data_ExtrasCopy.Details() + "</div>");
 		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 		break;
 	}
@@ -779,7 +781,6 @@ function AddABlockToNetwork(Block) {
 function PrepareParamsEditor() {
 	try {
 		GSK_Data_ExtrasCopy = CopyJSONForBlocks(GSK_Data.gskExtra);
-		SetGUIState("RemoveMatrixEditorForParamsDialog");
 		ParametersEditorDialog.dialog({
 			autoOpen : false
 		});
@@ -801,8 +802,7 @@ function PrepareParamsEditor() {
 				break;
 			}
 		}
-		$("#GSK_Params_Edt_Details").append(GSK_Data_ExtrasCopy.Details());
-		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+		SetGUIState("RemoveMatrixEditorForParamsDialog");
 		ParametersEditorDialog.dialog("open");
 	} catch (err) {
 		$.notify("Unable to prepare this block for editing.\n Recommendation: Delete this block and report author(s) of this block.", "error");
@@ -843,13 +843,15 @@ function PrepareMatrixToEditAParam(InputItem) {
 			GSK_MatrixEditor.alter('insert_row');
 		},
 		"Row -" : function () {
-			if (GSK_MatrixEditor.countRows()>1) GSK_MatrixEditor.alter('remove_row');
+			if (GSK_MatrixEditor.countRows() > 1)
+				GSK_MatrixEditor.alter('remove_row');
 		},
 		"Column +" : function () {
 			GSK_MatrixEditor.alter('insert_col');
 		},
 		"Column -" : function () {
-			if (GSK_MatrixEditor.countCols()>1) GSK_MatrixEditor.alter('remove_col');
+			if (GSK_MatrixEditor.countCols() > 1)
+				GSK_MatrixEditor.alter('remove_col');
 		},
 		"Update variable" : function () {
 			var TempTableData = GSK_MatrixEditor.getData();
