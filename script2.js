@@ -479,24 +479,6 @@ function init() {
 						//GSK_Callback(null);
 					}
 				});
-			GSK_BtnsForParametersEditorDialog = {
-				"Update block" : function () {
-					for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++)
-						GSK_Data.gskExtra.Parameters[i].Value = GSK_Data_ExtrasCopy.Parameters[i].Value;
-					GSK_Data.label = "Hello";
-					GSK_Callback(GSK_Data);
-					ParametersEditorDialog.dialog("close");
-				},
-				Cancel : function () {
-					ParametersEditorDialog.dialog("close");
-				}
-			}
-			GSK_BtnsForMatrixEditorForParamsDialog = {
-				"Back" : function () {
-					SetGUIState("RemoveMatrixEditorForParamsDialog");
-				}
-			};
-
 		} catch (err) {
 			$("#GSKShowInitProgress").append("<p>Error in resolving <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
 		}
@@ -770,8 +752,6 @@ function AddABlockToNetwork(Block) {
 		GSK_Data.image = GSK_Data.gskExtra.Icon;
 		GSK_Data.shape = "image";
 	}
-	/*GSK_Data.gskFile = $(Block).attr('GSK_File');
-	GSK_Data.gskVariable = $(Block).attr('GSK_Var');*/
 	GSK_Data.gskExtra.Constructor();
 	GSK_Callback(GSK_Data);
 	LibraryDialog.dialog("close");
@@ -780,27 +760,36 @@ function AddABlockToNetwork(Block) {
 
 function PrepareParamsEditor() {
 	try {
+		GSK_BtnsForParametersEditorDialog = {
+			"Update block" : function () {
+				GSK_Data.gskExtra.Parameters = GSK_Data_ExtrasCopy.Parameters;
+				/*for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++)
+				GSK_Data.gskExtra.Parameters[i].Value = GSK_Data_ExtrasCopy.Parameters[i].Value;*/
+				GSK_Data.label = GSK_Data.gskExtra.Label();
+				GSK_Callback(GSK_Data);
+				ParametersEditorDialog.dialog("close");
+			},
+			Cancel : function () {
+				ParametersEditorDialog.dialog("close");
+			}
+		};
 		GSK_Data_ExtrasCopy = CopyJSONForBlocks(GSK_Data.gskExtra);
-		ParametersEditorDialog.dialog({
-			autoOpen : false
-		});
 		$("#GSK_Params_Items").empty();
 		$("#GSK_Params_Edt_Details").empty();
 		$("#GSK_Params_Mtx_Editor").empty();
-		GSK_Callback(null);
 		for (var i = 0; i < GSK_Data_ExtrasCopy.Parameters.length; i++) {
+			if (i % 3 === 0)
+				$("#GSK_Params_Items").append("<div class='w3-row'>");
 			switch (GSK_Data_ExtrasCopy.Parameters[i].Type) {
 			case "ScalarInteger":
 			case "VectReal":
 			case "VectComplex":
 			case "MatComplex":
-				if (i % 3 === 0)
-					$("#GSK_Params_Items").append("<div class='w3-row'>");
 				$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
-				if (i % 3 === 0)
-					$("#GSK_Params_Items").append("</div>");
 				break;
 			}
+			if (i % 3 === 0)
+				$("#GSK_Params_Items").append("</div>");
 		}
 		SetGUIState("RemoveMatrixEditorForParamsDialog");
 		ParametersEditorDialog.dialog("open");
@@ -910,12 +899,6 @@ function ExtractNumberAtEnd(Str) {
 		return 0;
 }
 
-function GenJSONFuncsForNodes(TabName, ItemName) {
-	/*switch(TabName) {
-	case "Sources":{}
-	}
-	Source.Init = */
-}
 function CopyJSONForBlocks(Source) {
 	var target;
 	target = JSON.parse2(JSON.stringify2(Source));
