@@ -3,7 +3,7 @@ gsk_libs_sources_sine = {
 	Icon: "images/tex/sources-figure1.png",
 	Parameters: [{
 			Name: "Amplitude $(A)$",
-			Type: "ConstInteger",
+			Type: "ScalarInteger",
 			Value: [[1]]
 		}, {
 			Name: "Frequency $(f)$",

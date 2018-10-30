@@ -3,8 +3,9 @@ var options;
 var container;
 var dialog;
 var LibraryDialog, ParametersEditorDialog;
+var GSK_BtnsForParametersEditorDialog, GSK_BtnsForMatrixEditorForParamsDialog;
 var GSK_MatrixEditor;
-var GSK_Data, GSK_Callback;
+var GSK_Data, GSK_Callback, GSK_Data_ExtrasCopy;
 var showInterval = false;
 var SelectedLibraryBlock;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
@@ -20,16 +21,16 @@ var MaximumFileSize = 2 * 1024 * 1024;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
 
 var GSK_Parameter_Types = {
-	"ConstInteger" : {
-		"Size" : "Constant",
+	"ScalarInteger" : {
+		"Size" : "Scalar",
 		"Type" : "Integer",
 	},
-	"ConstReal" : {
-		"Size" : "Constant",
+	"ScalarReal" : {
+		"Size" : "Scalar",
 		"Type" : "Real",
 	},
-	"ConstComplex" : {
-		"Size" : "Constant",
+	"ScalarComplex" : {
+		"Size" : "Scalar",
 		"Type" : "Complex",
 	},
 	"VectInteger" : {
@@ -59,7 +60,6 @@ var GSK_Parameter_Types = {
 };
 var GSK_Mandatory_Items = {
 	"Name" : "string",
-	"Icon" : "string",
 	"MaxInTerminals" : "number",
 	"MaxOutTerminals" : "number",
 	"Constructor" : "function",
@@ -475,16 +475,29 @@ function init() {
 						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
 						SetGUIState("DisableLibraryAddButton");
 					},
-					buttons : {
-						"Update block" : function () {},
-						Cancel : function () {
-							GSK_Callback(null);
-						}
-					},
 					close : function (event, ui) {
 						GSK_Callback(null);
 					}
 				});
+			GSK_BtnsForParametersEditorDialog = {
+				"Update block" : function () {
+					for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++)
+						GSK_Data.gskExtra.Parameters[i].Value = GSK_Data_ExtrasCopy.Parameters[i].Value;
+					GSK_Callback(GSK_Data);
+					//GSK_Data.
+					ParametersEditorDialog.dialog("close");
+				},
+				Cancel : function () {
+					/*GSK_Callback(null);*/
+					ParametersEditorDialog.dialog("close");
+				}
+			}
+			GSK_BtnsForMatrixEditorForParamsDialog = {
+				"Back" : function () {
+					SetGUIState("RemoveMatrixEditorForParamsDialog");
+				}
+			};
+
 		} catch (err) {
 			$("#GSKShowInitProgress").append("<p>Error in resolving <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
 		}
@@ -661,11 +674,15 @@ function SetGUIState(State) {
 		$("#GSK_Params_Mtx_Editor").css("display", "block");
 		$("#GSK_Params_Items").css("display", "none");
 		$("#GSK_Params_Edt_Details").css("display", "none");
+		ParametersEditorDialog.dialog('option', 'buttons', GSK_BtnsForMatrixEditorForParamsDialog);
 		break;
 	case "RemoveMatrixEditorForParamsDialog":
 		$("#GSK_Params_Mtx_Editor").css("display", "none");
 		$("#GSK_Params_Items").css("display", "block");
 		$("#GSK_Params_Edt_Details").css("display", "block");
+		ParametersEditorDialog.dialog('option', 'buttons', GSK_BtnsForParametersEditorDialog);
+		ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon === 'string') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label())
+		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 		break;
 	}
 }
@@ -747,8 +764,10 @@ function ValidateAndAddBlock(Block) {
 function AddABlockToNetwork(Block) {
 	GSK_Data.gskExtra = CopyJSONForBlocks(eval($(Block).attr('GSK_Var')));
 	GSK_Data.label = GSK_Data.gskExtra.Label();
-	GSK_Data.shape = "image";
-	GSK_Data.image = GSK_Data.gskExtra.Icon;
+	if (typeof GSK_Data.gskExtra.Icon === 'string') {
+		GSK_Data.image = GSK_Data.gskExtra.Icon;
+		GSK_Data.shape = "image";
+	}
 	/*GSK_Data.gskFile = $(Block).attr('GSK_File');
 	GSK_Data.gskVariable = $(Block).attr('GSK_Var');*/
 	GSK_Data.gskExtra.Constructor();
@@ -759,29 +778,30 @@ function AddABlockToNetwork(Block) {
 
 function PrepareParamsEditor() {
 	try {
-
+		GSK_Data_ExtrasCopy = CopyJSONForBlocks(GSK_Data.gskExtra);
+		SetGUIState("RemoveMatrixEditorForParamsDialog");
 		ParametersEditorDialog.dialog({
 			autoOpen : false
-		}).dialog('widget').find('.ui-dialog-title').html("<img style='height: 2em;' src='" + GSK_Data.gskExtra.Icon + "'/> " + GSK_Data.gskExtra.Label());
+		});
 		$("#GSK_Params_Items").empty();
 		$("#GSK_Params_Edt_Details").empty();
-		console.log(GSK_Data);
+		$("#GSK_Params_Mtx_Editor").empty();
 		GSK_Callback(null);
-		for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++) {
-			switch (GSK_Data.gskExtra.Parameters[i].Type) {
-			case "ConstInteger":
+		for (var i = 0; i < GSK_Data_ExtrasCopy.Parameters.length; i++) {
+			switch (GSK_Data_ExtrasCopy.Parameters[i].Type) {
+			case "ScalarInteger":
 			case "VectReal":
 			case "VectComplex":
 			case "MatComplex":
 				if (i % 3 === 0)
 					$("#GSK_Params_Items").append("<div class='w3-row'>");
-				$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data.gskExtra.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data.gskExtra.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
+				$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
 				if (i % 3 === 0)
 					$("#GSK_Params_Items").append("</div>");
 				break;
 			}
 		}
-		$("#GSK_Params_Edt_Details").append(GSK_Data.gskExtra.Details());
+		$("#GSK_Params_Edt_Details").append(GSK_Data_ExtrasCopy.Details());
 		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 		ParametersEditorDialog.dialog("open");
 	} catch (err) {
@@ -793,7 +813,7 @@ function PrepareMatrixToEditAParam(InputItem) {
 	InputItem = $(InputItem);
 	$('#GSK_Params_Mtx_Editor').empty();
 
-	var TempParamItem = GSK_Data.gskExtra.Parameters[parseInt(InputItem.attr("GSKParamNum"))];
+	var TempParamItem = GSK_Data_ExtrasCopy.Parameters[parseInt(InputItem.attr("GSKParamNum"))];
 	var TempSpreadSheetSettings = {
 		data : JSON.parse2(JSON.stringify2(TempParamItem.Value)),
 		rowHeaders : true,
@@ -805,12 +825,10 @@ function PrepareMatrixToEditAParam(InputItem) {
 		manualRowResize : true,
 		manualColumnResize : true,
 		contextMenu : true,
-		minSpareRows : 2,
-		minSpareCols : 2,
 	};
 	var TempValidatorText = "my." + GSK_Parameter_Types[TempParamItem.Type].Type;
 	switch (GSK_Parameter_Types[TempParamItem.Type].Size) {
-	case "Constant":
+	case "Scalar":
 		TempSpreadSheetSettings.maxRows = 1;
 		TempSpreadSheetSettings.maxCols = 1;
 		break;
@@ -820,26 +838,50 @@ function PrepareMatrixToEditAParam(InputItem) {
 	}
 	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), TempSpreadSheetSettings);
 
-	SetGUIState("SetMatrixEditorForParamsDialog");
-
-	var myButtons = {
-		"Validate" : function () {
+	GSK_BtnsForMatrixEditorForParamsDialog = {
+		"Row +" : function () {
+			GSK_MatrixEditor.alter('insert_row');
+		},
+		"Row -" : function () {
+			if (GSK_MatrixEditor.countRows()>1) GSK_MatrixEditor.alter('remove_row');
+		},
+		"Column +" : function () {
+			GSK_MatrixEditor.alter('insert_col');
+		},
+		"Column -" : function () {
+			if (GSK_MatrixEditor.countCols()>1) GSK_MatrixEditor.alter('remove_col');
+		},
+		"Update variable" : function () {
 			var TempTableData = GSK_MatrixEditor.getData();
 			for (var i = 0; i < TempTableData.length; i++) {
 				for (var j = 0; j < TempTableData[0].length; j++) {
 					GSK_MatrixEditor.setCellMeta(i, j, 'validator', TempValidatorText);
 				}
 			}
-			GSK_MatrixEditor.validateCells();
+			GSK_MatrixEditor.validateCells(function () {
+				var TempIsValid = true;
+				for (var i = 0; i < TempTableData.length; i++) {
+					for (var j = 0; j < TempTableData[0].length; j++) {
+						if (!GSK_MatrixEditor.getCellMeta(i, j).valid) {
+							TempIsValid = false;
+							break;
+						}
+					}
+				}
+				if (TempIsValid) {
+					TempParamItem.Value = JSON.parse2(JSON.stringify2(GSK_MatrixEditor.getData()));
+					SetGUIState("RemoveMatrixEditorForParamsDialog");
+				} else
+					$.notify("Error in validating user input. Please correct the red cells.", "error");
+			});
 		},
 		"Back" : function () {
 			SetGUIState("RemoveMatrixEditorForParamsDialog");
 		}
 	};
-
-	ParametersEditorDialog.dialog('option', 'buttons', myButtons);
-
-	//SetGUIState("RemoveMatrixEditorForParamsDialog");
+	SetGUIState("SetMatrixEditorForParamsDialog");
+	ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon === 'string') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label() + " > " + TempParamItem.Name + " | <i style='border: 1pt black solid; background: yellow'>&lt;" + GSK_Parameter_Types[TempParamItem.Type].Type + ", " + GSK_Parameter_Types[TempParamItem.Type].Size + "&gt;</i>");
+	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 }
 
 function ValidateInputFor(InputItem) {
