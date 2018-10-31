@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  30 OCT 2018 17:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  30 OCT 2018 18:59
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1588,22 +1588,21 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 74.
 (c:/texlive/2018/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-\openout3 = `icons-figure0.md5'.
-
+===== Image 'icons-figure0' is up-to-date. ======
+===== Image 'icons-figure1' is up-to-date. ======
+===== Image 'icons-figure2' is up-to-date. ======
+\openout3 = `icons-figure3.md5'.
 
 ===== 'mode=convert with system call': Invoking 'pdflatex -shell-escape -halt-o
-n-error -interaction=batchmode -jobname "icons-figure0" "\def\tikzexternalrealj
+n-error -interaction=batchmode -jobname "icons-figure3" "\def\tikzexternalrealj
 ob{icons}\input{icons}"' ========
 \openout3 = `icons.auxlock'.
 
 runsystem(pdflatex -shell-escape -halt-on-error -interaction=batchmode -jobname
- "icons-figure0" "\def\tikzexternalrealjob{icons}\input{icons}")...executed.
+ "icons-figure3" "\def\tikzexternalrealjob{icons}\input{icons}")...executed.
 
 \openout3 = `icons.auxlock'.
 
-===== Image 'icons-figure1' is up-to-date. ======
-===== Image 'icons-figure2' is up-to-date. ======
-===== Image 'icons-figure3' is up-to-date. ======
 ===== Image 'icons-figure4' is up-to-date. ======
 ===== Image 'icons-figure5' is up-to-date. ======
 [1
@@ -1714,12 +1713,14 @@ Here is how much of TeX's memory you used:
  79i,5n,136p,10382b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 <c:/texlive/2018/texmf-dist/fonts/type1/public/fontawesome/Fo
 ntAwesome.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/mnsymbol/MnSymbol1
-2.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:
-/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
-Output written on icons.pdf (1 page, 39840 bytes).
+0.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/mnsymbol/MnSymbol7.pfb><c:
+/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/
+2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2018/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+Output written on icons.pdf (1 page, 80027 bytes).
 PDF statistics:
- 60 PDF objects out of 1000 (max. 8388607)
- 43 compressed objects within 1 object stream
+ 72 PDF objects out of 1000 (max. 8388607)
+ 53 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  31 words of extra memory for PDF output out of 10000 (max. 10000000)
 

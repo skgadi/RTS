@@ -1,4 +1,4 @@
-var gsk_libs_operators = {
+var gsk_libs_vOperators = {
 	sum: {
 		Name: "Summation",
 		Icon: "images/tex/operators-figure0.png",

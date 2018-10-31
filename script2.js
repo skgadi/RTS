@@ -19,44 +19,69 @@ var RefreshGraphsMS = 1000;
 var MaximumNoOfPointsToShow = 300;
 var MaximumFileSize = 2 * 1024 * 1024;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
-
+GSK_Colors = ['AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'Black', 'BlanchedAlmond', 'Blue', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGrey', 'DarkGreen', 'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon', 'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkSlateGrey', 'DarkTurquoise', 'DarkViolet', 'DeepPink', 'DeepSkyBlue', 'DimGray', 'DimGrey', 'DodgerBlue', 'FireBrick', 'FloralWhite', 'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod', 'Gray', 'Grey', 'Green', 'GreenYellow', 'HoneyDew', 'HotPink', 'IndianRed ', 'Indigo ', 'Ivory', 'Khaki', 'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue', 'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey', 'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue', 'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime', 'LimeGreen', 'Linen', 'Magenta', 'Maroon', 'MediumAquaMarine', 'MediumBlue', 'MediumOrchid', 'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen', 'MediumTurquoise', 'MediumVioletRed', 'MidnightBlue', 'MintCream', 'MistyRose', 'Moccasin', 'NavajoWhite', 'Navy', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed', 'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed', 'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple', 'RebeccaPurple', 'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Salmon', 'SandyBrown', 'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue', 'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'Tan', 'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White', 'WhiteSmoke', 'Yellow', 'YellowGreen', 
+]
 var GSK_Parameter_Types = {
 	"ScalarInteger" : {
 		"Size" : "Scalar",
+		"Type" : "Integer",
+	},
+	"VectInteger" : {
+		"Size" : "Vector",
+		"Type" : "Integer",
+	},
+	"MatInteger" : {
+		"Size" : "Matrix",
 		"Type" : "Integer",
 	},
 	"ScalarReal" : {
 		"Size" : "Scalar",
 		"Type" : "Real",
 	},
-	"ScalarComplex" : {
-		"Size" : "Scalar",
-		"Type" : "Complex",
-	},
-	"VectInteger" : {
-		"Size" : "Vector",
-		"Type" : "Integer",
-	},
 	"VectReal" : {
 		"Size" : "Vector",
 		"Type" : "Real",
-	},
-	"VectComplex" : {
-		"Size" : "Vector",
-		"Type" : "Complex",
-	},
-	"MatInteger" : {
-		"Size" : "Matrix",
-		"Type" : "Integer",
 	},
 	"MatReal" : {
 		"Size" : "Matrix",
 		"Type" : "Real",
 	},
+	"ScalarComplex" : {
+		"Size" : "Scalar",
+		"Type" : "Complex",
+	},
+	"VectComplex" : {
+		"Size" : "Vector",
+		"Type" : "Complex",
+	},
 	"MatComplex" : {
 		"Size" : "Matrix",
 		"Type" : "Complex",
 	},
+	"ScalarText" : {
+		"Size" : "Scalar",
+		"Type" : "Text",
+	},
+	"VectText" : {
+		"Size" : "Vector",
+		"Type" : "Text",
+	},
+	"MatText" : {
+		"Size" : "Matrix",
+		"Type" : "Text",
+	},
+	"ScalarColor" : {
+		"Size" : "Scalar",
+		"Type" : "Color",
+	},
+	"VectColor" : {
+		"Size" : "Vector",
+		"Type" : "Color",
+	},
+	/*"MatColor" : {
+		"Size" : "Matrix",
+		"Type" : "Color",
+	},*/
 };
 var GSK_Mandatory_Items = {
 	"Name" : "string",
@@ -190,9 +215,9 @@ function draw(data) {
 						NoOfInputs++;
 				};
 				if (
-					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
+					(network.body.nodes[data.from].options.gskExtra.MaxOutTerminals > NoOfOutputs)
 					 &&
-					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs)
+					(network.body.nodes[data.to].options.gskExtra.MaxInTerminals > NoOfInputs)
 					 &&
 					data.from != data.to)
 					callback(data);
@@ -213,9 +238,9 @@ function draw(data) {
 					}
 				};
 				if (
-					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
+					(network.body.nodes[data.from].options.gskExtra.MaxOutTerminals > NoOfOutputs)
 					 &&
-					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs))
+					(network.body.nodes[data.to].options.gskExtra.MaxInTerminals > NoOfInputs))
 					callback(data);
 				else {
 					$.notify("This connection is not allowed", "warn");
@@ -445,7 +470,7 @@ function init() {
 	.done(function (script, textStatus, jqxhr) {
 		try {
 			for (var TempTabs in gsk_libs) {
-				$("#GSK_Lib_Head").append("<button style='width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \" title='" + gsk_libs[TempTabs].Name + "'> <img src='" + gsk_libs[TempTabs].Icon + "' style='width: 100%;'/></button>");
+				$("#GSK_Lib_Head").append("<button style='border: 2px black dashed; width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \" title='" + gsk_libs[TempTabs].Name + "'> <img src='" + gsk_libs[TempTabs].Icon + "' style='height: 2em;'/></button>");
 			}
 			LibraryDialog = $("#GSK_Library").dialog({
 					closeOnEscape : true,
@@ -476,7 +501,7 @@ function init() {
 						SetGUIState("DisableLibraryAddButton");
 					},
 					close : function (event, ui) {
-						//GSK_Callback(null);
+						GSK_Callback(null);
 					}
 				});
 		} catch (err) {
@@ -529,9 +554,20 @@ $(document).ready(function () {
 				callback(false);
 			}
 		}
+		function GSK_Cell_ValidateText(query, callback) {
+			if (query === "" || query === null) callback(false);
+			else callback(true);
+		}
+		function GSK_Cell_ValidateColor(query, callback) {
+			if (query === "" || query === null) callback(false);
+			else callback(true);
+		}
+
 		Handsontable.validators.registerValidator('my.Integer', GSK_Cell_ValidateInteger);
 		Handsontable.validators.registerValidator('my.Real', GSK_Cell_ValidateReal);
 		Handsontable.validators.registerValidator('my.Complex', GSK_Cell_ValidateComplex);
+		Handsontable.validators.registerValidator('my.Text', GSK_Cell_ValidateText);
+		Handsontable.validators.registerValidator('my.Color', GSK_Cell_ValidateColor);
 	})(Handsontable);
 	// Handle loading files to open
 	$('form input').change(function (event) {
@@ -730,7 +766,6 @@ function ValidateAndAddBlock(Block) {
 	try {
 		var IsValid = true;
 		for (TempBlockItem in GSK_Mandatory_Items) {
-			console.log();
 			if (typeof eval($(Block).attr('GSK_Var'))[TempBlockItem] !== GSK_Mandatory_Items[TempBlockItem]) {
 				console.log('Unable to find ' + TempBlockItem + ' as a ' + GSK_Mandatory_Items[TempBlockItem] + ' in ' + $(Block).attr('GSK_Var') + '.');
 				IsValid = false;
@@ -780,14 +815,12 @@ function PrepareParamsEditor() {
 		for (var i = 0; i < GSK_Data_ExtrasCopy.Parameters.length; i++) {
 			if (i % 3 === 0)
 				$("#GSK_Params_Items").append("<div class='w3-row'>");
-			switch (GSK_Data_ExtrasCopy.Parameters[i].Type) {
+			/*switch (GSK_Data_ExtrasCopy.Parameters[i].Type) {
 			case "ScalarInteger":
-			case "VectReal":
-			case "VectComplex":
-			case "MatComplex":
-				$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
-				break;
-			}
+			$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
+			break;
+			}*/
+			$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
 			if (i % 3 === 0)
 				$("#GSK_Params_Items").append("</div>");
 		}
@@ -814,17 +847,30 @@ function PrepareMatrixToEditAParam(InputItem) {
 		manualRowResize : true,
 		manualColumnResize : true,
 		contextMenu : true,
+		"allowInvalid": false,
+		"allowEmpty": false,
 	};
 	var TempValidatorText = "my." + GSK_Parameter_Types[TempParamItem.Type].Type;
 	switch (GSK_Parameter_Types[TempParamItem.Type].Size) {
 	case "Scalar":
 		TempSpreadSheetSettings.maxRows = 1;
 		TempSpreadSheetSettings.maxCols = 1;
+		TempSpreadSheetSettings.colWidths= [400];
 		break;
 	case "Vector":
 		TempSpreadSheetSettings.maxCols = 1;
+		TempSpreadSheetSettings.colWidths= [400];
 		break;
 	}
+	switch (GSK_Parameter_Types[TempParamItem.Type].Type) {
+	case "Color":
+		TempSpreadSheetSettings.columns = [{
+				type : 'dropdown',
+				source : GSK_Colors,
+			}];
+		break;
+	}
+	console.log(TempSpreadSheetSettings);
 	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), TempSpreadSheetSettings);
 
 	GSK_BtnsForMatrixEditorForParamsDialog = {
@@ -1008,7 +1054,7 @@ function GetOrderOfExecution() {
 		for (var TempEdge in network.body.edges) {
 			if (
 				(OrderOfExecution.indexOf(network.body.edges[TempEdge].toId) < 0) &&
-				(network.body.nodes[network.body.edges[TempEdge].toId].options.gskExtra.MaxOutputs == 0))
+				(network.body.nodes[network.body.edges[TempEdge].toId].options.gskExtra.MaxOutTerminals == 0))
 				OrderOfExecution.push(network.body.edges[TempEdge].toId);
 		}
 		var TempIndex = 0;

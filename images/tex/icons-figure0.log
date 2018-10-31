@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  30 OCT 2018 17:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  30 OCT 2018 18:09
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1481,7 +1481,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \openout4 = `icons-figure0.dpth'.
 
 LaTeX Font Info:    Try loading font information for U+fontawesomeone on input 
-line 79.
+line 77.
 (c:/texlive/2018/texmf-dist/tex/latex/fontawesome/ufontawesomeone.fd
 File: ufontawesomeone.fd 2016/05/22 Font definitions for U/fontawesomeone.
 ) [1
@@ -1521,16 +1521,16 @@ A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
  ) 
 Here is how much of TeX's memory you used:
- 49289 strings out of 492649
- 1194614 string characters out of 6133400
+ 49040 strings out of 492649
+ 1186588 string characters out of 6133400
  1459448 words of memory out of 5000000
- 52503 multiletter control sequences out of 15000+600000
- 539401 words of font info for 55 fonts, out of 8000000 for 9000
+ 52255 multiletter control sequences out of 15000+600000
+ 539102 words of font info for 54 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 80i,11n,136p,10417b,1856s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 80i,8n,136p,10417b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2018/texmf-dist/fonts/enc/dvips/fontawesome/fontawesomeone.enc}<c
 :/texlive/2018/texmf-dist/fonts/type1/public/fontawesome/FontAwesome.pfb>
-Output written on icons-figure0.pdf (1 page, 8107 bytes).
+Output written on icons-figure0.pdf (1 page, 8008 bytes).
 PDF statistics:
  16 PDF objects out of 1000 (max. 8388607)
  8 compressed objects within 1 object stream

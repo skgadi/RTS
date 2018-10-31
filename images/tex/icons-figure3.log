@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  19 OCT 2018 18:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  30 OCT 2018 18:59
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1486,11 +1486,7 @@ A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
 \openout4 = `icons-figure3.dpth'.
 
-LaTeX Font Info:    Try loading font information for U+fontawesometwo on input 
-line 97.
-(c:/texlive/2018/texmf-dist/tex/latex/fontawesome/ufontawesometwo.fd
-File: ufontawesometwo.fd 2016/05/22 Font definitions for U/fontawesometwo.
-) [1
+[1
 Non-PDF special ignored!
 <special> header=pstricks.pro
 Non-PDF special ignored!
@@ -1521,19 +1517,20 @@ A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
  ) 
 Here is how much of TeX's memory you used:
- 49290 strings out of 492649
- 1194622 string characters out of 6133400
+ 49031 strings out of 492649
+ 1186301 string characters out of 6133400
  1459448 words of memory out of 5000000
- 52504 multiletter control sequences out of 15000+600000
- 539401 words of font info for 55 fonts, out of 8000000 for 9000
+ 52250 multiletter control sequences out of 15000+600000
+ 538786 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 80i,11n,136p,10417b,1858s stack positions out of 5000i,500n,10000p,200000b,80000s
-{c:/texlive/2018/texmf-dist/fonts/enc/dvips/fontawesome/fontawesometwo.enc}<c
-:/texlive/2018/texmf-dist/fonts/type1/public/fontawesome/FontAwesome.pfb>
-Output written on icons-figure3.pdf (1 page, 8072 bytes).
+ 80i,8n,136p,10417b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
+{c:/texlive/2018/texmf-dist/fonts/enc/dvips/mnsymbol/MnSymbolC.enc}{c:/texliv
+e/2018/texmf-dist/fonts/enc/dvips/mnsymbol/MnSymbolE.enc}<c:/texlive/2018/texmf
+-dist/fonts/type1/public/mnsymbol/MnSymbol10.pfb>
+Output written on icons-figure3.pdf (1 page, 23464 bytes).
 PDF statistics:
- 16 PDF objects out of 1000 (max. 8388607)
- 8 compressed objects within 1 object stream
+ 19 PDF objects out of 1000 (max. 8388607)
+ 11 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

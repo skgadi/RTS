@@ -1,10 +1,18 @@
 var gsk_libs_sinks = {
-	scope: {
-		Name: "Time vs Signal",
+	linearlinear: {
+		Name: "Linear vs Linear",
 		Icon: "images/tex/sinks-figure0.png",
 	},
-	xygraph: {
-		Name: "X vs Y Graph",
+	linearlog: {
+		Name: "Linear vs Log",
 		Icon: "images/tex/sinks-figure1.png",
+	},
+	loglinear: {
+		Name: "Log vs Linear",
+		Icon: "images/tex/sinks-figure2.png",
+	},
+	loglog: {
+		Name: "Log vs Log",
+		Icon: "images/tex/sinks-figure3.png",
 	},
 };
