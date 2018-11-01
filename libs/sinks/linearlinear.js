@@ -1,26 +1,40 @@
 var gsk_libs_sinks_linearlinear = {
 	Name : "Linear vs Linear",
-	Icon : "images/tex/sinks-figure0.png",
-	Parameters: [{
-			Name: "Label",
-			Type: "ScalarText",
-			Value: [["Scope"]]
+	Parameters : [{
+			Name : "Scope type",
+			Type : "ScalarOptions",
+			Value : [["Time series"]],
+			Options : ["Time series", "XY plot"],
 		}, {
-			Name: "Title",
-			Type: "ScalarText",
-			Value: [["Title"]]
+			Name : "Label",
+			Type : "ScalarText",
+			Value : [["Scope"]]
 		}, {
-			Name: "Signals legend",
-			Type: "VectText",
-			Value: [["Signal"]]
+			Name : "X-scale",
+			Type : "ScalarOptions",
+			Value : [["Linear"]],
+			Options : ["Linear", "Logarithmic"],
 		}, {
-			Name: "Legend colors",
-			Type: "VectColor",
-			Value: [["Blue"]]
+			Name : "Y-scale",
+			Type : "ScalarOptions",
+			Value : [["Linear"]],
+			Options : ["Linear", "Logarithmic"],
 		}, {
-			Name: "Background color",
-			Type: "ScalarColor",
-			Value: [["Red"]]
+			Name : "Title",
+			Type : "ScalarText",
+			Value : [["Title"]]
+		}, {
+			Name : "Signals legend",
+			Type : "VectText",
+			Value : [["Signal"]]
+		}, {
+			Name : "Legend colors",
+			Type : "VectColor",
+			Value : [["Blue"]]
+		}, {
+			Name : "Background color",
+			Type : "ScalarColor",
+			Value : [["Red"]]
 		},
 	],
 	MaxOutTerminals : 0,
@@ -32,12 +46,30 @@ var gsk_libs_sinks_linearlinear = {
 	ChartData : "",
 	InputParams : [0],
 	PresentOut : [0],
-	Constructor: function () {
+	Icon : function () {
+		try {
+			var x = this.Parameters[2].Options.indexOf(this.Parameters[2].Value[0][0]);
+			var y = this.Parameters[3].Options.indexOf(this.Parameters[3].Value[0][0]);
+			return "images/tex/sinks-figure" + (x * 2 + y * 1) + ".png";
+		} catch (err) {
+			return;
+		}
 	},
-	Evaluate: function () {
+	Constructor : function (data) {
+		try {
+			this.DialogDiv = "Node_" + data.id;
+			$("#" + this.DialogDiv).remove();
+			$("#GSK_HiddenForEverDIV").append("<div id='Node_" + data.id + "' style='padding: 0px;' title='" + this.Parameters[4].Value[0][0] + "'><div id='Chart_" + data.id + "'></div></div>");
+		} catch (err) {
+			console.log(err);
+		}
 	},
+	Destructor : function (data) {
+		$("#" + this.DialogDiv).remove();
+	},
+	Evaluate : function () {},
 	Label : function () {
-		return this.Parameters[0].Value[0][0];
+		return this.Parameters[1].Value[0][0];
 	},
 	Init : function () {
 		this.DialogID = $("#" + this.DialogDiv).dialog({

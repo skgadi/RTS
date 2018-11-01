@@ -19,9 +19,21 @@ var RefreshGraphsMS = 1000;
 var MaximumNoOfPointsToShow = 300;
 var MaximumFileSize = 2 * 1024 * 1024;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
-GSK_Colors = ['AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'Black', 'BlanchedAlmond', 'Blue', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGrey', 'DarkGreen', 'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon', 'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkSlateGrey', 'DarkTurquoise', 'DarkViolet', 'DeepPink', 'DeepSkyBlue', 'DimGray', 'DimGrey', 'DodgerBlue', 'FireBrick', 'FloralWhite', 'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod', 'Gray', 'Grey', 'Green', 'GreenYellow', 'HoneyDew', 'HotPink', 'IndianRed ', 'Indigo ', 'Ivory', 'Khaki', 'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue', 'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey', 'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue', 'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime', 'LimeGreen', 'Linen', 'Magenta', 'Maroon', 'MediumAquaMarine', 'MediumBlue', 'MediumOrchid', 'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen', 'MediumTurquoise', 'MediumVioletRed', 'MidnightBlue', 'MintCream', 'MistyRose', 'Moccasin', 'NavajoWhite', 'Navy', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed', 'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed', 'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple', 'RebeccaPurple', 'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Salmon', 'SandyBrown', 'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue', 'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'Tan', 'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White', 'WhiteSmoke', 'Yellow', 'YellowGreen', 
+GSK_Colors = ['AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'Black', 'BlanchedAlmond', 'Blue', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGrey', 'DarkGreen', 'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon', 'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkSlateGrey', 'DarkTurquoise', 'DarkViolet', 'DeepPink', 'DeepSkyBlue', 'DimGray', 'DimGrey', 'DodgerBlue', 'FireBrick', 'FloralWhite', 'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod', 'Gray', 'Grey', 'Green', 'GreenYellow', 'HoneyDew', 'HotPink', 'IndianRed ', 'Indigo ', 'Ivory', 'Khaki', 'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue', 'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey', 'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue', 'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime', 'LimeGreen', 'Linen', 'Magenta', 'Maroon', 'MediumAquaMarine', 'MediumBlue', 'MediumOrchid', 'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen', 'MediumTurquoise', 'MediumVioletRed', 'MidnightBlue', 'MintCream', 'MistyRose', 'Moccasin', 'NavajoWhite', 'Navy', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed', 'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed', 'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple', 'RebeccaPurple', 'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Salmon', 'SandyBrown', 'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue', 'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'Tan', 'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White', 'WhiteSmoke', 'Yellow', 'YellowGreen',
 ]
 var GSK_Parameter_Types = {
+	"ScalarOptions" : {
+		"Size" : "Scalar",
+		"Type" : "Options",
+	},
+	"VectOptions" : {
+		"Size" : "Vector",
+		"Type" : "Options",
+	},
+	/*"MatOptions" : {
+	"Size" : "Matrix",
+	"Type" : "Options",
+	},*/
 	"ScalarInteger" : {
 		"Size" : "Scalar",
 		"Type" : "Integer",
@@ -79,19 +91,20 @@ var GSK_Parameter_Types = {
 		"Type" : "Color",
 	},
 	/*"MatColor" : {
-		"Size" : "Matrix",
-		"Type" : "Color",
+	"Size" : "Matrix",
+	"Type" : "Color",
 	},*/
 };
 var GSK_Mandatory_Items = {
-	"Name" : "string",
+	"Constructor" : "function",
+	"Destructor" : "function",
+	"Details" : "function",
+	"Evaluate" : "function",
+	"Init" : "function",
+	"Label" : "function",
 	"MaxInTerminals" : "number",
 	"MaxOutTerminals" : "number",
-	"Constructor" : "function",
-	"Init" : "function",
-	"Evaluate" : "function",
-	"Label" : "function",
-	"Details" : "function",
+	"Name" : "string",
 };
 /*function setDefaultLocale() {
 var defaultLocal = navigator.language;
@@ -200,9 +213,7 @@ function draw(data) {
 				PrepareParamsEditor();
 			},
 			deleteNode : function (data, callback) {
-				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
-					$("#Node_" + data.nodes[0]).remove();
-				//console.log(data.nodes[0]);
+				network.body.nodes[data.nodes[0]].options.gskExtra.Destructor(data);
 				callback(data);
 			},
 			addEdge : function (data, callback) {
@@ -555,12 +566,22 @@ $(document).ready(function () {
 			}
 		}
 		function GSK_Cell_ValidateText(query, callback) {
-			if (query === "" || query === null) callback(false);
-			else callback(true);
+			if (query === "" || query === null)
+				callback(false);
+			else
+				callback(true);
 		}
 		function GSK_Cell_ValidateColor(query, callback) {
-			if (query === "" || query === null) callback(false);
-			else callback(true);
+			if (query === "" || query === null)
+				callback(false);
+			else
+				callback(true);
+		}
+		function GSK_Cell_ValidateOption(query, callback) {
+			if (query === "" || query === null)
+				callback(false);
+			else
+				callback(true);
 		}
 
 		Handsontable.validators.registerValidator('my.Integer', GSK_Cell_ValidateInteger);
@@ -568,6 +589,7 @@ $(document).ready(function () {
 		Handsontable.validators.registerValidator('my.Complex', GSK_Cell_ValidateComplex);
 		Handsontable.validators.registerValidator('my.Text', GSK_Cell_ValidateText);
 		Handsontable.validators.registerValidator('my.Color', GSK_Cell_ValidateColor);
+		Handsontable.validators.registerValidator('my.Options', GSK_Cell_ValidateOption);
 	})(Handsontable);
 	// Handle loading files to open
 	$('form input').change(function (event) {
@@ -698,7 +720,7 @@ function SetGUIState(State) {
 		$("#GSK_Params_Items").css("display", "block");
 		$("#GSK_Params_Edt_Details").css("display", "block");
 		ParametersEditorDialog.dialog('option', 'buttons', GSK_BtnsForParametersEditorDialog);
-		ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon === 'string') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label());
+		ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon !== 'undefined') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon() + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label());
 		$("#GSK_Params_Edt_Details").empty();
 		$("#GSK_Params_Edt_Details").append("<label><b>Details</b></label>");
 		$("#GSK_Params_Edt_Details").append("<div>" + GSK_Data_ExtrasCopy.Details() + "</div>");
@@ -783,11 +805,13 @@ function ValidateAndAddBlock(Block) {
 function AddABlockToNetwork(Block) {
 	GSK_Data.gskExtra = CopyJSONForBlocks(eval($(Block).attr('GSK_Var')));
 	GSK_Data.label = GSK_Data.gskExtra.Label();
-	if (typeof GSK_Data.gskExtra.Icon === 'string') {
-		GSK_Data.image = GSK_Data.gskExtra.Icon;
-		GSK_Data.shape = "image";
+	if (typeof GSK_Data.gskExtra.Icon !== 'undefined') {
+		if (typeof GSK_Data.gskExtra.Icon() === 'string') {
+			GSK_Data.image = GSK_Data.gskExtra.Icon();
+			GSK_Data.shape = "image";
+		}
 	}
-	GSK_Data.gskExtra.Constructor();
+	GSK_Data.gskExtra.Constructor(GSK_Data);
 	GSK_Callback(GSK_Data);
 	LibraryDialog.dialog("close");
 
@@ -797,10 +821,17 @@ function PrepareParamsEditor() {
 	try {
 		GSK_BtnsForParametersEditorDialog = {
 			"Update block" : function () {
+
 				GSK_Data.gskExtra.Parameters = GSK_Data_ExtrasCopy.Parameters;
-				/*for (var i = 0; i < GSK_Data.gskExtra.Parameters.length; i++)
-				GSK_Data.gskExtra.Parameters[i].Value = GSK_Data_ExtrasCopy.Parameters[i].Value;*/
 				GSK_Data.label = GSK_Data.gskExtra.Label();
+				if (typeof GSK_Data.gskExtra.Icon !== 'undefined') {
+					if (typeof GSK_Data.gskExtra.Icon() === 'string') {
+						GSK_Data.image = GSK_Data.gskExtra.Icon();
+						GSK_Data.shape = "image";
+					}
+				} else if (typeof GSK_Data.shape !== 'undefined')
+					delete GSK_Data.shape;
+				GSK_Data.gskExtra.Constructor(GSK_Data);
 				GSK_Callback(GSK_Data);
 				ParametersEditorDialog.dialog("close");
 			},
@@ -847,19 +878,19 @@ function PrepareMatrixToEditAParam(InputItem) {
 		manualRowResize : true,
 		manualColumnResize : true,
 		contextMenu : true,
-		"allowInvalid": false,
-		"allowEmpty": false,
+		"allowInvalid" : false,
+		"allowEmpty" : false,
 	};
 	var TempValidatorText = "my." + GSK_Parameter_Types[TempParamItem.Type].Type;
 	switch (GSK_Parameter_Types[TempParamItem.Type].Size) {
 	case "Scalar":
 		TempSpreadSheetSettings.maxRows = 1;
 		TempSpreadSheetSettings.maxCols = 1;
-		TempSpreadSheetSettings.colWidths= [400];
+		TempSpreadSheetSettings.colWidths = [400];
 		break;
 	case "Vector":
 		TempSpreadSheetSettings.maxCols = 1;
-		TempSpreadSheetSettings.colWidths= [400];
+		TempSpreadSheetSettings.colWidths = [400];
 		break;
 	}
 	switch (GSK_Parameter_Types[TempParamItem.Type].Type) {
@@ -867,7 +898,15 @@ function PrepareMatrixToEditAParam(InputItem) {
 		TempSpreadSheetSettings.columns = [{
 				type : 'dropdown',
 				source : GSK_Colors,
-			}];
+			}
+		];
+		break;
+	case "Options":
+		TempSpreadSheetSettings.columns = [{
+				type : 'dropdown',
+				source : TempParamItem.Options,
+			}
+		];
 		break;
 	}
 	console.log(TempSpreadSheetSettings);
@@ -917,7 +956,7 @@ function PrepareMatrixToEditAParam(InputItem) {
 		}
 	};
 	SetGUIState("SetMatrixEditorForParamsDialog");
-	ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon === 'string') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label() + " > " + TempParamItem.Name + " | <i style='border: 1pt black solid; background: yellow'>&lt;" + GSK_Parameter_Types[TempParamItem.Type].Type + ", " + GSK_Parameter_Types[TempParamItem.Type].Size + "&gt;</i>");
+	ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon !== 'undefined') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon() + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label() + " > " + TempParamItem.Name + " | <i style='border: 1pt black solid; background: yellow'>&lt;" + GSK_Parameter_Types[TempParamItem.Type].Type + ", " + GSK_Parameter_Types[TempParamItem.Type].Size + "&gt;</i>");
 	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 }
 
