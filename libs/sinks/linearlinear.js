@@ -149,4 +149,7 @@ var gsk_libs_sinks_linearlinear = {
 	Details : function () {
 		return "Port: $fff$";
 	},
+	ValidateParams : function () {
+		return "OK";
+	},
 }

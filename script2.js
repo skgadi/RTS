@@ -105,18 +105,8 @@ var GSK_Mandatory_Items = {
 	"MaxInTerminals" : "number",
 	"MaxOutTerminals" : "number",
 	"Name" : "string",
+	"ValidateParams" : "function",
 };
-/*function setDefaultLocale() {
-var defaultLocal = navigator.language;
-var select = document.getElementById('locale');
-select.selectedIndex = 0; // set fallback value
-for (var i = 0, j = select.options.length; i < j; ++i) {
-if (select.options[i].getAttribute('value') === defaultLocal) {
-select.selectedIndex = i;
-break;
-}
-}
-}*/
 
 function destroy() {
 	if (network !== null) {
@@ -546,21 +536,21 @@ $(document).ready(function () {
 	(function (Handsontable) {
 		function GSK_Cell_ValidateInteger(query, callback) {
 			try {
-				((query === null) || ((typeof math.eval(query) === 'number') && (math.eval(query) % 1 === 0))) ? callback(true) : callback(false);
+				((typeof math.eval(query) === 'number') && (math.eval(query) % 1 === 0)) ? callback(true) : callback(false);
 			} catch (err) {
 				callback(false);
 			}
 		}
 		function GSK_Cell_ValidateReal(query, callback) {
 			try {
-				((query === null) || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+				(typeof math.eval(query) === 'number') ? callback(true) : callback(false);
 			} catch (err) {
 				callback(false);
 			}
 		}
 		function GSK_Cell_ValidateComplex(query, callback) {
 			try {
-				((query === null) || (math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
 			} catch (err) {
 				callback(false);
 			}
@@ -821,19 +811,22 @@ function PrepareParamsEditor() {
 	try {
 		GSK_BtnsForParametersEditorDialog = {
 			"Update block" : function () {
-
-				GSK_Data.gskExtra.Parameters = GSK_Data_ExtrasCopy.Parameters;
-				GSK_Data.label = GSK_Data.gskExtra.Label();
-				if (typeof GSK_Data.gskExtra.Icon !== 'undefined') {
-					if (typeof GSK_Data.gskExtra.Icon() === 'string') {
-						GSK_Data.image = GSK_Data.gskExtra.Icon();
-						GSK_Data.shape = "image";
-					}
-				} else if (typeof GSK_Data.shape !== 'undefined')
-					delete GSK_Data.shape;
-				GSK_Data.gskExtra.Constructor(GSK_Data);
-				GSK_Callback(GSK_Data);
-				ParametersEditorDialog.dialog("close");
+				GSK_ParamsValidationText = GSK_Data_ExtrasCopy.ValidateParams();
+				if (GSK_ParamsValidationText === "OK") {
+					GSK_Data.gskExtra.Parameters = GSK_Data_ExtrasCopy.Parameters;
+					GSK_Data.label = GSK_Data.gskExtra.Label();
+					if (typeof GSK_Data.gskExtra.Icon !== 'undefined') {
+						if (typeof GSK_Data.gskExtra.Icon() === 'string') {
+							GSK_Data.image = GSK_Data.gskExtra.Icon();
+							GSK_Data.shape = "image";
+						}
+					} else if (typeof GSK_Data.shape !== 'undefined')
+						delete GSK_Data.shape;
+					GSK_Data.gskExtra.Constructor(GSK_Data);
+					GSK_Callback(GSK_Data);
+					ParametersEditorDialog.dialog("close");
+				} else
+					$.notify("Unable to validate the parameters.\nPlease correct the parameters.\nDetails:\n"+GSK_ParamsValidationText, "error");
 			},
 			Cancel : function () {
 				ParametersEditorDialog.dialog("close");
