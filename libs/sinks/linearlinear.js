@@ -38,8 +38,8 @@ var gsk_libs_sinks_linearlinear = {
 		}, {
 			Name : "Handling numbers",
 			Type : "ScalarOptions",
-			Value : [["Only the real part"]],
-			Options : ["Only the real part", "Only the imaginary part", "Both real and imaginary parts"],
+			Value : [["Show real"]],
+			Options : ["Show real", "Show imaginary", "Both"],
 		},
 	],
 	MaxOutTerminals : 0,
@@ -102,7 +102,8 @@ var gsk_libs_sinks_linearlinear = {
 				color : this.Parameters[7].Value[i][0],
 			};
 			TempSeries.push(TempLineStyle);
-			if (this.Parameters[8].Value[0][0] == "Both real and imaginary parts") {
+			if (this.Parameters[8].Value[0][0] == "Both") {
+				this.ChartData.addColumn('number', "Re:" + this.Parameters[6].Value[i][0]);
 				TempLineStyle = {
 					lineDashStyle : [4, 4],
 					color : this.Parameters[7].Value[i][0],
@@ -116,7 +117,7 @@ var gsk_libs_sinks_linearlinear = {
 			chartArea : {
 				right : 0,
 				top : 10,
-				left : 30,
+				left : 60,
 				bottom : 20,
 				height : ($("#" + this.DialogDiv).height() - 50),
 				width : ($("#" + this.DialogDiv).width() - 200),
@@ -125,7 +126,8 @@ var gsk_libs_sinks_linearlinear = {
 				scaleType : TempXAxisType
 			},
 			vAxis : {
-				scaleType : TempYAxisType
+				scaleType : TempYAxisType,
+				format : '0.0E0',
 			},
 			series : TempSeries,
 			height : $("#" + this.DialogDiv).height() - 7,
@@ -138,15 +140,27 @@ var gsk_libs_sinks_linearlinear = {
 	},
 	End : function () {
 		this.ChartID.draw(this.ChartData, this.ChartOptions);
+		this.ChartID = null;
+		this.ChartData = null;
 	},
 	Evaluate : function () {
 		var TempRow = [];
-		var TempIndex=0;
+		var TempIndex = 0;
 		var TempInputParams = this.InputParams[0];
-		if (this.Parameters[0].Value[0][0] == "Time series") TempRow.push(SimulationTime);
-		for (var i=0; i<TempInputParams.length; i++) {
-			for (var j=0; j<TempInputParams[0].length; j++) {
-				TempRow.push(TempInputParams[i][j]);
+		if (this.Parameters[0].Value[0][0] == "Time series")
+			TempRow.push(SimulationTime);
+		for (var i = 0; i < TempInputParams.length; i++) {
+			for (var j = 0; j < TempInputParams[0].length; j++) {
+				switch (this.Parameters[8].Value[0][0]) {
+				case "Both":
+					TempRow.push(math.complex(TempInputParams[i][j]).re);
+				case "Show imaginary":
+					TempRow.push(math.complex(TempInputParams[i][j]).im);
+					break;
+				case "Show real":
+					TempRow.push(math.complex(TempInputParams[i][j]).re);
+					break;
+				}
 				TempIndex++;
 				if (TempIndex === this.Parameters[6].Value.length) {
 					i = TempInputParams.length;
@@ -156,9 +170,10 @@ var gsk_libs_sinks_linearlinear = {
 		}
 		while (TempIndex !== this.Parameters[6].Value.length) {
 			TempRow.push(NaN);
+			if (this.Parameters[8].Value[0][0] === "Both")
+				TempRow.push(NaN);
 			TempIndex++;
 		}
-		//console.log(TempRow);
 		this.ChartData.addRow(TempRow);
 		if ((SimulationTime * 1000) % RefreshGraphsMS == 0)
 			this.ChartID.draw(this.ChartData, this.ChartOptions);
@@ -172,7 +187,7 @@ var gsk_libs_sinks_linearlinear = {
 			TempStr += this.Parameters[i].Value.toString();
 			TempStr += ";";
 		}
-		TempStr += "<br/><br/><b>Status:</b> "+ValidateText + ";";
+		TempStr += "<br/><br/><b>Status:</b> " + ValidateText + ";";
 		return TempStr;
 	},
 	ValidateParams : function () {
