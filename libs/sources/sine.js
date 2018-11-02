@@ -26,21 +26,31 @@ gsk_libs_sources_sine = {
 		return "images/tex/sources-figure1.png"
 	},
 	Init : function () {
-		var Compiled_A=[[]];
-		var Compiled_omega=[[]];
-		var Compiled_phi=[[]];
-		var Compiled_O=[[]];
+		var Compiled_A=[];
+		var Compiled_omega=[];
+		var Compiled_phi=[];
+		var Compiled_O=[];
+		this.PresentOut = [];
 		for (var i=0; i<this.Parameters[0].Value.length; i++) {
+			var Temp_A = [];
+			var Temp_omega = [];
+			var Temp_phi = [];
+			var Temp_O = [];
+			var Temp_PresentOut = [];
 			for (var j=0; j<this.Parameters[0].Value[0].length; j++) {
-				Compiled_A[i][j] 	= math.eval(this.Parameters[0].Value[i][j]);
-				Compiled_omega[i][j]= math.eval(this.Parameters[1].Value[i][j]);
-				Compiled_phi[i][j] 	= math.eval(this.Parameters[2].Value[i][j]);
-				Compiled_O[i][j] 	= math.eval(this.Parameters[3].Value[i][j]);
+				Temp_A.push(math.eval(this.Parameters[0].Value[i][j]));
+				Temp_omega.push(math.eval(this.Parameters[1].Value[i][j]));
+				Temp_phi.push(math.eval(this.Parameters[2].Value[i][j]));
+				Temp_O.push(math.eval(this.Parameters[3].Value[i][j]));
+				Temp_PresentOut.push(0);
 			}
+			Compiled_A.push(Temp_A);
+			Compiled_omega.push(Temp_omega);
+			Compiled_phi.push(Temp_phi);
+			Compiled_O.push(Temp_O);
+			this.PresentOut.push(Temp_PresentOut);
 		}
 		this.CompiledParams = [Compiled_A, Compiled_omega, Compiled_phi, Compiled_O];
-		this.InputParams 	= math.zeros(this.Parameters[0].Value.length, this.Parameters[0].Value[0].length);
-		this.PresentOut 	= math.zeros(this.Parameters[0].Value.length, this.Parameters[0].Value[0].length);
 	},
 	Constructor : function (data) {},
 	Destructor : function (data) {},

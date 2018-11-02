@@ -490,7 +490,6 @@ function init() {
 					}
 				});
 			ParametersEditorDialog = $("#GSK_Params_Editor").dialog({
-					closeOnEscape : true,
 					autoOpen : false,
 					height : 400,
 					width : 500,

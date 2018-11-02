@@ -39,13 +39,13 @@ var gsk_libs_sinks_linearlinear = {
 	],
 	MaxOutTerminals : 0,
 	MaxInTerminals : 1,
-	DialogDiv : "Node_",
-	ChartDiv : "Chart_",
-	DialogID : "",
-	ChartID : "",
-	ChartData : "",
-	InputParams : [0],
-	PresentOut : [0],
+	DialogDiv : null,
+	ChartDiv : null,
+	DialogID : null,
+	ChartID : null,
+	ChartData : null,
+	InputParams : null,
+	PresentOut : null,
 	Icon : function () {
 		try {
 			var x = this.Parameters[2].Options.indexOf(this.Parameters[2].Value[0][0]);
@@ -58,6 +58,7 @@ var gsk_libs_sinks_linearlinear = {
 	Constructor : function (data) {
 		try {
 			this.DialogDiv = "Node_" + data.id;
+			this.ChartDiv = "Chart_" + data.id;
 			$("#" + this.DialogDiv).remove();
 			$("#GSK_HiddenForEverDIV").append("<div id='Node_" + data.id + "' style='padding: 0px;' title='" + this.Parameters[4].Value[0][0] + "'><div id='Chart_" + data.id + "'></div></div>");
 		} catch (err) {
@@ -81,19 +82,47 @@ var gsk_libs_sinks_linearlinear = {
 				resizable : true,
 			}).dialog("open");
 		//Chart Initialization
+		var TempXAxisType,
+		TempYAxisType;
+		(this.Parameters[2].Value[0][0] === "Linear") ? (TempXAxisType = "linear") : (TempXAxisType = "log");
+		(this.Parameters[3].Value[0][0] === "Linear") ? (TempYAxisType = "linear") : (TempYAxisType = "log");
+		var TempLineStyle;
+		var TempColors = [];
+		var TempSeries = [];
+		this.ChartData = new google.visualization.DataTable();
+		if (this.Parameters[0].Value[0][0] === "Time series") this.ChartData.addColumn('number', 'Time');
+		for (var i=0; i < this.Parameters[5].Value.length; i++) {
+			TempColors.push(this.Parameters[6].Value[i][0]);
+			TempColors.push(this.Parameters[6].Value[i][0]);
+			this.ChartData.addColumn('number', "Re: " + this.Parameters[5].Value[i][0]);
+			this.ChartData.addColumn('number', "Img: " + this.Parameters[5].Value[i][0]);
+			TempLineStyle = {
+				lineDashStyle : [0],
+			};
+			TempSeries[2*i] = TempLineStyle;
+			TempLineStyle = {
+				lineDashStyle : [4, 4],
+			};
+			TempSeries[2*i+1] = TempLineStyle;
+		}
 		var options = {
-			legend : "none",
+			legend : "right",
 			chartArea : {
 				height : ($("#" + this.DialogDiv).height() - 50),
-				width : ($("#" + this.DialogDiv).width() - 100),
 			},
+			colors : TempColors,
+			hAxis : {
+				scaleType : TempXAxisType
+			},
+			vAxis : {
+				scaleType : TempYAxisType
+			},
+			series: TempSeries,
+
 			height : $("#" + this.DialogDiv).height() - 7,
 			width : $("#" + this.DialogDiv).width(),
 		};
 		this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
-		this.ChartData = new google.visualization.DataTable();
-		this.ChartData.addColumn('number', 'Time');
-		this.ChartData.addColumn('number', this.Name);
 		this.ChartID.draw(this.ChartData, options);
 	},
 	Eval : function () {
@@ -150,6 +179,7 @@ var gsk_libs_sinks_linearlinear = {
 		return "Port: $fff$";
 	},
 	ValidateParams : function () {
+		// if xy, should be minimum 2
 		return "OK";
 	},
 }
