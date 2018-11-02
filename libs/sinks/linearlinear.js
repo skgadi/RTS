@@ -155,7 +155,7 @@ var gsk_libs_sinks_linearlinear = {
 			}
 		}
 		while (TempIndex !== this.Parameters[6].Value.length) {
-			TempRow.push(TempInputParams[i][j]);
+			TempRow.push(NaN);
 			TempIndex++;
 		}
 		//console.log(TempRow);
