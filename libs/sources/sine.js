@@ -19,9 +19,7 @@ gsk_libs_sources_sine = {
 		},
 	],
 	MaxInTerminals : 1,
-	MaxOutTerminals : Infinity,
-	PresentOut : null,
-	InputParams : null,
+	MaxOutTerminals : 99999,
 	Icon : function () {
 		return "images/tex/sources-figure1.png"
 	},
@@ -51,7 +49,9 @@ gsk_libs_sources_sine = {
 			this.PresentOut.push(Temp_PresentOut);
 		}
 		this.CompiledParams = [Compiled_A, Compiled_omega, Compiled_phi, Compiled_O];
+		this.PresentOut = math.zeros(Compiled_A.length, Compiled_A[0].length)._data;
 	},
+	End : function () {},
 	Constructor : function (data) {},
 	Destructor : function (data) {},
 	Evaluate : function () {

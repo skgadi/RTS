@@ -15,9 +15,10 @@ var SimulationState = "Loading";
 var SimulateAtInterval;
 var SimulationTime;
 var SamplingTimeMs = 10;
-var RefreshGraphsMS = 1000;
+var RefreshGraphsMS = 500;
 var MaximumNoOfPointsToShow = 300;
 var MaximumFileSize = 2 * 1024 * 1024;
+var RunSimulationForS = 5;
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
 GSK_Colors = ['AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'Black', 'BlanchedAlmond', 'Blue', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGrey', 'DarkGreen', 'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon', 'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkSlateGrey', 'DarkTurquoise', 'DarkViolet', 'DeepPink', 'DeepSkyBlue', 'DimGray', 'DimGrey', 'DodgerBlue', 'FireBrick', 'FloralWhite', 'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod', 'Gray', 'Grey', 'Green', 'GreenYellow', 'HoneyDew', 'HotPink', 'IndianRed ', 'Indigo ', 'Ivory', 'Khaki', 'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue', 'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey', 'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue', 'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime', 'LimeGreen', 'Linen', 'Magenta', 'Maroon', 'MediumAquaMarine', 'MediumBlue', 'MediumOrchid', 'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen', 'MediumTurquoise', 'MediumVioletRed', 'MidnightBlue', 'MintCream', 'MistyRose', 'Moccasin', 'NavajoWhite', 'Navy', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed', 'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed', 'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple', 'RebeccaPurple', 'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Salmon', 'SandyBrown', 'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue', 'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'Tan', 'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White', 'WhiteSmoke', 'Yellow', 'YellowGreen',
 ]
@@ -99,12 +100,14 @@ var GSK_Mandatory_Items = {
 	"Constructor" : "function",
 	"Destructor" : "function",
 	"Details" : "function",
+	"End" : "function",
 	"Evaluate" : "function",
 	"Init" : "function",
 	"Label" : "function",
 	"MaxInTerminals" : "number",
 	"MaxOutTerminals" : "number",
 	"Name" : "string",
+	"Parameters" : "object",
 	"ValidateParams" : "function",
 };
 
@@ -490,6 +493,7 @@ function init() {
 					}
 				});
 			ParametersEditorDialog = $("#GSK_Params_Editor").dialog({
+					closeOnEscape : false,
 					autoOpen : false,
 					height : 400,
 					width : 500,
@@ -654,8 +658,14 @@ function OpenAFile() {
 
 function SimulateTheNetwork() {
 	if (SimulationState == "Running") {
-		if (SimulateAtInterval != undefined)
+		if (SimulateAtInterval != undefined) {
 			clearInterval(SimulateAtInterval);
+		}
+		if (OrderOfExecution.length > 0) {
+			for (var i = 0; i < OrderOfExecution.length; i++) {
+				network.body.nodes[OrderOfExecution[i]].options.gskExtra.End();
+			}
+		}
 		SetViewAsLoaded();
 	} else if (SimulationState == "Design") {
 		SetViewAsSimulating();
@@ -793,6 +803,8 @@ function ValidateAndAddBlock(Block) {
 
 function AddABlockToNetwork(Block) {
 	GSK_Data.gskExtra = CopyJSONForBlocks(eval($(Block).attr('GSK_Var')));
+	GSK_Data.gskExtra.InputParams = [];
+	GSK_Data.gskExtra.PresentOut = [];
 	GSK_Data.label = GSK_Data.gskExtra.Label();
 	if (typeof GSK_Data.gskExtra.Icon !== 'undefined') {
 		if (typeof GSK_Data.gskExtra.Icon() === 'string') {
@@ -825,7 +837,7 @@ function PrepareParamsEditor() {
 					GSK_Callback(GSK_Data);
 					ParametersEditorDialog.dialog("close");
 				} else
-					$.notify("Unable to validate the parameters.\nPlease correct the parameters.\nDetails:\n"+GSK_ParamsValidationText, "error");
+					$.notify("Unable to validate the parameters.\nPlease correct the parameters.\nDetails:\n" + GSK_ParamsValidationText, "error");
 			},
 			Cancel : function () {
 				ParametersEditorDialog.dialog("close");
@@ -838,11 +850,6 @@ function PrepareParamsEditor() {
 		for (var i = 0; i < GSK_Data_ExtrasCopy.Parameters.length; i++) {
 			if (i % 3 === 0)
 				$("#GSK_Params_Items").append("<div class='w3-row'>");
-			/*switch (GSK_Data_ExtrasCopy.Parameters[i].Type) {
-			case "ScalarInteger":
-			$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
-			break;
-			}*/
 			$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
 			if (i % 3 === 0)
 				$("#GSK_Params_Items").append("</div>");
@@ -851,6 +858,7 @@ function PrepareParamsEditor() {
 		ParametersEditorDialog.dialog("open");
 	} catch (err) {
 		$.notify("Unable to prepare this block for editing.\n Recommendation: Delete this block and report author(s) of this block.", "error");
+		GSK_Callback(null);
 	}
 }
 
@@ -978,7 +986,7 @@ function ExtractNumberAtEnd(Str) {
 
 function CopyJSONForBlocks(Source) {
 	var target;
-	target = JSON.parse2(JSON.stringify2(Source));
+	target = Flatted.parse(Flatted.stringify(Source));
 	for (var TempObject in Source) {
 		if (typeof Source[TempObject] === "function") {
 			target[TempObject] = Source[TempObject];
@@ -1117,7 +1125,7 @@ function SetProperView() {
 	if (SimulationState == "Design") {
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
-		$("#Simulate").html("<i class=' fas fa - play '></i>");
+		$("#Simulate").html("<i class='fas fa-play'></i>");
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
 		$(".FileHandling").css("display", "block");
@@ -1125,7 +1133,7 @@ function SetProperView() {
 	if (SimulationState == "Running") {
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
-		$("#Simulate").html("<i class=' fas fa - stop '></i>");
+		$("#Simulate").html("<i class='fas fa-stop'></i>");
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
 		$(".FileHandling").css("display", "none");
@@ -1147,7 +1155,6 @@ function RunSimulation() {
 	GetOrderOfExecution();
 	if (OrderOfExecution.length > 0) {
 		for (var i = 0; i < OrderOfExecution.length; i++) {
-			//console.log(network.body.nodes[OrderOfExecution[i]]);
 			network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
 		}
 		SimulationTime = 0;
@@ -1167,9 +1174,10 @@ function ExecuteFunctions() {
 				TempArrayIndex++;
 			}
 		});
-		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = parseFloat(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Eval());
+		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
 	}
-	SimulationTime = parseFloat((SimulationTime + SamplingTimeMs / 1000).toFixed(3))
+	if ((RunSimulationForS>0) && (SimulationTime>=RunSimulationForS)) SimulateTheNetwork();
+	SimulationTime = math.round(SimulationTime + SamplingTimeMs/1000, 3);
 }
 
 function PrepareNetworkToDownload() {
