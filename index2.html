@@ -22,8 +22,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js" type="text/javascript"></script>
 	<script src="https://unpkg.com/flatted@2.0.0/min.js" type="text/javascript"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css"/>
-	<link rel="stylesheet" href="style.css?version=0.002"/>
-	<script src="script2.js?version=0.002"></script>
+	<link rel="stylesheet" href="style.css?version=0.003"/>
+	<script src="script2.js?version=0.003"></script>
 </head>
 <body>
 <div class="GSKShowWhenLoading" id="GSKShowInitProgress" style="display: block">
@@ -55,7 +55,7 @@
 	<div style = "padding: 2px 0px; cursor: default;" class="NetworkManuplation w3-bar-item w3-green">&nbsp;</div>
 	<button style = "padding: 2px;" class="NetworkManuplation w3-bar-item w3-button w3-ripple" title="Settings"><i class="fas fa-cogs"></i></button>
 	<div style = "padding: 2px 0px; cursor: default;" class="NetworkManuplation w3-bar-item w3-green">&nbsp;</div>
-	<button style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple"  title="Explore the execution order" onclick="FocusAllNodes()"><i class="far fa-eye"></i></button>
+	<button id = "BtnExecOrderDisplay" style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple"  title="Explore the execution order" onclick="FocusAllNodes()"><i class="far fa-eye"></i></button>
 	<button id = "Simulate" style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple" onclick="SimulateTheNetwork()" title="Run/Stop simulation"><i class="fas fa-play"></i></button>
 </div></div>
 </div>
