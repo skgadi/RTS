@@ -60,6 +60,9 @@ var gsk_libs_sinks_linearlinear = {
 			return;
 		}
 	},
+	RunTimeExec : function () {
+		$("#" + this.DialogDiv).dialog("open");
+	},
 	Constructor : function (data) {
 		try {
 			this.DialogDiv = "Node_" + data.id;

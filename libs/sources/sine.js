@@ -54,6 +54,7 @@ gsk_libs_sources_sine = {
 	End : function () {},
 	Constructor : function (data) {},
 	Destructor : function (data) {},
+	RunTimeExec : function () {},
 	Evaluate : function () {
 		var A = this.CompiledParams[0];
 		var omega = this.CompiledParams[1];

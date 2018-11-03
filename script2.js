@@ -108,11 +108,14 @@ var GSK_Mandatory_Items = {
 	"MaxOutTerminals" : "number",
 	"Name" : "string",
 	"Parameters" : "object",
+	"RunTimeExec" : "function",
 	"ValidateParams" : "function",
 };
 
 function destroy() {
 	if (network !== null) {
+		for (TempBlockID in network.body.data.nodes._data)
+			network.body.data.nodes._data[TempBlockID].gskExtra.Destructor();
 		network.destroy();
 		network = null;
 	}
@@ -259,10 +262,8 @@ function draw(data) {
 			else
 				network.addNodeMode();
 		}
-		if (SimulationState === "Running")
-			if (properties.nodes.length == 1)
-				if (network.body.nodes[properties.nodes[0]].options.gskExtra.Tab == "Sinks")
-					network.body.nodes[properties.nodes[0]].options.gskExtra.Init();
+		if ((SimulationState === "Running") && (properties.nodes.length == 1))
+			network.body.nodes[properties.nodes[0]].options.gskExtra.RunTimeExec();
 	});
 }
 
@@ -405,7 +406,7 @@ $(document).ready(function () {
 				draw(NewData);
 				PrepareNetworkAfterOpenAction();
 				$("#OpenFileDialog").dialog("close");
-			});//.catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."));
+			}); //.catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."));
 		}
 		$('form input').val("");
 	});
@@ -427,6 +428,24 @@ function CreateNewFile() {
 			"Delete this network" : function () {
 				ResetNetwork();
 				$(this).dialog("close");
+			},
+			Cancel : function () {
+				$(this).dialog("close");
+			}
+		}
+	}).dialog("open");
+}
+function ConfirmOpenFile() {
+	$("#ConfirmRemoveNetwork").dialog({
+		resizable : false,
+		height : "auto",
+		width : 400,
+		modal : true,
+		buttons : {
+			"Delete this network" : function () {
+				ResetNetwork();
+				$(this).dialog("close");
+				OpenAFile();
 			},
 			Cancel : function () {
 				$(this).dialog("close");
@@ -666,6 +685,7 @@ var OpenOperationLoadingFilesIndex = 0;
 function PrepareNetworkAfterOpenAction() {
 	Object.keys(network.body.data.nodes._data);
 	if (OpenOperationLoadingFilesIndex === Object.keys(network.body.data.nodes._data).length) {
+		OpenOperationLoadingFilesIndex = 0;
 		SetViewAsLoaded();
 		network.fit();
 	} else {
@@ -674,18 +694,24 @@ function PrepareNetworkAfterOpenAction() {
 		if (eval("typeof " + GSK_Data.gskExtra.VarName + " === 'undefined'")) {
 			$.getScript(GSK_Data.gskExtra.FileName)
 			.done(function (script, textStatus, jqxhr) {
-				CopyFuncsToBlock(eval(GSK_Data.gskExtra.VarName), GSK_Data.gskExtra);
-				console.log(GSK_Data.gskExtra);
-				network.manipulation.body.data.nodes.getDataSet().update(GSK_Data);
-				GSK_Data.gskExtra.Constructor(GSK_Data);
-				OpenOperationLoadingFilesIndex++;
-				PrepareNetworkAfterOpenAction();
+				LoadABlockFromOpenFileContext();
 			})
 			.fail(function (jqxhr, settings, exception) {
 				$.notify("Error in loading " + GSK_Data.gskExtra.FileName + ".", "error");
 			});
-		} else OpenOperationLoadingFilesIndex++
+		} else {
+			LoadABlockFromOpenFileContext();
+		}
 	}
+}
+
+function LoadABlockFromOpenFileContext() {
+	console.log(eval(GSK_Data.gskExtra.VarName));
+	CopyFuncsToBlock(eval(GSK_Data.gskExtra.VarName), GSK_Data.gskExtra);
+	GSK_Data.gskExtra.Constructor(GSK_Data);
+	console.log(network.manipulation.body.data.nodes.getDataSet().update(GSK_Data));
+	OpenOperationLoadingFilesIndex++;
+	PrepareNetworkAfterOpenAction();
 }
 
 function PrepareMatrixToEditAParam(InputItem) {
@@ -838,7 +864,7 @@ function SetProperView() {
 		$("#Simulate").html("<i class='fas fa-play'></i>");
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
-		$(".FileHandling").css("display", "block");
+		$(".NetworkManuplation").css("display", "block");
 	}
 	if (SimulationState == "Running") {
 		$(".GSKShowWhenLoading").css("display", "none");
@@ -846,7 +872,7 @@ function SetProperView() {
 		$("#Simulate").html("<i class='fas fa-stop'></i>");
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
-		$(".FileHandling").css("display", "none");
+		$(".NetworkManuplation").css("display", "none");
 
 	}
 }
@@ -915,42 +941,39 @@ function readFileContent(file) {
 				reader.readAsText(file)
 		})
 }
-/*
+
+var FocusAllTheNodesIndex = 0;
+var FocusAllTheNodesInterval;
+var IsShowingTheNodes = false;
 function FocusAllNodes() {
-for (var TempNode in network.body.data.nodes._data) {
-FocusANode(TempNode);
-}
-if (showInterval !== false) {
-showInterval = false;
-network.fit();
-} else {
-focusRandom();
-setTimeout(doTheShow, duration);
-showInterval = true;
-}
+	if (IsShowingTheNodes === false) {
+		FocusAllTheNodesInterval = setInterval(FocusANode, 1000);
+		IsShowingTheNodes = true;
+	} else {
+		clearInterval(FocusAllTheNodesInterval);
+		network.fit();
+		IsShowingTheNodes = false;
+	}
 }
 
-function FocusANode(nodeId) {
-var options = {
-// position: {x:positionx,y:positiony}, // this is not relevant when focusing on nodes
-scale : 1,
-offset : {
-x : 0,
-y : 0
-},
-animation : {
-duration : 1000,
-easingFunction : "easeInOutQuad"
+function FocusANode() {
+	if (FocusAllTheNodesIndex === Object.keys(network.body.data.nodes._data).length) {
+		FocusAllTheNodesIndex = 0;
+		FocusAllNodes();
+	} else {
+		var FocusOptions = {
+			scale : 5,
+			offset : {
+				x : 0,
+				y : 0
+			},
+			animation : {
+				duration : 1000,
+				easingFunction : "easeInOutQuad"
+			}
+		};
+		nodeId = Object.keys(network.body.data.nodes._data)[FocusAllTheNodesIndex];
+		network.focus(nodeId, FocusOptions);
+		FocusAllTheNodesIndex++;
+	}
 }
-};
-network.focus(nodeId, options);
-}
-
-function GetNextNode(db, key) {
-for (var i = 0; i < db.length; i++) {
-if (db[i].key === key) {
-return db[i + 1] && db[i + 1].value;
-}
-}
-};
-*/

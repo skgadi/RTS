@@ -49,12 +49,12 @@
 <div id ="ToolbarDragging" class="w3-show-inline-block" style="position: absolute; top: 33px; left: 0; font-size: 1.5em;"><div class="w3-bar w3-theme">
 	<div style = "padding: 2px 2px; cursor: move;" class="w3-bar-item ToolbarDraggingHandle" title="Move toolbar"><i class="fas fa-grip-vertical"></i></div>
 	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-green">&nbsp;</div>
-	<button style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple" onclick="CreateNewFile()" title="New network"><i class="fas fa-file"></i></button>
-	<button style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple" onclick="PrepareNetworkToDownload()" title="Save this network"><i class="fas fa-save"></i></button>
-	<button style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple" onclick="OpenAFile()" title="Open a network"><i class="fas fa-folder-open"></i></button>
-	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-green">&nbsp;</div>
-	<button style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple" title="Settings"><i class="fas fa-cogs"></i></button>
-	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-green">&nbsp;</div>
+	<button style = "padding: 2px;" class="NetworkManuplation w3-bar-item w3-button w3-ripple" onclick="CreateNewFile()" title="New network"><i class="fas fa-file"></i></button>
+	<button style = "padding: 2px;" class="NetworkManuplation w3-bar-item w3-button w3-ripple" onclick="PrepareNetworkToDownload()" title="Save this network"><i class="fas fa-save"></i></button>
+	<button style = "padding: 2px;" class="NetworkManuplation w3-bar-item w3-button w3-ripple" onclick="ConfirmOpenFile()" title="Open a network"><i class="fas fa-folder-open"></i></button>
+	<div style = "padding: 2px 0px; cursor: default;" class="NetworkManuplation w3-bar-item w3-green">&nbsp;</div>
+	<button style = "padding: 2px;" class="NetworkManuplation w3-bar-item w3-button w3-ripple" title="Settings"><i class="fas fa-cogs"></i></button>
+	<div style = "padding: 2px 0px; cursor: default;" class="NetworkManuplation w3-bar-item w3-green">&nbsp;</div>
 	<button style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple"  title="Explore the execution order" onclick="FocusAllNodes()"><i class="far fa-eye"></i></button>
 	<button id = "Simulate" style = "padding: 2px;" class="w3-bar-item w3-button w3-ripple" onclick="SimulateTheNetwork()" title="Run/Stop simulation"><i class="fas fa-play"></i></button>
 </div></div>
