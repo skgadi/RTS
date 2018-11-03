@@ -667,6 +667,7 @@ function PrepareNetworkAfterOpenAction() {
 	Object.keys(network.body.data.nodes._data);
 	if (OpenOperationLoadingFilesIndex === Object.keys(network.body.data.nodes._data).length) {
 		SetViewAsLoaded();
+		network.fit();
 	} else {
 		SetViewAsLoading();
 		GSK_Data = network.body.data.nodes._data[Object.keys(network.body.data.nodes._data)[OpenOperationLoadingFilesIndex]];
@@ -675,7 +676,8 @@ function PrepareNetworkAfterOpenAction() {
 			.done(function (script, textStatus, jqxhr) {
 				CopyFuncsToBlock(eval(GSK_Data.gskExtra.VarName), GSK_Data.gskExtra);
 				console.log(GSK_Data.gskExtra);
-				network.manipulation.body.data.nodes.getDataSet().update(GSK_Data)
+				network.manipulation.body.data.nodes.getDataSet().update(GSK_Data);
+				GSK_Data.gskExtra.Constructor(GSK_Data);
 				OpenOperationLoadingFilesIndex++;
 				PrepareNetworkAfterOpenAction();
 			})
