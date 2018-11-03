@@ -113,10 +113,6 @@ var GSK_Mandatory_Items = {
 
 function destroy() {
 	if (network !== null) {
-		for (var TempNode in network.body.data.nodes._data) {
-			if (network.body.data.nodes._data[TempNode].gskExtra.Tab == "Sinks")
-				$("#Node_" + TempNode).remove();
-		}
 		network.destroy();
 		network = null;
 	}
@@ -255,7 +251,6 @@ function draw(data) {
 	};
 	network = new vis.Network(container, data, options);
 	network.on('doubleClick', function (properties) {
-		//console.log(properties);
 		if (SimulationState === "Design") {
 			if (properties.nodes.length == 1)
 				network.editNode();
@@ -271,204 +266,6 @@ function draw(data) {
 	});
 }
 
-function clearPopUp() {
-	dialog.dialog("close");
-}
-
-function cancelEdit(callback) {
-	clearPopUp();
-	callback(null);
-}
-
-function saveDataAndCheckEdges(data, callback) {
-	saveData(data, callback);
-	var NoOfOutputs = 0;
-	var NoOfInputs = 0;
-	var RemoveElement = false;
-	for (var element in network.body.edges) {
-		RemoveElement = false;
-		if (network.body.edges[element].fromId == data.id) {
-			NoOfOutputs++;
-			if (NoOfOutputs > data.gskExtra.MaxOutputs)
-				RemoveElement = true;
-		}
-		if (network.body.edges[element].toId == data.id) {
-			NoOfInputs++;
-			if (NoOfInputs > data.gskExtra.MaxInputs)
-				RemoveElement = true;
-		}
-		if (RemoveElement)
-			network.body.data.edges.remove({
-				id : element
-			});
-	};
-}
-
-function saveData(data, callback) {
-	var d = new Date();
-	var n = d.getTime();
-	data.gskExtra = {};
-	if (CurrentTab == "Sources") {
-		data.label = TempSourceNodeItem.String();
-		data.shape = "image";
-		data.image = TempSourceNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempSourceNodeItem);
-		data.gskExtra.MaxInputs = 0;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "Sinks") {
-		$("#Node_" + data.id).remove();
-		$("#SinksDialogs").append("<div id='Node_" + data.id + "' style='padding: 0px;' title='" + $("#SinksLabel").val() + "'><div id='Chart_" + data.id + "'></div></div>");
-		var TempImgId0,
-		TempImgId1;
-		if ($("#SinksXAxisType").val() == "LINEAR")
-			TempImgId0 = 0;
-		else
-			TempImgId0 = 1;
-		if ($("#SinksYAxisType").val() == "LINEAR")
-			TempImgId1 = 0;
-		else
-			TempImgId1 = 1;
-		data.gskExtra = {
-			Name : $("#SinksLabel").val(),
-			Image : "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
-			SinksPlotType : $("#SinksPlotType").val(),
-			SinksLineColor : $("#SinksLineColor").val(),
-			SinksLineType : $("#SinksLineType").val(),
-			SinksXAxisType : $("#SinksXAxisType").val(),
-			SinksYAxisType : $("#SinksYAxisType").val(),
-			MaxOutputs : 0,
-			DialogDiv : "Node_" + data.id,
-			ChartDiv : "Chart_" + data.id,
-			DialogID : "",
-			ChartID : "",
-			ChartData : "",
-			InputParams : [0],
-			PresentOut : [0],
-			String : function () {
-				return SinksLabel;
-			},
-			Init : function () {
-				this.DialogID = $("#" + this.DialogDiv).dialog({
-						closeOnEscape : true,
-						autoOpen : false,
-						height : 350,
-						width : 500,
-						modal : false,
-						resizable : true,
-					}).dialog("open");
-				//Chart Initialization
-				var options = {
-					legend : "none",
-					chartArea : {
-						height : ($("#" + this.DialogDiv).height() - 50),
-						width : ($("#" + this.DialogDiv).width() - 100),
-					},
-					height : $("#" + this.DialogDiv).height() - 7,
-					width : $("#" + this.DialogDiv).width(),
-				};
-				this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
-				this.ChartData = new google.visualization.DataTable();
-				this.ChartData.addColumn('number', 'Time');
-				this.ChartData.addColumn('number', this.Name);
-				this.ChartID.draw(this.ChartData, options);
-			},
-			Eval : function () {
-				var hAxis,
-				vAxis;
-				var LineStyle = [];
-				if (this.SinksXAxisType == "LOGARITHMIC")
-					hAxis = 'log';
-				else
-					hAxis = 'linear';
-				if (this.SinksYAxisType == "LOGARITHMIC")
-					vAxis = 'log';
-				else
-					vAxis = 'linear';
-				if (this.SinksLineType == "DASHED")
-					LineStyle = [10, 2];
-				else if (this.SinksLineType == "DOTTED")
-					LineStyle = [4, 4];
-				else
-					LineStyle = [0];
-				var options = {
-					legend : "none",
-					chartArea : {
-						height : ($("#" + this.DialogDiv).height() - 50),
-						width : ($("#" + this.DialogDiv).width() - 100),
-					},
-					series : {
-						0 : {
-							lineDashStyle : LineStyle,
-						}
-					},
-					colors : [this.SinksLineColor],
-					vAxis : {
-						scaleType : vAxis
-					},
-					hAxis : {
-						scaleType : hAxis
-					},
-					height : $("#" + this.DialogDiv).height() - 7,
-					width : $("#" + this.DialogDiv).width(),
-				};
-				//console.log(this.InputParams);
-				if (this.ChartData.getNumberOfRows() >= MaximumNoOfPointsToShow)
-					this.ChartData.removeRow(0);
-				if (this.SinksPlotType == "XYGRAPH")
-					this.ChartData.addRow([this.InputParams[0], this.InputParams[1]]);
-				else
-					this.ChartData.addRow([SimulationTime, this.InputParams[0]]);
-				if ((SimulationTime * 1000) % RefreshGraphsMS == 0)
-					this.ChartID.draw(this.ChartData, options);
-				return [0];
-			},
-		};
-		if ($("#SinksPlotType").val() == "XYGRAPH")
-			data.gskExtra.MaxInputs = 2;
-		else
-			data.gskExtra.MaxInputs = 1;
-		data.label = data.gskExtra.Name;
-		data.shape = "image";
-		data.image = data.gskExtra.Image;
-	} else if (CurrentTab == "Functions") {
-		data.label = TempFunctionNodeItem.String();
-		data.shape = "image";
-		data.image = TempFunctionNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempFunctionNodeItem);
-		data.gskExtra.MaxInputs = 1;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "Operators") {
-		data.label = TempOperatorNodeItem.String();
-		data.shape = "image";
-		data.image = TempOperatorNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempOperatorNodeItem);
-		data.gskExtra.MaxInputs = Infinity;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "TransferFunctions") {
-		data.label = TempTransferFunctionNodeItem.String();
-		data.shape = "image";
-		data.image = TempTransferFunctionNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempTransferFunctionNodeItem);
-		data.gskExtra.MaxInputs = 1;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "HardwareIOs") {
-		data.label = TempHardwareIONodeItem.String();
-		data.shape = "image";
-		data.image = TempHardwareIONodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempHardwareIONodeItem);
-	} else {
-		data.label = "Error: " + n;
-		data.gskExtra = {
-			MaxInputs : 1,
-			MaxOutputs : Infinity,
-		}
-	}
-	data.gskExtra.Tab = CurrentTab;
-	data.gskExtra.id = n;
-	clearPopUp();
-	callback(data);
-}
-var TempValue;
 function init() {
 	$.getScript('libs/libs.js')
 	.done(function (script, textStatus, jqxhr) {
@@ -535,6 +332,9 @@ $(document).ready(function () {
 			inlineMath : [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
+	/*window.onbeforeunload = (function () {
+	return true;
+	});*/
 	//Handsontable validator for complex number
 	(function (Handsontable) {
 		function GSK_Cell_ValidateInteger(query, callback) {
@@ -591,23 +391,21 @@ $(document).ready(function () {
 			$('form p').html($('form p').html() + "<br/>This file is too big, select another file.");
 		else {
 			readFileContent(this.files[0]).then(content => {
-				var TempData = JSON.parse2(content);
+				var TempData = Flatted.parse(content);
 				var TempNodes = [];
 				var TempEdges = [];
 				for (var TempNode in TempData.nodes._data)
-					TempNodes[TempNodes.length] = JSON.parse2(JSON.stringify2(TempData.nodes._data[TempNode]));
+					TempNodes[TempNodes.length] = Flatted.parse(Flatted.stringify(TempData.nodes._data[TempNode]));
 				for (var TempEdge in TempData.edges._data)
-					TempEdges[TempEdges.length] = JSON.parse2(JSON.stringify2(TempData.edges._data[TempEdge]));
-				console.log(TempNodes);
-				console.log(TempEdges);
+					TempEdges[TempEdges.length] = Flatted.parse(Flatted.stringify(TempData.edges._data[TempEdge]));
 				var NewData = {
 					nodes : new vis.DataSet(TempNodes),
 					edges : new vis.DataSet(TempEdges),
 				};
-				console.log(NewData);
 				draw(NewData);
+				PrepareNetworkAfterOpenAction();
 				$("#OpenFileDialog").dialog("close");
-			}).catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."))
+			});//.catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."));
 		}
 		$('form input').val("");
 	});
@@ -727,6 +525,7 @@ function SetGUIState(State) {
 		break;
 	}
 }
+
 function SelectLibraryTab(evt, TabId) {
 	//Set GUI state
 	SetGUIState("DisableLibraryAddButton");
@@ -788,7 +587,6 @@ function ValidateAndAddBlock(Block) {
 		var IsValid = true;
 		for (TempBlockItem in GSK_Mandatory_Items) {
 			if (typeof eval($(Block).attr('GSK_Var'))[TempBlockItem] !== GSK_Mandatory_Items[TempBlockItem]) {
-				console.log('Unable to find ' + TempBlockItem + ' as a ' + GSK_Mandatory_Items[TempBlockItem] + ' in ' + $(Block).attr('GSK_Var') + '.');
 				IsValid = false;
 			}
 		}
@@ -803,6 +601,8 @@ function ValidateAndAddBlock(Block) {
 
 function AddABlockToNetwork(Block) {
 	GSK_Data.gskExtra = CopyJSONForBlocks(eval($(Block).attr('GSK_Var')));
+	GSK_Data.gskExtra.FileName = $(Block).attr('GSK_File');
+	GSK_Data.gskExtra.VarName = $(Block).attr('GSK_Var');
 	GSK_Data.gskExtra.InputParams = [];
 	GSK_Data.gskExtra.PresentOut = [];
 	GSK_Data.label = GSK_Data.gskExtra.Label();
@@ -862,13 +662,37 @@ function PrepareParamsEditor() {
 	}
 }
 
+var OpenOperationLoadingFilesIndex = 0;
+function PrepareNetworkAfterOpenAction() {
+	Object.keys(network.body.data.nodes._data);
+	if (OpenOperationLoadingFilesIndex === Object.keys(network.body.data.nodes._data).length) {
+		SetViewAsLoaded();
+	} else {
+		SetViewAsLoading();
+		GSK_Data = network.body.data.nodes._data[Object.keys(network.body.data.nodes._data)[OpenOperationLoadingFilesIndex]];
+		if (eval("typeof " + GSK_Data.gskExtra.VarName + " === 'undefined'")) {
+			$.getScript(GSK_Data.gskExtra.FileName)
+			.done(function (script, textStatus, jqxhr) {
+				CopyFuncsToBlock(eval(GSK_Data.gskExtra.VarName), GSK_Data.gskExtra);
+				console.log(GSK_Data.gskExtra);
+				network.manipulation.body.data.nodes.getDataSet().update(GSK_Data)
+				OpenOperationLoadingFilesIndex++;
+				PrepareNetworkAfterOpenAction();
+			})
+			.fail(function (jqxhr, settings, exception) {
+				$.notify("Error in loading " + GSK_Data.gskExtra.FileName + ".", "error");
+			});
+		} else OpenOperationLoadingFilesIndex++
+	}
+}
+
 function PrepareMatrixToEditAParam(InputItem) {
 	InputItem = $(InputItem);
 	$('#GSK_Params_Mtx_Editor').empty();
 
 	var TempParamItem = GSK_Data_ExtrasCopy.Parameters[parseInt(InputItem.attr("GSKParamNum"))];
 	var TempSpreadSheetSettings = {
-		data : JSON.parse2(JSON.stringify2(TempParamItem.Value)),
+		data : Flatted.parse(Flatted.stringify(TempParamItem.Value)),
 		rowHeaders : true,
 		colHeaders : function (col) {
 			return (col + 1);
@@ -909,7 +733,6 @@ function PrepareMatrixToEditAParam(InputItem) {
 		];
 		break;
 	}
-	console.log(TempSpreadSheetSettings);
 	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), TempSpreadSheetSettings);
 
 	GSK_BtnsForMatrixEditorForParamsDialog = {
@@ -945,7 +768,7 @@ function PrepareMatrixToEditAParam(InputItem) {
 					}
 				}
 				if (TempIsValid) {
-					TempParamItem.Value = JSON.parse2(JSON.stringify2(GSK_MatrixEditor.getData()));
+					TempParamItem.Value = Flatted.parse(Flatted.stringify(GSK_MatrixEditor.getData()));
 					SetGUIState("RemoveMatrixEditorForParamsDialog");
 				} else
 					$.notify("Error in validating user input. Please correct the red cells.", "error");
@@ -960,132 +783,20 @@ function PrepareMatrixToEditAParam(InputItem) {
 	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 }
 
-function ValidateInputFor(InputItem) {
-	InputItem = $(InputItem);
-	console.log(InputItem);
-	var TempValid = "false";
-	switch (InputItem.attr("GSKParamType")) {
-	case "Number":
-		if (!isNaN(InputItem.val())) {
-			TempValid = "true";
-			InputItem.addClass("w3-border-theme").removeClass("w3-border-red");
-		} else
-			InputItem.addClass("w3-border-red").removeClass("w3-border-theme");
-		break;
+function CopyFuncsToBlock(FromBlock, ToBlock) {
+	for (var TempObject in FromBlock) {
+		if (typeof FromBlock[TempObject] === "function") {
+			ToBlock[TempObject] = FromBlock[TempObject];
+		}
 	}
-	InputItem.attr("GSKValid", TempValid);
-}
-
-function ExtractNumberAtEnd(Str) {
-	var matches = Str.match(/\d+$/);
-	if (matches)
-		return matches[0];
-	else
-		return 0;
 }
 
 function CopyJSONForBlocks(Source) {
 	var target;
 	target = Flatted.parse(Flatted.stringify(Source));
-	for (var TempObject in Source) {
-		if (typeof Source[TempObject] === "function") {
-			target[TempObject] = Source[TempObject];
-		}
-	}
+	CopyFuncsToBlock(Source, target);
 	return target;
 }
-
-// Taken from https://gist.github.com/kaustubh-karkare/6065251
-JSON.stringify2 = function (obj, replacer) {
-	if (typeof(reviver) !== "function")
-		replacer = undefined;
-	var reference = [],
-	replace = {};
-	(function (obj) {
-		if (typeof(obj) === "function" || obj === undefined)
-			return;
-		var i;
-		// if this element is already in the reference array, return the index
-		if ((i = reference.indexOf(obj)) !== -1)
-			return i;
-		// or else, push this element, and save the index, to be returned later
-		else
-			i = reference.push(obj) - 1;
-		// if this is an object (exceptions: RegExp & null)
-		if (obj && typeof(obj) === "object" && !(obj instanceof RegExp)) {
-			var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
-			// recursively process this object
-			for (var key in obj)
-				if (typeof(obj[key]) !== "function" && obj[key] !== undefined)
-					obj2[key] = arguments.callee(obj[key]);
-			// mark the original object for replacement later
-			replace[i] = obj2;
-		}
-		return i;
-	})(obj);
-	// replace the original objects in the reference array
-	for (var i in replace)
-		reference[i] = replace[i];
-	return JSON.stringify(reference, function (key, value) {
-		value = (replacer ? replacer(key, value) : value);
-		if (typeof(value) === "string")
-			return "S" + value;
-		else if (value !== value)
-			return "N"; // NaN
-		else if (value === Infinity)
-			return "I";
-		else if (value === -Infinity)
-			return "i";
-		else if (value instanceof RegExp)
-			return "R" + value.lastIndex + "/" + (value.ignoreCase ? "i" : "") +
-			(value.global ? "g" : "") + (value.multiline ? "m" : "") + "/" + value.source;
-		else
-			return value;
-	});
-};
-
-JSON.parse2 = function (obj_str, reviver) {
-	if (typeof(reviver) !== "function")
-		reviver = undefined;
-	var replace = {};
-	var reference = JSON.parse(obj_str, function (key, value) {
-			var result;
-			if (typeof(value) !== "string")
-				result = value;
-			else if (value[0] === "R") {
-				var i = value.indexOf("/"),
-				j = value.indexOf("/", i + 1);
-				k = new RegExp(value.substr(j + 1), value.substr(i + 1, j - i - 1));
-				k.lastIndex = parseInt(value.substr(1, i - 1));
-				result = k;
-			} else if (value[0] === "i")
-				result = -Infinity;
-			else if (value[0] === "I")
-				result = Infinity;
-			else if (value[0] === "N")
-				result = NaN;
-			else if (value[0] === "S")
-				result = value.substr(1);
-			else
-				throw new Error("Invalid Item");
-			return (reviver ? reviver(key, result) : result);
-		});
-	return (function (obj) {
-		// if the item is not an object or an array, return immediately
-		if (!obj || typeof(obj) !== "object" || obj instanceof RegExp)
-			return obj;
-		var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
-		// save a reference to new object corresponding to the index of the old one
-		replace[reference.indexOf(obj)] = obj2;
-		// if the item has not already been encountered, recursively process its components
-		for (var key in obj)
-			obj2[key] = replace[obj[key]] || arguments.callee(reference[obj[key]]);
-		return obj2;
-	})(reference[0]);
-};
-
-//$(".vis-manipulation").css("display", "none")
-//$(".vis-edit-mode").css("display", "none")
 
 function GetOrderOfExecution() {
 	if (network != null) {
@@ -1112,9 +823,6 @@ function GetOrderOfExecution() {
 		}
 	}
 	OrderOfExecution.reverse();
-	/*OrderOfExecution.forEach(function (TempNode) {
-	console.log(network.body.nodes[TempNode].options.label);
-	});*/
 }
 
 function SetProperView() {
@@ -1139,6 +847,11 @@ function SetProperView() {
 		$(".FileHandling").css("display", "none");
 
 	}
+}
+
+function SetViewAsLoading() {
+	SimulationState = "Loading";
+	SetProperView();
 }
 
 function SetViewAsLoaded() {
@@ -1176,15 +889,20 @@ function ExecuteFunctions() {
 		});
 		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
 	}
-	if ((RunSimulationForS>0) && (SimulationTime>=RunSimulationForS)) SimulateTheNetwork();
-	SimulationTime = math.round(SimulationTime + SamplingTimeMs/1000, 3);
+	if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
+		SimulateTheNetwork();
+	SimulationTime = math.round(SimulationTime + SamplingTimeMs / 1000, 3);
+}
+
+Date.prototype.FileFormat = function () {
+	return "GSK_" + this.getFullYear() + this.getMonth() + this.getDay() + this.getHours() + this.getMinutes() + this.getSeconds() + this.getMilliseconds() + ".rts";
 }
 
 function PrepareNetworkToDownload() {
-	var blob = new Blob([JSON.stringify2(network.body.data)], {
+	var blob = new Blob([Flatted.stringify(network.body.data)], {
 			type : "application/json"
 		});
-	saveAs(blob, "hello world.JSON");
+	saveAs(blob, (new Date()).FileFormat());
 }
 
 function readFileContent(file) {
