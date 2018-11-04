@@ -1,5 +1,5 @@
-var gsk_libs_sinks_linearlinear = {
-	Name : "Linear vs Linear",
+var gsk_libs_sinks_cartesiancoordinate = {
+	Name : "Cartesian coordinate system",
 	Parameters : [{
 			Name : "Scope type",
 			Type : "ScalarOptions",
@@ -132,6 +132,9 @@ var gsk_libs_sinks_linearlinear = {
 				scaleType : TempYAxisType,
 				format : '0.0E0',
 			},
+			/*explorer : {
+				actions : ['dragToZoom', 'rightClickToReset'],
+			},*/
 			series : TempSeries,
 			height : $("#" + this.DialogDiv).height() - 7,
 			backgroundColor : {

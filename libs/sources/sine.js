@@ -7,19 +7,19 @@ gsk_libs_sources_sine = {
 		}, {
 			Name : "Angular velocity $(\\omega)$",
 			Type : "MatComplex",
-			Value : [[1]]
+			Value : [["2*pi*1"]]
 		}, {
 			Name : "Phase $(\\phi)$",
 			Type : "MatComplex",
-			Value : [[1]]
+			Value : [[0]]
 		}, {
 			Name : "Offset $(O)$",
 			Type : "MatComplex",
 			Value : [[0]]
 		},
 	],
-	MaxInTerminals : 1,
-	MaxOutTerminals : 99999,
+	MaxInTerminals : 0,
+	MaxOutTerminals : MaxOutTerminalsAllowedToUse,
 	Icon : function () {
 		return "images/tex/sources-figure1.png"
 	},
@@ -28,25 +28,21 @@ gsk_libs_sources_sine = {
 		var Compiled_omega=[];
 		var Compiled_phi=[];
 		var Compiled_O=[];
-		this.PresentOut = [];
 		for (var i=0; i<this.Parameters[0].Value.length; i++) {
 			var Temp_A = [];
 			var Temp_omega = [];
 			var Temp_phi = [];
 			var Temp_O = [];
-			var Temp_PresentOut = [];
 			for (var j=0; j<this.Parameters[0].Value[0].length; j++) {
 				Temp_A.push(math.eval(this.Parameters[0].Value[i][j]));
 				Temp_omega.push(math.eval(this.Parameters[1].Value[i][j]));
 				Temp_phi.push(math.eval(this.Parameters[2].Value[i][j]));
 				Temp_O.push(math.eval(this.Parameters[3].Value[i][j]));
-				Temp_PresentOut.push(0);
 			}
 			Compiled_A.push(Temp_A);
 			Compiled_omega.push(Temp_omega);
 			Compiled_phi.push(Temp_phi);
 			Compiled_O.push(Temp_O);
-			this.PresentOut.push(Temp_PresentOut);
 		}
 		this.CompiledParams = [Compiled_A, Compiled_omega, Compiled_phi, Compiled_O];
 		this.PresentOut = math.zeros(Compiled_A.length, Compiled_A[0].length)._data;
@@ -73,7 +69,7 @@ gsk_libs_sources_sine = {
 		var ValidateText = this.ValidateParams();
 		if (ValidateText === 'OK') {
 			var StrOut;
-			StrOut = "$y(t) = \\begin{bmatrix}";
+			StrOut = "$Y(t) = \\begin{bmatrix}";
 			for (var i=0; i<A.length; i++) {
 				for (var j=0; j<A[0].length; j++) {
 					if (j!==0) StrOut += "&";
@@ -90,9 +86,9 @@ gsk_libs_sources_sine = {
 		var omega = this.Parameters[1].Value;
 		var phi = 	this.Parameters[2].Value;
 		var O = 	this.Parameters[3].Value;
-		if ((A.length !== omega.length) || (A[0].length !== omega[0].length)) return "Dimentions of A is different from ω";
-		if ((A.length !== phi.length) || (A[0].length !== phi[0].length)) return "Dimentions of A is different from ϕ";
-		if ((A.length !== O.length) || (A[0].length !== O[0].length)) return "Dimentions of A is different from O";
+		if ((A.length !== omega.length) || (A[0].length !== omega[0].length)) return "Dimentions of $A$ is different from $\\omega$";
+		if ((A.length !== phi.length) || (A[0].length !== phi[0].length)) return "Dimentions of $A$ is different from $\\phi$";
+		if ((A.length !== O.length) || (A[0].length !== O[0].length)) return "Dimentions of $A$ is different from $O$";
 		return "OK";
 	},
 }
