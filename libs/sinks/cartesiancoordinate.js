@@ -80,6 +80,7 @@ var gsk_libs_sinks_cartesiancoordinate = {
 		return this.Parameters[3].Value[0][0];
 	},
 	Init : function () {
+		this.InputParams = [];
 		this.DialogID = $("#" + this.DialogDiv).dialog({
 				closeOnEscape : true,
 				autoOpen : false,

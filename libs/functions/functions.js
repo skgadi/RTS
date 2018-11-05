@@ -11,12 +11,12 @@ var gsk_libs_functions = {
 		Name: "Gain",
 		Icon: "images/tex/functions-figure2.png",
 	},
-	sine: {
+	/*sine: {
 		Name: "Sine",
 		Icon: "images/tex/functions-figure3.png",
 	},
 	cosine: {
 		Name: "Cosine",
 		Icon: "images/tex/functions-figure4.png",
-	},
+	},*/
 };

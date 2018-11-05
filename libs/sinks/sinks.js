@@ -3,4 +3,8 @@ var gsk_libs_sinks = {
 		Name: "Cartesian coordinate system",
 		Icon: "images/tex/sinks-figure0.png",
 	},
+	display: {
+		Name: "Display",
+		Icon: "images/tex/sinks-figure4.png",
+	},
 };
