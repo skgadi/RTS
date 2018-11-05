@@ -20,8 +20,15 @@ gsk_libs_sources_rectangular = {
 			Name : "Offset $(O)$",
 			Type : "MatComplex",
 			Value : [[0]]
+		}, {
+			Name : "Label",
+			Type : "ScalarText",
+			Value : [["Rectangular wave"]]
 		},
 	],
+	Label : function () {
+		return this.Parameters[5].Value[0][0];
+	},
 	MaxInTerminals : 0,
 	MaxOutTerminals : MaxOutTerminalsAllowedToUse,
 	Icon : function () {
@@ -78,9 +85,6 @@ gsk_libs_sources_rectangular = {
 			}
 		}
 		return math.add(math.dotMultiply(A, TempMat), O);
-	},
-	Label : function () {
-		return "Rectangular wave";
 	},
 	Details : function () {
 		var A = this.Parameters[0].Value;

@@ -16,8 +16,15 @@ gsk_libs_sources_triangular = {
 			Name : "Offset $(O)$",
 			Type : "MatComplex",
 			Value : [[0]]
+		}, {
+			Name : "Label",
+			Type : "ScalarText",
+			Value : [["Triangular wave"]]
 		},
 	],
+	Label : function () {
+		return this.Parameters[4].Value[0][0];
+	},
 	MaxInTerminals : 0,
 	MaxOutTerminals : MaxOutTerminalsAllowedToUse,
 	Icon : function () {
@@ -78,9 +85,6 @@ gsk_libs_sources_triangular = {
 			}
 		}
 		return math.add(math.dotMultiply(A, TempMat), O);
-	},
-	Label : function () {
-		return "Triangular wave";
 	},
 	Details : function () {
 		var A = 	this.Parameters[0].Value;

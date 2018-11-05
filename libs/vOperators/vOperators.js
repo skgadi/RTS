@@ -1,10 +1,10 @@
 var gsk_libs_vOperators = {
-	sum: {
-		Name: "Summation",
-		Icon: "images/tex/operators-figure0.png",
+	concathorizontal: {
+		Name: "Concatenate matrix (horizontal)",
+		Icon: "images/tex/vOperators-figure0.png",
 	},
-	product: {
-		Name: "Product",
-		Icon: "images/tex/operators-figure1.png",
+	concatvertical: {
+		Name: "Concatenate matrix (vertical)",
+		Icon: "images/tex/vOperators-figure1.png",
 	},
 };

@@ -16,8 +16,15 @@ gsk_libs_sources_sine = {
 			Name : "Offset $(O)$",
 			Type : "MatComplex",
 			Value : [[0]]
+		}, {
+			Name : "Label",
+			Type : "ScalarText",
+			Value : [["Sine"]]
 		},
 	],
+	Label : function () {
+		return this.Parameters[4].Value[0][0];
+	},
 	MaxInTerminals : 0,
 	MaxOutTerminals : MaxOutTerminalsAllowedToUse,
 	Icon : function () {
@@ -57,9 +64,6 @@ gsk_libs_sources_sine = {
 		var phi = this.CompiledParams[2];
 		var O = this.CompiledParams[3];
 		return math.add(math.dotMultiply(A, math.sin(math.add(math.dotMultiply(SimulationTime, omega), phi))),O);
-	},
-	Label : function () {
-		return "Sine wave";
 	},
 	Details : function () {
 		var A = 	this.Parameters[0].Value;

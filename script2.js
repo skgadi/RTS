@@ -20,7 +20,19 @@ var MaximumNoOfPointsToShow = 300;
 var MaximumFileSize = 2 * 1024 * 1024;
 var RunSimulationForS = 5;
 var LoadByIgnoringCache;
+var MaxInTerminalsAllowedToUse = 99999;
 var MaxOutTerminalsAllowedToUse = 99999;
+var ShowNodeFocusOptions = {
+	scale : 5,
+	offset : {
+		x : 0,
+		y : 0
+	},
+	animation : {
+		duration : 1000,
+		easingFunction : "easeInOutQuad"
+	}
+};
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
 GSK_Colors = ['AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'Black', 'BlanchedAlmond', 'Blue', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGrey', 'DarkGreen', 'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon', 'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkSlateGrey', 'DarkTurquoise', 'DarkViolet', 'DeepPink', 'DeepSkyBlue', 'DimGray', 'DimGrey', 'DodgerBlue', 'FireBrick', 'FloralWhite', 'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod', 'Gray', 'Grey', 'Green', 'GreenYellow', 'HoneyDew', 'HotPink', 'IndianRed ', 'Indigo ', 'Ivory', 'Khaki', 'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue', 'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey', 'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue', 'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime', 'LimeGreen', 'Linen', 'Magenta', 'Maroon', 'MediumAquaMarine', 'MediumBlue', 'MediumOrchid', 'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen', 'MediumTurquoise', 'MediumVioletRed', 'MidnightBlue', 'MintCream', 'MistyRose', 'Moccasin', 'NavajoWhite', 'Navy', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed', 'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed', 'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple', 'RebeccaPurple', 'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Salmon', 'SandyBrown', 'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue', 'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'Tan', 'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White', 'WhiteSmoke', 'Yellow', 'YellowGreen',
 ]
@@ -219,15 +231,24 @@ function draw(data) {
 					if (data.to == network.body.edges[element].toId)
 						NoOfInputs++;
 				};
-				if (
-					(network.body.nodes[data.from].options.gskExtra.MaxOutTerminals > NoOfOutputs)
-					 &&
-					(network.body.nodes[data.to].options.gskExtra.MaxInTerminals > NoOfInputs)
-					 &&
-					data.from != data.to)
+				var TempIsValidNewEdge = true;
+				var TempErrorMessage = "";
+				if (NoOfOutputs >= network.body.nodes[data.from].options.gskExtra.MaxOutTerminals) {
+					TempIsValidNewEdge = false;
+					TempErrorMessage += "\nThe origin block cannot generate more output.";
+				}
+				if (NoOfInputs >= network.body.nodes[data.to].options.gskExtra.MaxInTerminals) {
+					TempIsValidNewEdge = false;
+					TempErrorMessage += "\nThe destination block cannot take more inputs.";
+				}
+				if (data.from === data.to) {
+					TempIsValidNewEdge = false;
+					TempErrorMessage += "\nYou cannot connect the same block to itself. Use an unit gain instead.";
+				}
+				if (TempIsValidNewEdge)
 					callback(data);
 				else {
-					$.notify("This connection is not allowed", "warn");
+					$.notify("This connection is not allowed:" + TempErrorMessage, "error");
 					callback(null);
 				}
 			},
@@ -271,7 +292,7 @@ function draw(data) {
 
 function init() {
 	LoadByIgnoringCache = "?cache=" + (new Date()).UniqueMSNumber();
-	$.getScript('libs/libs.js'+LoadByIgnoringCache)
+	$.getScript('libs/libs.js' + LoadByIgnoringCache)
 	.done(function (script, textStatus, jqxhr) {
 		try {
 			for (var TempTabs in gsk_libs) {
@@ -604,7 +625,7 @@ function SelectLibraryTab(evt, TabId) {
 	$("#GSK_Lib_Functions").empty();
 	if (gsk_libs[TabId].Loaded != true) {
 		SetGUIState("SuspendGUIDialog");
-		$.getScript('libs/' + TabId + '/' + TabId + '.js'+LoadByIgnoringCache)
+		$.getScript('libs/' + TabId + '/' + TabId + '.js' + LoadByIgnoringCache)
 		.done(function (script, textStatus, jqxhr, TempTabId = TabId) {
 			try {
 				gsk_libs[TempTabId].Loaded = true;
@@ -633,7 +654,7 @@ function AddLibraryTabMainSelect(TabId) {
 
 function PrepareAndAddBlock(Block) {
 	if (eval("typeof " + $(Block).attr('GSK_Var')) === 'undefined') {
-		$.getScript($(Block).attr('GSK_File')+LoadByIgnoringCache)
+		$.getScript($(Block).attr('GSK_File') + LoadByIgnoringCache)
 		.done(function (script, textStatus, jqxhr, TempBlock = Block) {
 			ValidateAndAddBlock(TempBlock);
 		})
@@ -651,13 +672,16 @@ function ValidateAndAddBlock(Block) {
 		for (TempBlockItem in GSK_Mandatory_Items) {
 			if (typeof eval($(Block).attr('GSK_Var'))[TempBlockItem] !== GSK_Mandatory_Items[TempBlockItem]) {
 				IsValid = false;
+				console.log("Unable to load the mandatory " + GSK_Mandatory_Items[TempBlockItem] + " from the member " + TempBlockItem);
 			}
 		}
 		if (IsValid)
 			AddABlockToNetwork(Block);
-		else
+		else {
 			$.notify("Error in validating " + $(Block).attr('GSK_Var') + ".", "error");
+		}
 	} catch (err) {
+		console.log(err);
 		$.notify("Error in processing " + $(Block).attr('GSK_Var') + ".", "error");
 	}
 }
@@ -737,7 +761,7 @@ function PrepareNetworkAfterOpenAction() {
 		SetViewAsLoading();
 		GSK_Data = network.body.data.nodes._data[Object.keys(network.body.data.nodes._data)[OpenOperationLoadingFilesIndex]];
 		if (eval("typeof " + GSK_Data.gskExtra.VarName + " === 'undefined'")) {
-			$.getScript(GSK_Data.gskExtra.FileName+LoadByIgnoringCache)
+			$.getScript(GSK_Data.gskExtra.FileName + LoadByIgnoringCache)
 			.done(function (script, textStatus, jqxhr) {
 				LoadABlockFromOpenFileContext();
 			})
@@ -912,19 +936,27 @@ function RunSimulation() {
 }
 
 function ExecuteFunctions() {
-	for (var i = 0; i < OrderOfExecution.length; i++) {
-		var TempArrayIndex = 0;
-		network.body.nodes[OrderOfExecution[i]].edges.forEach(function (TempEdge) {
-			if (TempEdge.toId == OrderOfExecution[i]) {
-				network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams[TempArrayIndex] = network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut;
-				TempArrayIndex++;
-			}
-		});
-		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
-	}
-	if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
+	var i;
+	try {
+		for (i = 0; i < OrderOfExecution.length; i++) {
+			var TempArrayIndex = 0;
+			network.body.nodes[OrderOfExecution[i]].edges.forEach(function (TempEdge) {
+				if (TempEdge.toId == OrderOfExecution[i]) {
+					network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams[TempArrayIndex] = network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut;
+					TempArrayIndex++;
+				}
+			});
+			network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
+		}
+		if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
+			SimulateTheNetwork();
+		SimulationTime = math.round(SimulationTime + SamplingTimeMs / 1000, 3);
+	} catch (err) {
+		network.focus(OrderOfExecution[i], ShowNodeFocusOptions);
+		$.notify("Error in simulating this network.", "error");
+		console.log(err);
 		SimulateTheNetwork();
-	SimulationTime = math.round(SimulationTime + SamplingTimeMs / 1000, 3);
+	}
 }
 
 Date.prototype.FileFormat = function () {
@@ -999,19 +1031,8 @@ function FocusANode() {
 			}
 		});
 	} else {
-		var FocusOptions = {
-			scale : 5,
-			offset : {
-				x : 0,
-				y : 0
-			},
-			animation : {
-				duration : 1000,
-				easingFunction : "easeInOutQuad"
-			}
-		};
 		nodeId = OrderOfExecution[FocusAllTheNodesIndex];
-		network.focus(nodeId, FocusOptions);
+		network.focus(nodeId, ShowNodeFocusOptions);
 		setTimeout(function () {
 			network.fit({
 				nodes : OrderOfExecution,

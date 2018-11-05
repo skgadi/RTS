@@ -16,8 +16,15 @@ gsk_libs_sources_sawtooth = {
 			Name : "Offset $(O)$",
 			Type : "MatComplex",
 			Value : [[0]]
+		}, {
+			Name : "Label",
+			Type : "ScalarText",
+			Value : [["Sawtooth wave"]]
 		},
 	],
+	Label : function () {
+		return this.Parameters[4].Value[0][0];
+	},
 	MaxInTerminals : 0,
 	MaxOutTerminals : MaxOutTerminalsAllowedToUse,
 	Icon : function () {
@@ -71,9 +78,6 @@ gsk_libs_sources_sawtooth = {
 			}
 		}
 		return math.add(math.dotMultiply(A, TempMat), O);
-	},
-	Label : function () {
-		return "Sawtooth wave";
 	},
 	Details : function () {
 		var A = 	this.Parameters[0].Value;

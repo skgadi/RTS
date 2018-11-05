@@ -12,8 +12,15 @@ gsk_libs_sources_step = {
 			Name : "Offset $(O)$",
 			Type : "MatComplex",
 			Value : [[0]]
+		}, {
+			Name : "Label",
+			Type : "ScalarText",
+			Value : [["Step"]]
 		},
 	],
+	Label : function () {
+		return this.Parameters[3].Value[0][0];
+	},
 	MaxInTerminals : 0,
 	MaxOutTerminals : MaxOutTerminalsAllowedToUse,
 	Icon : function () {
@@ -61,9 +68,6 @@ gsk_libs_sources_step = {
 			}
 		}
 		return math.add(math.dotMultiply(A,TempMat), O);
-	},
-	Label : function () {
-		return "Step";
 	},
 	Details : function () {
 		var A = 	this.Parameters[0].Value;

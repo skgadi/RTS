@@ -1,4 +1,8 @@
 var gsk_libs_sources = {
+	constant: {
+		Name: "Constant",
+		Icon: "images/tex/sources-figure5.png",
+	},
 	step: {
 		Name: "Step",
 		Icon: "images/tex/sources-figure0.png",
@@ -18,5 +22,9 @@ var gsk_libs_sources = {
 	rectangular: {
 		Name: "Rectangular wave",
 		Icon: "images/tex/sources-figure4.png",
+	},
+	random: {
+		Name: "Random",
+		Icon: "images/tex/sources-figure6.png",
 	},
 };
