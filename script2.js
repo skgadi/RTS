@@ -22,8 +22,19 @@ var RunSimulationForS = 5;
 var LoadByIgnoringCache;
 var MaxInTerminalsAllowedToUse = 99999;
 var MaxOutTerminalsAllowedToUse = 99999;
-var ShowNodeFocusOptions = {
+var ShowNodeFocusInOptions = {
 	scale: 5,
+	offset: {
+		x: 0,
+		y: 0
+	},
+	animation: {
+		duration: 1000,
+		easingFunction: "easeInOutQuad"
+	}
+};
+var ShowNodeFocusOutOptions = {
+	scale: 2,
 	offset: {
 		x: 0,
 		y: 0
@@ -1182,16 +1193,10 @@ function FocusANode() {
 		});
 	} else {
 		nodeId = OrderOfExecution[FocusAllTheNodesIndex];
-		network.focus(nodeId, ShowNodeFocusOptions);
+		network.focus(nodeId, ShowNodeFocusInOptions);
 		setTimeout(function () {
-			network.fit({
-				nodes: OrderOfExecution,
-				animation: {
-					duration: 1000,
-					easingFunction: "easeInOutQuad",
-				}
-			});
+			network.focus(nodeId, ShowNodeFocusOutOptions);
+			FocusAllTheNodesIndex++;
 		}, 1000);
-		FocusAllTheNodesIndex++;
 	}
 }
