@@ -23,87 +23,87 @@ var LoadByIgnoringCache;
 var MaxInTerminalsAllowedToUse = 99999;
 var MaxOutTerminalsAllowedToUse = 99999;
 var ShowNodeFocusOptions = {
-	scale : 5,
-	offset : {
-		x : 0,
-		y : 0
+	scale: 5,
+	offset: {
+		x: 0,
+		y: 0
 	},
-	animation : {
-		duration : 1000,
-		easingFunction : "easeInOutQuad"
+	animation: {
+		duration: 1000,
+		easingFunction: "easeInOutQuad"
 	}
 };
 var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
 GSK_Colors = ['AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'Black', 'BlanchedAlmond', 'Blue', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGrey', 'DarkGreen', 'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon', 'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkSlateGrey', 'DarkTurquoise', 'DarkViolet', 'DeepPink', 'DeepSkyBlue', 'DimGray', 'DimGrey', 'DodgerBlue', 'FireBrick', 'FloralWhite', 'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod', 'Gray', 'Grey', 'Green', 'GreenYellow', 'HoneyDew', 'HotPink', 'IndianRed ', 'Indigo ', 'Ivory', 'Khaki', 'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue', 'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey', 'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue', 'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime', 'LimeGreen', 'Linen', 'Magenta', 'Maroon', 'MediumAquaMarine', 'MediumBlue', 'MediumOrchid', 'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen', 'MediumTurquoise', 'MediumVioletRed', 'MidnightBlue', 'MintCream', 'MistyRose', 'Moccasin', 'NavajoWhite', 'Navy', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed', 'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed', 'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple', 'RebeccaPurple', 'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Salmon', 'SandyBrown', 'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue', 'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'Tan', 'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White', 'WhiteSmoke', 'Yellow', 'YellowGreen',
 ]
 var GSK_Parameter_Types = {
-	"ScalarOptions" : {
-		"Size" : "Scalar",
-		"Type" : "Options",
+	"ScalarOptions": {
+		"Size": "Scalar",
+		"Type": "Options",
 	},
-	"VectOptions" : {
-		"Size" : "Vector",
-		"Type" : "Options",
+	"VectOptions": {
+		"Size": "Vector",
+		"Type": "Options",
 	},
 	/*"MatOptions" : {
 	"Size" : "Matrix",
 	"Type" : "Options",
 	},*/
-	"ScalarInteger" : {
-		"Size" : "Scalar",
-		"Type" : "Integer",
+	"ScalarInteger": {
+		"Size": "Scalar",
+		"Type": "Integer",
 	},
-	"VectInteger" : {
-		"Size" : "Vector",
-		"Type" : "Integer",
+	"VectInteger": {
+		"Size": "Vector",
+		"Type": "Integer",
 	},
-	"MatInteger" : {
-		"Size" : "Matrix",
-		"Type" : "Integer",
+	"MatInteger": {
+		"Size": "Matrix",
+		"Type": "Integer",
 	},
-	"ScalarReal" : {
-		"Size" : "Scalar",
-		"Type" : "Real",
+	"ScalarReal": {
+		"Size": "Scalar",
+		"Type": "Real",
 	},
-	"VectReal" : {
-		"Size" : "Vector",
-		"Type" : "Real",
+	"VectReal": {
+		"Size": "Vector",
+		"Type": "Real",
 	},
-	"MatReal" : {
-		"Size" : "Matrix",
-		"Type" : "Real",
+	"MatReal": {
+		"Size": "Matrix",
+		"Type": "Real",
 	},
-	"ScalarComplex" : {
-		"Size" : "Scalar",
-		"Type" : "Complex",
+	"ScalarComplex": {
+		"Size": "Scalar",
+		"Type": "Complex",
 	},
-	"VectComplex" : {
-		"Size" : "Vector",
-		"Type" : "Complex",
+	"VectComplex": {
+		"Size": "Vector",
+		"Type": "Complex",
 	},
-	"MatComplex" : {
-		"Size" : "Matrix",
-		"Type" : "Complex",
+	"MatComplex": {
+		"Size": "Matrix",
+		"Type": "Complex",
 	},
-	"ScalarText" : {
-		"Size" : "Scalar",
-		"Type" : "Text",
+	"ScalarText": {
+		"Size": "Scalar",
+		"Type": "Text",
 	},
-	"VectText" : {
-		"Size" : "Vector",
-		"Type" : "Text",
+	"VectText": {
+		"Size": "Vector",
+		"Type": "Text",
 	},
-	"MatText" : {
-		"Size" : "Matrix",
-		"Type" : "Text",
+	"MatText": {
+		"Size": "Matrix",
+		"Type": "Text",
 	},
-	"ScalarColor" : {
-		"Size" : "Scalar",
-		"Type" : "Color",
+	"ScalarColor": {
+		"Size": "Scalar",
+		"Type": "Color",
 	},
-	"VectColor" : {
-		"Size" : "Vector",
-		"Type" : "Color",
+	"VectColor": {
+		"Size": "Vector",
+		"Type": "Color",
 	},
 	/*"MatColor" : {
 	"Size" : "Matrix",
@@ -111,19 +111,19 @@ var GSK_Parameter_Types = {
 	},*/
 };
 var GSK_Mandatory_Items = {
-	"Constructor" : "function",
-	"Destructor" : "function",
-	"Details" : "function",
-	"End" : "function",
-	"Evaluate" : "function",
-	"Init" : "function",
-	"Label" : "function",
-	"MaxInTerminals" : "number",
-	"MaxOutTerminals" : "number",
-	"Name" : "string",
-	"Parameters" : "object",
-	"RunTimeExec" : "function",
-	"ValidateParams" : "function",
+	"Constructor": "function",
+	"Destructor": "function",
+	"Details": "function",
+	"End": "function",
+	"Evaluate": "function",
+	"Init": "function",
+	"Label": "function",
+	"MaxInTerminals": "number",
+	"MaxOutTerminals": "number",
+	"Name": "string",
+	"Parameters": "object",
+	"RunTimeExec": "function",
+	"ValidateParams": "function",
 };
 
 function destroy() {
@@ -143,86 +143,86 @@ function draw(data) {
 	// create a network
 	container = document.getElementById('mynetwork');
 	NetworkOptions = {
-		locale : "gsk",
-		locales : {
-			"gsk" : {
-				edit : 'Edit',
-				del : 'Delete selected',
-				back : 'Back',
-				addNode : 'Add block',
-				addEdge : 'New connection',
-				editNode : 'Edit block',
-				editEdge : 'Edit connection',
-				addDescription : 'Click in an empty space to place a new block.',
-				edgeDescription : 'Click on a block and drag the connection to another block to connect them.',
-				editEdgeDescription : 'Click on the control points and drag them to a block to connect to it.',
-				createEdgeError : 'Cannot connect to a cluster.',
-				deleteClusterError : 'Clusters cannot be deleted.',
-				editClusterError : 'Clusters cannot be edited.'
+		locale: "gsk",
+		locales: {
+			"gsk": {
+				edit: 'Edit',
+				del: 'Delete selected',
+				back: 'Back',
+				addNode: 'Add block',
+				addEdge: 'New connection',
+				editNode: 'Edit block',
+				editEdge: 'Edit connection',
+				addDescription: 'Click in an empty space to place a new block.',
+				edgeDescription: 'Click on a block and drag the connection to another block to connect them.',
+				editEdgeDescription: 'Click on the control points and drag them to a block to connect to it.',
+				createEdgeError: 'Cannot connect to a cluster.',
+				deleteClusterError: 'Clusters cannot be deleted.',
+				editClusterError: 'Clusters cannot be edited.'
 			}
 		},
-		interaction : {
-			navigationButtons : true,
-			keyboard : false,
+		interaction: {
+			navigationButtons: true,
+			keyboard: false,
 		},
-		nodes : {
-			shape : 'box',
-			color : {
-				border : '#000000',
-				background : "#ffffff",
+		nodes: {
+			shape: 'box',
+			color: {
+				border: '#000000',
+				background: "#ffffff",
 			},
-			font : {
-				color : '#000000',
+			font: {
+				color: '#000000',
 			},
 		},
-		edges : {
-			color : {
-				color : '#000000',
+		edges: {
+			color: {
+				color: '#000000',
 			},
-			arrows : {
-				to : {
-					enabled : true,
-					scaleFactor : 1,
-					type : 'arrow'
+			arrows: {
+				to: {
+					enabled: true,
+					scaleFactor: 1,
+					type: 'arrow'
 				}
 			},
 		},
-		physics : {
-			enabled : true,
-			solver : 'barnesHut',
-			barnesHut : {
-				centralGravity : 0,
-				springLength : 0,
-				avoidOverlap : 1,
-				damping : 1,
-				springConstant : 0.00,
-				gravitationalConstant : -1,
+		physics: {
+			enabled: true,
+			solver: 'barnesHut',
+			barnesHut: {
+				centralGravity: 0,
+				springLength: 0,
+				avoidOverlap: 1,
+				damping: 1,
+				springConstant: 0.00,
+				gravitationalConstant: -1,
 			},
-			forceAtlas2Based : {
-				springLength : 50,
-				springConstant : 0,
-				avoidOverlap : 1,
-				centralGravity : 0.00,
-				gravitationalConstant : -1
+			forceAtlas2Based: {
+				springLength: 50,
+				springConstant: 0,
+				avoidOverlap: 1,
+				centralGravity: 0.00,
+				gravitationalConstant: -1
 			},
 		},
-		manipulation : {
-			initiallyActive : true,
-			addNode : function (data, callback) {
+		manipulation: {
+			initiallyActive: true,
+			addNode: function (data, callback) {
 				GSK_Data = data;
 				GSK_Callback = callback;
 				LibraryDialog.dialog("open");
 			},
-			editNode : function (data, callback) {
+			editNode: function (data, callback) {
 				GSK_Data = data;
 				GSK_Callback = callback;
 				PrepareParamsEditor();
 			},
-			deleteNode : function (data, callback) {
+			deleteNode: function (data, callback) {
 				network.body.nodes[data.nodes[0]].options.gskExtra.Destructor(data);
 				callback(data);
 			},
-			addEdge : function (data, callback) {
+			addEdge: function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -253,7 +253,7 @@ function draw(data) {
 					callback(null);
 				}
 			},
-			editEdge : function (data, callback) {
+			editEdge: function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -300,34 +300,34 @@ function init() {
 				$("#GSK_Lib_Head").append("<button style='border: 2px black dashed; width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \" title='" + gsk_libs[TempTabs].Name + "'> <img src='" + gsk_libs[TempTabs].Icon + "' style='height: 2em;'/></button>");
 			}
 			LibraryDialog = $("#GSK_Library").dialog({
-					closeOnEscape : true,
-					autoOpen : false,
-					height : 400,
-					width : 500,
-					modal : true,
-					resizable : false,
-					open : function () {
+					closeOnEscape: true,
+					autoOpen: false,
+					height: 400,
+					width: 500,
+					modal: true,
+					resizable: false,
+					open: function () {
 						$(".ui-dialog").css("padding", "0px");
 						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
 						SetGUIState("DisableLibraryAddButton");
 					},
-					close : function (event, ui) {
+					close: function (event, ui) {
 						GSK_Callback(null);
 					}
 				});
 			ParametersEditorDialog = $("#GSK_Params_Editor").dialog({
-					closeOnEscape : false,
-					autoOpen : false,
-					height : 400,
-					width : 500,
-					modal : true,
-					resizable : false,
-					open : function () {
+					closeOnEscape: false,
+					autoOpen: false,
+					height: 400,
+					width: 500,
+					modal: true,
+					resizable: false,
+					open: function () {
 						$(".ui-dialog").css("padding", "0px");
 						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
 						SetGUIState("DisableLibraryAddButton");
 					},
-					close : function (event, ui) {
+					close: function (event, ui) {
 						GSK_Callback(null);
 					}
 				});
@@ -341,7 +341,7 @@ function init() {
 	});
 	ResetNetwork();
 	google.charts.load('current', {
-		'packages' : ['corechart']
+		'packages': ['corechart']
 	});
 	google.charts.setOnLoadCallback(SetViewAsLoaded);
 }
@@ -349,13 +349,13 @@ function init() {
 $(document).ready(function () {
 	//MathJax setup
 	MathJax.Hub.Config({
-		menuSettings : {
-			inTabOrder : false
+		menuSettings: {
+			inTabOrder: false
 		},
-		extensions : ["tex2jax.js"],
-		jax : ["input/TeX", "output/HTML-CSS"],
-		tex2jax : {
-			inlineMath : [["$", "$"], ["\\(", "\\)"]]
+		extensions: ["tex2jax.js"],
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
 	/*window.onbeforeunload = (function () {
@@ -418,43 +418,116 @@ $(document).ready(function () {
 		else {
 			readFileContent(this.files[0]).then(content => {
 				var TempData = Flatted.parse(content);
-				var TempNodes = [];
-				var TempEdges = [];
-				for (var TempNode in TempData.nodes._data)
-					TempNodes[TempNodes.length] = Flatted.parse(Flatted.stringify(TempData.nodes._data[TempNode]));
-				for (var TempEdge in TempData.edges._data)
-					TempEdges[TempEdges.length] = Flatted.parse(Flatted.stringify(TempData.edges._data[TempEdge]));
 				var NewData = {
-					nodes : new vis.DataSet(TempNodes),
-					edges : new vis.DataSet(TempEdges),
+					nodes: getNodeData(TempData),
+					edges: getEdgeData(TempData),
 				};
 				draw(NewData);
 				PrepareNetworkAfterOpenAction();
 				$("#OpenFileDialog").dialog("close");
-			}); //.catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."));
+			}).catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the selected file."));
 		}
 		$('form input').val("");
 	});
 	$("#ToolbarDragging").draggable({
-		handle : ".ToolbarDraggingHandle",
-		snap : "body",
-		containment : "body"
+		handle: ".ToolbarDraggingHandle",
+		snap: "body",
+		containment: "body"
 	});
 	init();
 });
+function getNodeData(data) {
+	var networkNodes = [];
+	data.forEach(function (elem, index, array) {
+		if (typeof elem.image === "undefined") {
+			networkNodes.push({
+				id: elem.id,
+				label: elem.label,
+				x: elem.x,
+				y: elem.y,
+				gskExtra: elem.gskExtra
+			});
+		} else {
+			networkNodes.push({
+				id: elem.id,
+				label: elem.label,
+				x: elem.x,
+				y: elem.y,
+				shape: "image",
+				image: elem.image,
+				gskExtra: elem.gskExtra
+			});
+		}
+	});
+
+	return new vis.DataSet(networkNodes);
+}
+function getNodeById(data, id) {
+	for (var n = 0; n < data.length; n++) {
+		if (data[n].id == id) { // double equals since id can be numeric or string
+			return data[n];
+		}
+	};
+
+	throw 'Can not find id \'' + id + '\' in data';
+}
+
+function getEdgeData(data) {
+	var networkEdges = [];
+	data.forEach(function (node) {
+		// add the connection
+		node.connections.forEach(function (connId, cIndex, conns) {
+			networkEdges.push({
+				from: node.id,
+				to: connId
+			});
+			let cNode = getNodeById(data, connId);
+
+			var elementConnections = cNode.connections;
+
+			// remove the connection from the other node to prevent duplicate connections
+			var duplicateIndex = elementConnections.findIndex(function (connection) {
+					return connection == node.id; // double equals since id can be numeric or string
+				});
+
+			if (duplicateIndex != -1) {
+				elementConnections.splice(duplicateIndex, 1);
+			};
+		});
+	});
+	return new vis.DataSet(networkEdges);
+}
+function objectToArray(obj) {
+	return Object.keys(obj).map(function (key) {
+		obj[key].id = key;
+		return obj[key];
+	});
+}
+
+function addConnections(elem, index) {
+	// need to replace this with a tree of the network, then get child direct children of the element
+	elem.connections = network.getConnectedNodes(elem.id);
+}
+
+function addGSKExtras(elem, index) {
+	elem.label = network.body.data.nodes._data[elem.id].label;
+	if (typeof network.body.data.nodes._data[elem.id].image !== "undefined")
+		elem.image = network.body.data.nodes._data[elem.id].image;
+	elem.gskExtra = network.body.data.nodes._data[elem.id].gskExtra;
+}
 
 function CreateNewFile() {
 	$("#ConfirmRemoveNetwork").dialog({
-		resizable : false,
-		height : "auto",
-		width : 400,
-		modal : true,
-		buttons : {
-			"Delete this network" : function () {
+		resizable: false,
+		height: "auto",
+		width: 400,
+		modal: true,
+		buttons: {
+			"Delete this network": function () {
 				ResetNetwork();
 				$(this).dialog("close");
 			},
-			Cancel : function () {
+			Cancel: function () {
 				$(this).dialog("close");
 			}
 		}
@@ -462,17 +535,17 @@ function CreateNewFile() {
 }
 function ConfirmOpenFile() {
 	$("#ConfirmRemoveNetwork").dialog({
-		resizable : false,
-		height : "auto",
-		width : 400,
-		modal : true,
-		buttons : {
-			"Delete this network" : function () {
+		resizable: false,
+		height: "auto",
+		width: 400,
+		modal: true,
+		buttons: {
+			"Delete this network": function () {
 				ResetNetwork();
 				$(this).dialog("close");
 				OpenAFile();
 			},
-			Cancel : function () {
+			Cancel: function () {
 				$(this).dialog("close");
 			}
 		}
@@ -481,10 +554,10 @@ function ConfirmOpenFile() {
 
 function OpenAFile() {
 	$("#OpenFileDialog").dialog({
-		height : "auto",
-		height : 300,
-		width : 400,
-		modal : true,
+		height: "auto",
+		height: 300,
+		width: 400,
+		modal: true,
 		/*buttons : {
 		"Open selected" : function () {
 
@@ -709,7 +782,7 @@ function AddABlockToNetwork(Block) {
 function PrepareParamsEditor() {
 	try {
 		GSK_BtnsForParametersEditorDialog = {
-			"Update block" : function () {
+			"Update block": function () {
 				GSK_ParamsValidationText = GSK_Data_ExtrasCopy.ValidateParams();
 				if (GSK_ParamsValidationText === "OK") {
 					GSK_Data.gskExtra.Parameters = GSK_Data_ExtrasCopy.Parameters;
@@ -727,7 +800,7 @@ function PrepareParamsEditor() {
 				} else
 					$.notify("Unable to validate the parameters.\nPlease correct the parameters.\nDetails:\n" + GSK_ParamsValidationText, "error");
 			},
-			Cancel : function () {
+			Cancel: function () {
 				ParametersEditorDialog.dialog("close");
 			}
 		};
@@ -789,18 +862,18 @@ function PrepareMatrixToEditAParam(InputItem) {
 
 	var TempParamItem = GSK_Data_ExtrasCopy.Parameters[parseInt(InputItem.attr("GSKParamNum"))];
 	var TempSpreadSheetSettings = {
-		data : Flatted.parse(Flatted.stringify(TempParamItem.Value)),
-		rowHeaders : true,
-		colHeaders : function (col) {
+		data: Flatted.parse(Flatted.stringify(TempParamItem.Value)),
+		rowHeaders: true,
+		colHeaders: function (col) {
 			return (col + 1);
 		},
-		manualRowMove : true,
-		manualColumnMove : true,
-		manualRowResize : true,
-		manualColumnResize : true,
-		contextMenu : true,
-		"allowInvalid" : false,
-		"allowEmpty" : false,
+		manualRowMove: true,
+		manualColumnMove: true,
+		manualRowResize: true,
+		manualColumnResize: true,
+		contextMenu: true,
+		"allowInvalid": false,
+		"allowEmpty": false,
 	};
 	var TempValidatorText = "my." + GSK_Parameter_Types[TempParamItem.Type].Type;
 	switch (GSK_Parameter_Types[TempParamItem.Type].Size) {
@@ -817,15 +890,15 @@ function PrepareMatrixToEditAParam(InputItem) {
 	switch (GSK_Parameter_Types[TempParamItem.Type].Type) {
 	case "Color":
 		TempSpreadSheetSettings.columns = [{
-				type : 'dropdown',
-				source : GSK_Colors,
+				type: 'dropdown',
+				source: GSK_Colors,
 			}
 		];
 		break;
 	case "Options":
 		TempSpreadSheetSettings.columns = [{
-				type : 'dropdown',
-				source : TempParamItem.Options,
+				type: 'dropdown',
+				source: TempParamItem.Options,
 			}
 		];
 		break;
@@ -833,21 +906,21 @@ function PrepareMatrixToEditAParam(InputItem) {
 	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), TempSpreadSheetSettings);
 
 	GSK_BtnsForMatrixEditorForParamsDialog = {
-		"Row +" : function () {
+		"Row +": function () {
 			GSK_MatrixEditor.alter('insert_row');
 		},
-		"Row -" : function () {
+		"Row -": function () {
 			if (GSK_MatrixEditor.countRows() > 1)
 				GSK_MatrixEditor.alter('remove_row');
 		},
-		"Column +" : function () {
+		"Column +": function () {
 			GSK_MatrixEditor.alter('insert_col');
 		},
-		"Column -" : function () {
+		"Column -": function () {
 			if (GSK_MatrixEditor.countCols() > 1)
 				GSK_MatrixEditor.alter('remove_col');
 		},
-		"Update variable" : function () {
+		"Update variable": function () {
 			var TempTableData = GSK_MatrixEditor.getData();
 			for (var i = 0; i < TempTableData.length; i++) {
 				for (var j = 0; j < TempTableData[0].length; j++) {
@@ -871,7 +944,7 @@ function PrepareMatrixToEditAParam(InputItem) {
 					$.notify("Error in validating user input. Please correct the red cells.", "error");
 			});
 		},
-		"Back" : function () {
+		"Back": function () {
 			SetGUIState("RemoveMatrixEditorForParamsDialog");
 		}
 	};
@@ -921,31 +994,58 @@ function GetOrderOfExecution() {
 	}
 	//Finding all the sources.
 	OrderOfExecution = [];
-	for (var i=0; i<TempOrderOfExecution.length; i++) {
+	for (var i = 0; i < TempOrderOfExecution.length; i++) {
 		if (network.body.nodes[TempOrderOfExecution[i]].options.gskExtra.MaxInTerminals === 0) {
 			OrderOfExecution.push(TempOrderOfExecution[i]);
 		}
 	}
 	//Removing sources from the TempOrderOfExecution
-	for (var i=0; i<OrderOfExecution.length; i++) {
+	for (var i = 0; i < OrderOfExecution.length; i++) {
 		var TempIndexOfFoundItem;
-		if ((TempIndexOfFoundItem = TempOrderOfExecution.indexOf(OrderOfExecution[i])) >=0)
+		if ((TempIndexOfFoundItem = TempOrderOfExecution.indexOf(OrderOfExecution[i])) >= 0)
 			TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
 	}
-	var CursorOfSearch=0;
+	//Add forward path blocks
+	var TempFeedBackBlocks = [];
+	var CursorOfSearch = 0;
 	while (true) {
 		network.body.nodes[OrderOfExecution[CursorOfSearch]].edges.forEach(function (TempEdgeOfItem) {
 			var TempIndexOfFoundItem;
 			if (
-			(TempEdgeOfItem.to.id !== OrderOfExecution[CursorOfSearch])
-			&& ((TempIndexOfFoundItem = TempOrderOfExecution.indexOf(TempEdgeOfItem.to.id)) >= 0)
-			) {
-				OrderOfExecution.push(TempEdgeOfItem.to.id);
-				TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
+				(TempEdgeOfItem.to.id !== OrderOfExecution[CursorOfSearch])
+				 && ((TempIndexOfFoundItem = TempOrderOfExecution.indexOf(TempEdgeOfItem.to.id)) >= 0)) {
+				var IsForwardBlock = true;
+				network.body.nodes[TempEdgeOfItem.to.id].edges.forEach(function (TempEdgeToTest) {
+					if (OrderOfExecution.indexOf(TempEdgeToTest.to.id) >= 0)
+						IsForwardBlock = false;
+				});
+				if (IsForwardBlock) {
+					OrderOfExecution.push(TempEdgeOfItem.to.id);
+					TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
+				} else {
+					TempFeedBackBlocks.push(TempEdgeOfItem.to.id);
+					TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
+				}
 			}
 		});
-		console.log(TempOrderOfExecution.toString());
-		if (TempOrderOfExecution.length === 0) break;
+		if (TempOrderOfExecution.length === 0)
+			break;
+		CursorOfSearch++;
+	}
+	//Add feedback blocks
+	CursorOfSearch = 0;
+	while (true) {
+		network.body.nodes[OrderOfExecution[CursorOfSearch]].edges.forEach(function (TempEdgeOfItem) {
+			var TempIndexOfFoundItem;
+			if (
+				(TempEdgeOfItem.to.id !== OrderOfExecution[CursorOfSearch])
+				 && ((TempIndexOfFoundItem = TempFeedBackBlocks.indexOf(TempEdgeOfItem.to.id)) >= 0)) {
+				OrderOfExecution.push(TempEdgeOfItem.to.id);
+				TempFeedBackBlocks.splice(TempIndexOfFoundItem, 1);
+			}
+		});
+		if (TempFeedBackBlocks.length === 0)
+			break;
 		CursorOfSearch++;
 	}
 }
@@ -957,9 +1057,7 @@ function RunSimulation() {
 		try {
 			for (i = 0; i < OrderOfExecution.length; i++) {
 				network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
-				if (network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut.length === 0) {
-					
-				}
+				if (network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut.length === 0) {}
 			}
 			SimulationTime = 0;
 			SimulateAtInterval = setInterval(ExecuteFunctions, SamplingTimeMs);
@@ -992,10 +1090,10 @@ function ExecuteFunctions() {
 			//network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = math.clone(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate());
 			console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
 			for (var j = 0; j < OrderOfExecution.length; j++) {
-			console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.Name);
-			console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.PresentOut);
+				console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.Name);
+				console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.PresentOut);
 			}
-			console.log("------------------");/**/
+			console.log("------------------"); /**/
 		}
 		if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
 			SimulateTheNetwork();
@@ -1017,8 +1115,11 @@ Date.prototype.UniqueMSNumber = function () {
 }
 
 function PrepareNetworkToDownload() {
-	var blob = new Blob([Flatted.stringify(network.body.data)], {
-			type : "application/json"
+	var TempFileToSave = objectToArray(network.getPositions());
+	TempFileToSave.forEach(addConnections);
+	TempFileToSave.forEach(addGSKExtras);
+	var blob = new Blob([Flatted.stringify(TempFileToSave)], {
+			type: "application/json"
 		});
 	saveAs(blob, (new Date()).FileFormat());
 }
@@ -1041,17 +1142,17 @@ function FocusAllNodes() {
 		GetOrderOfExecution();
 		if (OrderOfExecution.length !== 0) {
 			network.fit({
-				animation : {
-					duration : 1000,
-					easingFunction : "easeInOutQuad",
+				animation: {
+					duration: 1000,
+					easingFunction: "easeInOutQuad",
 				}
 			});
 			setTimeout(function () {
 				network.fit({
-					nodes : OrderOfExecution,
-					animation : {
-						duration : 1000,
-						easingFunction : "easeInOutQuad",
+					nodes: OrderOfExecution,
+					animation: {
+						duration: 1000,
+						easingFunction: "easeInOutQuad",
 					}
 				});
 			}, 1000);
@@ -1074,9 +1175,9 @@ function FocusANode() {
 		FocusAllTheNodesIndex = 0;
 		FocusAllNodes();
 		network.fit({
-			animation : {
-				duration : 1000,
-				easingFunction : "easeInOutQuad",
+			animation: {
+				duration: 1000,
+				easingFunction: "easeInOutQuad",
 			}
 		});
 	} else {
@@ -1084,10 +1185,10 @@ function FocusANode() {
 		network.focus(nodeId, ShowNodeFocusOptions);
 		setTimeout(function () {
 			network.fit({
-				nodes : OrderOfExecution,
-				animation : {
-					duration : 1000,
-					easingFunction : "easeInOutQuad",
+				nodes: OrderOfExecution,
+				animation: {
+					duration: 1000,
+					easingFunction: "easeInOutQuad",
 				}
 			});
 		}, 1000);
