@@ -7,4 +7,8 @@ var gsk_libs_vOperators = {
 		Name: "Concatenate matrix (vertical)",
 		Icon: "images/tex/vOperators-figure1.png",
 	},
+	multiply: {
+		Name: "Multiply (Matricial)",
+		Icon: "images/tex/vOperators-figure2.png",
+	},
 };

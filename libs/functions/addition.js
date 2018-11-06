@@ -10,7 +10,7 @@ gsk_libs_functions_addition = {
 		return "images/tex/functions-figure0.png"
 	},
 	Init: function () {
-		this.InputParams = [];
+		this.InputParams = [[]];
 	},
 	End: function () {},
 	Constructor: function (data) {},
