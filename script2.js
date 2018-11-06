@@ -650,6 +650,7 @@ function SetGUIState(State) {
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
 		$(".NetworkManuplation").css("display", "block");
+		$("#SimulationTimeDisplay").css("display", "none");
 		break;
 	case "RunningSimulationState":
 		$(".GSKShowWhenLoading").css("display", "none");
@@ -658,6 +659,7 @@ function SetGUIState(State) {
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
 		$(".NetworkManuplation").css("display", "none");
+		$("#SimulationTimeDisplay").css("display", "block");
 		break;
 	case "DisableLibraryAddButton":
 		$(".ui-dialog-buttonpane button:contains('Add block')").button("disable");
@@ -1068,12 +1070,12 @@ function RunSimulation() {
 		try {
 			for (i = 0; i < OrderOfExecution.length; i++) {
 				network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
-				if (network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut.length === 0) {}
+				//if (network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut.length === 0) {}
 			}
 			SimulationTime = 0;
 			SimulateAtInterval = setInterval(ExecuteFunctions, SamplingTimeMs);
 		} catch (err) {
-			network.focus(OrderOfExecution[i], ShowNodeFocusOptions);
+			network.focus(OrderOfExecution[i], ShowNodeFocusInOptions);
 			$.notify("Error in simulating this network.", "error");
 			console.log(err);
 			SimulateTheNetwork();
@@ -1099,7 +1101,7 @@ function ExecuteFunctions() {
 			});
 			network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
 			//network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = math.clone(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate());
-			console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
+			/*console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
 			for (var j = 0; j < OrderOfExecution.length; j++) {
 				console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.Name);
 				console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.PresentOut);
@@ -1109,8 +1111,9 @@ function ExecuteFunctions() {
 		if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
 			SimulateTheNetwork();
 		SimulationTime = math.round(SimulationTime + SamplingTimeMs / 1000, 3);
+		$("#SimulationTimeDisplay").html(SimulationTime.toFixed(3));
 	} catch (err) {
-		network.focus(OrderOfExecution[i], ShowNodeFocusOptions);
+		network.focus(OrderOfExecution[i], ShowNodeFocusInOptions);
 		$.notify("Error in simulating this network.", "error");
 		console.log(err);
 		SimulateTheNetwork();
