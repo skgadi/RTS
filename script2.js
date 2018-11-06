@@ -957,6 +957,9 @@ function RunSimulation() {
 		try {
 			for (i = 0; i < OrderOfExecution.length; i++) {
 				network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
+				if (network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut.length === 0) {
+					
+				}
 			}
 			SimulationTime = 0;
 			SimulateAtInterval = setInterval(ExecuteFunctions, SamplingTimeMs);
@@ -987,12 +990,12 @@ function ExecuteFunctions() {
 			});
 			network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
 			//network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = math.clone(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate());
-			/*console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
+			console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
 			for (var j = 0; j < OrderOfExecution.length; j++) {
 			console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.Name);
 			console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.PresentOut);
 			}
-			console.log("------------------");*/
+			console.log("------------------");/**/
 		}
 		if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
 			SimulateTheNetwork();

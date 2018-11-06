@@ -17,7 +17,7 @@ gsk_libs_functions_gain = {
 	Init : function () {
 		var Compiled_G = math.eval(this.Parameters[0].Value[0][0]);
 		this.CompiledParams = [Compiled_G];
-		this.InputParams = [[]];
+		this.InputParams = [];
 	},
 	End : function () {},
 	Constructor : function (data) {},

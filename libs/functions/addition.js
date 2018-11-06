@@ -10,14 +10,14 @@ gsk_libs_functions_addition = {
 		return "images/tex/functions-figure0.png"
 	},
 	Init: function () {
-		this.InputParams = [[]];
+		this.InputParams = [];
 	},
 	End: function () {},
 	Constructor: function (data) {},
 	Destructor: function (data) {},
 	RunTimeExec: function () {},
 	Evaluate: function () {
-		var OutMatrix = this.InputParams[0];
+		var OutMatrix = math.clone(this.InputParams[0]);
 		for (var i = 1; i < this.InputParams.length; i++)
 			OutMatrix = math.add(OutMatrix, this.InputParams[i]);
 		return OutMatrix;
