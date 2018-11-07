@@ -17,11 +17,10 @@ gsk_libs_vOperators_concatvertical = {
 	Destructor: function (data) {},
 	RunTimeExec: function () {},
 	Evaluate: function () {
-		var TempMatrix = [];
 		var MatrixOut = math.clone(this.InputParams[0]);
 		for (var i = 1; i < this.InputParams.length; i++) {
 			for (var j = 0; j < this.InputParams[i].length; j++) {
-				if (MatrixOut[0].length !== this.InputParams[i][j].length) throw "Dimension error";
+					if (MatrixOut[0].length !== this.InputParams[i][j].length) throw "Dimension error";
 				MatrixOut.push(this.InputParams[i][j]);
 			}
 		}

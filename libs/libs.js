@@ -15,11 +15,11 @@ var gsk_libs = {
 		"Icon" : "images/tex/icons-figure3.png",
 		"Name": "Vector operators"
 	},
-	/*"dynamics" : {
+	"dynamics" : {
 		"Icon": "images/tex/icons-figure4.png",
 		"Name": "Dynamics"
 	},
-	"hardware" : {
+	/*"hardware" : {
 		"Icon" : "images/tex/icons-figure5.png",
 		"Name": "Hardware"
 	}*/

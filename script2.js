@@ -429,6 +429,7 @@ $(document).ready(function () {
 		else {
 			readFileContent(this.files[0]).then(content => {
 				var TempData = Flatted.parse(content);
+				//console.log(TempData);
 				var NewData = {
 					nodes: getNodeData(TempData),
 					edges: getEdgeData(TempData),
@@ -497,13 +498,13 @@ function getEdgeData(data) {
 			var elementConnections = cNode.connections;
 
 			// remove the connection from the other node to prevent duplicate connections
-			var duplicateIndex = elementConnections.findIndex(function (connection) {
+			/*var duplicateIndex = elementConnections.findIndex(function (connection) {
 					return connection == node.id; // double equals since id can be numeric or string
 				});
 
 			if (duplicateIndex != -1) {
 				elementConnections.splice(duplicateIndex, 1);
-			};
+			};*/
 		});
 	});
 	return new vis.DataSet(networkEdges);
@@ -517,7 +518,13 @@ function objectToArray(obj) {
 
 function addConnections(elem, index) {
 	// need to replace this with a tree of the network, then get child direct children of the element
-	elem.connections = network.getConnectedNodes(elem.id);
+	elem.connections = [];
+	network.body.nodes[elem.id].edges.forEach(function (TempEdgeOfItem) {
+		if (TempEdgeOfItem.to.id !== elem.id) {
+			elem.connections.push(TempEdgeOfItem.to.id);
+			//console.log(network.body.nodes[TempEdgeOfItem.from.id].options.gskExtra.Name+" -> " + TempEdgeOfItem.to.id + "->"+ network.body.nodes[TempEdgeOfItem.to.id].options.gskExtra.Name )
+		}
+	});
 }
 
 function addGSKExtras(elem, index) {
@@ -583,6 +590,7 @@ function OpenAFile() {
 }
 
 function SimulateTheNetwork() {
+	try {
 	if (SimulationState == "Running") {
 		if (SimulateAtInterval != undefined) {
 			clearInterval(SimulateAtInterval);
@@ -596,6 +604,11 @@ function SimulateTheNetwork() {
 	} else if (SimulationState == "Design") {
 		SetViewAsSimulating();
 		RunSimulation();
+	}
+	} catch (err) {
+		$.notify("Error in simulating.", "error");
+		SetViewAsLoaded();
+		console.log(err);
 	}
 }
 
@@ -1005,19 +1018,30 @@ function GetOrderOfExecution() {
 			}
 		}
 	}
-	//Finding all the sources.
+	TempOrderOfExecution.reverse();
+	//Finding all the sources and dynamicItems.
 	OrderOfExecution = [];
 	for (var i = 0; i < TempOrderOfExecution.length; i++) {
-		if (network.body.nodes[TempOrderOfExecution[i]].options.gskExtra.MaxInTerminals === 0) {
+		if ((network.body.nodes[TempOrderOfExecution[i]].options.gskExtra.MaxInTerminals === 0)
+			|| (typeof network.body.nodes[TempOrderOfExecution[i]].options.gskExtra.FirstInExecutionOrder !=='undefined')) {
 			OrderOfExecution.push(TempOrderOfExecution[i]);
 		}
 	}
+	
 	//Removing sources from the TempOrderOfExecution
 	for (var i = 0; i < OrderOfExecution.length; i++) {
 		var TempIndexOfFoundItem;
 		if ((TempIndexOfFoundItem = TempOrderOfExecution.indexOf(OrderOfExecution[i])) >= 0)
 			TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
 	}
+	
+	//Adding previous items before present items.
+	try {
+	OrderOfExecution = OrderOfExecution.concat(OrderByAddingPreviousBlocks(TempOrderOfExecution));
+	} catch (err) {
+		throw err;
+	}
+	/*
 	//Add forward path blocks
 	var TempFeedBackBlocks = [];
 	var CursorOfSearch = 0;
@@ -1060,8 +1084,41 @@ function GetOrderOfExecution() {
 		if (TempFeedBackBlocks.length === 0)
 			break;
 		CursorOfSearch++;
+	}*/
+}
+
+function OrderByAddingPreviousBlocks (AllBlocks) {
+	var TempAllBlocks = AllBlocks.slice();
+	var OutArray = [];
+	var TempCursor=0;
+	var ExitIteration = 0;
+	try {
+	while(TempAllBlocks.length !== 0) {
+		var ExistPrevNodeUnAttended = -1;
+		for (TempEdge of network.body.nodes[TempAllBlocks[TempCursor]].edges) {
+			if (
+			(TempEdge.from.id !== TempAllBlocks[TempCursor])
+			&& ((ExistPrevNodeUnAttended = TempAllBlocks.indexOf(TempEdge.from.id))>=0)) {
+				if ((ExitIteration++)>TempAllBlocks.length) throw "Too many iterations";
+				TempCursor = ExistPrevNodeUnAttended;
+				break;
+			}
+		}
+		if (ExistPrevNodeUnAttended<0) {
+			OutArray.push(TempAllBlocks[TempCursor]);
+			TempAllBlocks.splice(TempCursor, 1);
+			TempCursor=0;
+			ExitIteration = 0;
+		}
+	}
+	return OutArray;
+	} catch (err) {
+		$.notify("Error in identifying execution order, possibily there exists an arthematic loop.", "error");
+		network.focus(AllBlocks[TempCursor], ShowNodeFocusInOptions);
+		throw err;
 	}
 }
+
 
 function RunSimulation() {
 	GetOrderOfExecution();
@@ -1069,6 +1126,8 @@ function RunSimulation() {
 		var i;
 		try {
 			for (i = 0; i < OrderOfExecution.length; i++) {
+				network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams=[];
+				network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut=[];
 				network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
 				//if (network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut.length === 0) {}
 			}
@@ -1104,7 +1163,7 @@ function ExecuteFunctions() {
 			/*console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
 			for (var j = 0; j < OrderOfExecution.length; j++) {
 				console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.Name);
-				console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.PresentOut);
+				console.log("PresentOut: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.PresentOut);
 			}
 			console.log("------------------"); /**/
 		}
@@ -1151,6 +1210,7 @@ var FocusAllTheNodesIndex = 0;
 var FocusAllTheNodesInterval;
 var IsShowingTheNodes = false;
 function FocusAllNodes() {
+	try {
 	if (IsShowingTheNodes === false) {
 		SetGUIState("ShowingExectionOrder");
 		GetOrderOfExecution();
@@ -1181,6 +1241,10 @@ function FocusAllNodes() {
 		FocusAllTheNodesIndex = 0;
 		IsShowingTheNodes = false;
 		SetGUIState("NotShowingExectionOrder");
+	}
+	} catch (err) {
+		SetGUIState("NotShowingExectionOrder");
+		$.notify("Unable to show the execution order", "error");
 	}
 }
 

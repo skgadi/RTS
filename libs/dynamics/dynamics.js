@@ -1,10 +1,14 @@
 var gsk_libs_dynamics = {
+	unitdelay: {
+		Name: "Unit delay",
+		Icon: "images/tex/dynamics-figure0.png",
+	},
 	laplace: {
 		Name: "Laplace transform",	
-		Icon: "images/tex/transfer-functions-figure0.png",
+		Icon: "images/tex/dynamics-figure1.png",
 	},
 	ztransform: {
 		Name: "Z transform",
-		Icon: "images/tex/transfer-functions-figure1.png",
+		Icon: "images/tex/dynamics-figure2.png",
 	},
 };
