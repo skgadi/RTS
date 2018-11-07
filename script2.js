@@ -256,7 +256,6 @@ function draw(data) {
 					TempIsValidNewEdge = false;
 					TempErrorMessage += "\nYou cannot connect the same block to itself. Use an unit gain instead.";
 				}
-				data.label = "" + (NoOfInputs + 1);
 				if (TempIsValidNewEdge)
 					callback(data);
 				else {
@@ -1212,9 +1211,9 @@ var IsShowingTheNodes = false;
 function FocusAllNodes() {
 	try {
 	if (IsShowingTheNodes === false) {
-		SetGUIState("ShowingExectionOrder");
 		GetOrderOfExecution();
 		if (OrderOfExecution.length !== 0) {
+			SetGUIState("ShowingExectionOrder");
 			network.fit({
 				animation: {
 					duration: 1000,

@@ -36,10 +36,7 @@ gsk_libs_dynamics_unitdelay = {
 	Destructor : function (data) {},
 	RunTimeExec : function () {},
 	Evaluate : function () {
-		console.log(this.CompiledParams);
-		console.log(this.InputParams);
 		if ((this.InputParams.length>0) && (this.InputParams[0].length>0) && (this.InputParams[0][0].length>0)) this.CompiledParams.push(math.clone(this.InputParams[0]));
-		console.log(this.CompiledParams);
 		return this.CompiledParams.shift();
 	},
 	Details : function () {
