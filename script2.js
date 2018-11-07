@@ -662,7 +662,7 @@ function SetGUIState(State) {
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
 		$(".NetworkManuplation").css("display", "block");
-		$("#SimulationTimeDisplay").css("display", "none");
+		$(".SimulationTimeDisplay").css("display", "none");
 		break;
 	case "RunningSimulationState":
 		$(".GSKShowWhenLoading").css("display", "none");
@@ -671,7 +671,7 @@ function SetGUIState(State) {
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
 		$(".NetworkManuplation").css("display", "none");
-		$("#SimulationTimeDisplay").css("display", "block");
+		$(".SimulationTimeDisplay").css("display", "block");
 		break;
 	case "DisableLibraryAddButton":
 		$(".ui-dialog-buttonpane button:contains('Add block')").button("disable");
