@@ -1,5 +1,5 @@
-gsk_libs_dynamics_unitdelay = {
-	Name : "Unit delay",
+gsk_libs_dynamics_integral = {
+	Name : "Integral",
 	Parameters : [{
 			Name : "Initial conditions",
 			Type : "MatComplex",
@@ -17,7 +17,7 @@ gsk_libs_dynamics_unitdelay = {
 	MaxInTerminals : 1,
 	MaxOutTerminals : MaxOutTerminalsAllowedToUse,
 	Icon : function () {
-		return "images/tex/dynamics-figure0.png"
+		return "images/tex/dynamics-figure1.png"
 	},
 	Init : function () {
 		var Compiled_InitVal = [];
@@ -36,11 +36,12 @@ gsk_libs_dynamics_unitdelay = {
 	Destructor : function (data) {},
 	RunTimeExec : function () {},
 	Evaluate : function () {
-		if ((this.InputParams.length>0) && (this.InputParams[0].length>0) && (this.InputParams[0][0].length>0)) this.CompiledParams.push(math.clone(this.InputParams[0]));
-		return this.CompiledParams.shift();
+		if ((this.InputParams.length>0) && (this.InputParams[0].length>0) && (this.InputParams[0][0].length>0))
+			this.CompiledParams[0] = math.add( this.CompiledParams[0], math.dotMultiply( SamplingTimeMs/1000, math.clone(this.InputParams[0])));
+		return this.CompiledParams[0];
 	},
 	Details : function () {
-		return "Gives a unit delay<br/>$$\\frac{Y(z)}{X(z)} = \\frac{1}{z}$$";
+		return "Integrates the input signal over time";
 	},
 	ValidateParams : function () {
 		return "OK";

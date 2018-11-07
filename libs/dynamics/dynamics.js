@@ -3,6 +3,10 @@ var gsk_libs_dynamics = {
 		Name: "Unit delay",
 		Icon: "images/tex/dynamics-figure0.png",
 	},
+	integral: {
+		Name: "Integral",
+		Icon: "images/tex/dynamics-figure1.png",
+	},
 	/*laplace: {
 		Name: "Laplace transform",	
 		Icon: "images/tex/dynamics-figure1.png",
