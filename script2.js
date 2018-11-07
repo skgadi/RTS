@@ -11,6 +11,7 @@ var SelectedLibraryBlock;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
 var OrderOfExecution = [];
+var SettingsBlocksList = [];
 var SimulationState = "Loading";
 var SimulateAtInterval;
 var SimulationTime;
@@ -993,6 +994,16 @@ function CopyJSONForBlocks(Source) {
 	return target;
 }
 
+function GetSettingsBlocksList() {
+	SettingsBlocksList = [];
+	for (var TempNode in network.body.data.nodes._data) {
+		if ((network.body.data.nodes._data[TempNode].gskExtra.MaxOutTerminals === 0)
+			&& (network.body.data.nodes._data[TempNode].gskExtra.MaxInTerminals === 0)){
+				SettingsBlocksList.push(TempNode);
+			}
+	}
+}
+
 function GetOrderOfExecution() {
 	if (network != null) {
 		var TempOrderOfExecution = [];
@@ -1120,10 +1131,14 @@ function OrderByAddingPreviousBlocks (AllBlocks) {
 
 
 function RunSimulation() {
+	GetSettingsBlocksList();
 	GetOrderOfExecution();
 	if (OrderOfExecution.length > 0) {
 		var i;
 		try {
+			for (i = 0; i < SettingsBlocksList.length; i++) {
+				network.body.nodes[SettingsBlocksList[i]].options.gskExtra.Init();
+			}
 			for (i = 0; i < OrderOfExecution.length; i++) {
 				network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams=[];
 				network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut=[];

@@ -181,6 +181,8 @@ var gsk_libs_sinks_cartesiancoordinate = {
 				TempRow.push(NaN);
 			TempIndex++;
 		}
+		if (this.ChartData.getNumberOfRows() >= MaximumNoOfPointsToShow)
+			this.ChartData.removeRow(0);
 		this.ChartData.addRow(TempRow);
 		if ((SimulationTime * 1000) % RefreshGraphsMS == 0)
 			this.ChartID.draw(this.ChartData, this.ChartOptions);

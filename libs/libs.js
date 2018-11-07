@@ -19,6 +19,10 @@ var gsk_libs = {
 		"Icon": "images/tex/icons-figure4.png",
 		"Name": "Dynamics"
 	},
+	"settings" : {
+		"Icon": "images/tex/icons-figure5.png",
+		"Name": "Settings"
+	},
 	/*"hardware" : {
 		"Icon" : "images/tex/icons-figure5.png",
 		"Name": "Hardware"

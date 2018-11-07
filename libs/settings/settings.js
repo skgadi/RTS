@@ -1,7 +1,11 @@
-var gsk_libs_dynamics = {
-	unitdelay: {
-		Name: "Unit delay",
-		Icon: "images/tex/dynamics-figure0.png",
+var gsk_libs_settings = {
+	timing: {
+		Name: "Simulation",
+		Icon: "images/tex/settings-figure0.png",
+	},
+	graphs: {
+		Name: "Graphs",
+		Icon: "images/tex/settings-figure1.png",
 	},
 	/*laplace: {
 		Name: "Laplace transform",	
