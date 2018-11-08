@@ -220,7 +220,7 @@ function draw(data) {
 			},
 		},
 		manipulation : {
-			initiallyActive : true,
+			enabled : false,
 			addNode : function (data, callback) {
 				GSK_Data = data;
 				GSK_Callback = callback;
@@ -663,8 +663,8 @@ function SetGUIState(State) {
 		$("#Simulate").html("<i class='fas fa-play'></i>");
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
-		$(".NetworkManuplation").css("display", "block");
-		$(".SimulationTimeDisplay").css("display", "none");
+		$(".FileHandling").prop('disabled', false);
+		$(".SimulationTimeDisplay").prop('disabled', true);
 		break;
 	case "RunningSimulationState":
 		$(".GSKShowWhenLoading").css("display", "none");
@@ -672,8 +672,8 @@ function SetGUIState(State) {
 		$("#Simulate").html("<i class='fas fa-stop'></i>");
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
-		$(".NetworkManuplation").css("display", "none");
-		$(".SimulationTimeDisplay").css("display", "block");
+		$(".FileHandling").prop('disabled', true);
+		$(".SimulationTimeDisplay").prop('disabled', false);
 		break;
 	case "DisableLibraryAddButton":
 		$(".ui-dialog-buttonpane button:contains('Add block')").button("disable");
@@ -1182,10 +1182,10 @@ function ExecuteFunctions() {
 			}
 			console.log("------------------"); /**/
 		}
+		$("#SimulationTimeDisplay").html(SimulationTime.toFixed(3));
 		if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
 			SimulateTheNetwork();
 		SimulationTime = math.round(SimulationTime + SamplingTimeMs / 1000, 3);
-		$("#SimulationTimeDisplay").html(SimulationTime.toFixed(3));
 	} catch (err) {
 		network.focus(OrderOfExecution[i], ShowNodeFocusInOptions);
 		$.notify("Error in simulating this network.", "error");
