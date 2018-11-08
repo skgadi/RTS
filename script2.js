@@ -188,7 +188,7 @@ function draw(data) {
 			},
 		},
 		edges : {
-			smooth : false,
+			//smooth : false,
 			color : {
 				color : '#000000',
 			},

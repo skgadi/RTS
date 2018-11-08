@@ -11,6 +11,22 @@ var gsk_libs_functions = {
 		Name: "Gain",
 		Icon: "images/tex/functions-figure2.png",
 	},
+	concatvertical: {
+		Name: "Concatenate matrix (vertical)",
+		Icon: "images/tex/functions-figure3.png",
+	},
+	concathorizontal: {
+		Name: "Concatenate matrix (horizontal)",
+		Icon: "images/tex/functions-figure4.png",
+	},
+	transpose: {
+		Name: "Transpose",
+		Icon: "images/tex/functions-figure5.png",
+	},
+	inverse: {
+		Name: "Inverse",
+		Icon: "images/tex/functions-figure6.png",
+	},
 	/*sine: {
 		Name: "Sine",
 		Icon: "images/tex/functions-figure3.png",

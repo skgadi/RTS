@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  7 NOV 2018 18:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.9.2)  7 NOV 2018 19:40
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
-**\def\tikzexternalrealjob{vOperators}\input{vOperators}
-(./vOperators.tex (c:/texlive/2018/texmf-dist/tex/latex/base/fix-cm.sty
+**\def\tikzexternalrealjob{functions}\input{functions}
+(./functions.tex (c:/texlive/2018/texmf-dist/tex/latex/base/fix-cm.sty
 Package: fix-cm 2015/01/14 v1.1t fixes to LaTeX
 (c:/texlive/2018/texmf-dist/tex/latex/base/ts1enc.def
 File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
@@ -983,7 +983,7 @@ File: pgflibraryplotmarks.code.tex 2015/08/03 v3.0.1a (rcs-revision 1.14)
 )))
 (c:/texlive/2018/texmf-dist/tex/generic/pgfplots/libs/tikzlibrarypgfplots.patch
 plots.code.tex)
-No file vOperators-figure2.aux.
+No file functions-figure6.aux.
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 71.
 LaTeX Font Info:    ... okay on input line 71.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 71.
@@ -1061,27 +1061,39 @@ A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
 A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
-\openout4 = `vOperators-figure2.dpth'.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
+isable this.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
+isable this.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
+isable this.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
+isable this.
+\openout4 = `functions-figure6.dpth'.
 
 [1
 
 {c:/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
 isable this.
+A tikzpicture has been optimized away. Use '/tikz/external/optimize=false' to d
+isable this.
  ) 
 Here is how much of TeX's memory you used:
- 42663 strings out of 492649
- 1098920 string characters out of 6133400
- 1312795 words of memory out of 5000000
- 46025 multiletter control sequences out of 15000+600000
- 533980 words of font info for 38 fonts, out of 8000000 for 9000
+ 42622 strings out of 492649
+ 1097601 string characters out of 6133400
+ 1312789 words of memory out of 5000000
+ 45981 multiletter control sequences out of 15000+600000
+ 539744 words of font info for 61 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 80i,11n,136p,10427b,1904s stack positions out of 5000i,500n,10000p,200000b,80000s
-<c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on vOperators-figure2.pdf (1 page, 9796 bytes).
+ 80i,11n,136p,10425b,1846s stack positions out of 5000i,500n,10000p,200000b,80000s
+<c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/tex
+live/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2018/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on functions-figure6.pdf (1 page, 24074 bytes).
 PDF statistics:
- 15 PDF objects out of 1000 (max. 8388607)
- 10 compressed objects within 1 object stream
+ 23 PDF objects out of 1000 (max. 8388607)
+ 16 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

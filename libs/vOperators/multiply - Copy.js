@@ -1,5 +1,5 @@
-gsk_libs_vOperators_concathorizontal = {
-	Name: "Concatenate matrix (horizontal)",
+gsk_libs_vOperators_multiply = {
+	Name: "Multiply (Matricial)",
 	Parameters: [],
 	Label: function () {
 		return "";
@@ -7,7 +7,7 @@ gsk_libs_vOperators_concathorizontal = {
 	MaxInTerminals: MaxInTerminalsAllowedToUse,
 	MaxOutTerminals: MaxOutTerminalsAllowedToUse,
 	Icon: function () {
-		return "images/tex/vOperators-figure0.png"
+		return "images/tex/vOperators-figure2.png"
 	},
 	Init: function () {
 		this.InputParams = [];
@@ -20,17 +20,12 @@ gsk_libs_vOperators_concathorizontal = {
 		var TempMatrix = [];
 		var MatrixOut = math.clone(this.InputParams[0]);
 		for (var i = 1; i < this.InputParams.length; i++) {
-			TempMatrix = [];
-			for (var j =0; j < this.InputParams[0].length; j++) {
-				if (this.InputParams[i][j] === undefined) throw "Dimension error";
-				TempMatrix.push(MatrixOut[j].concat(this.InputParams[i][j]));
-			}
-			MatrixOut = TempMatrix;
+			MatrixOut = math.multiply(MatrixOut, this.InputParams[i]);
 		}
 		return MatrixOut;
 	},
 	Details: function () {
-		return "Concatenates all the matrices one besides other.";
+		return "Multiplies all the matricies in the order of they were connected.";
 	},
 	ValidateParams: function () {
 		return "OK";

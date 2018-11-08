@@ -11,10 +11,6 @@ var gsk_libs = {
 		"Icon" : "images/tex/icons-figure1.png",
 		"Name": "Functions"
 	},
-	"vOperators" : {
-		"Icon" : "images/tex/icons-figure3.png",
-		"Name": "Vector operators"
-	},
 	"dynamics" : {
 		"Icon": "images/tex/icons-figure4.png",
 		"Name": "Dynamics"
@@ -23,6 +19,10 @@ var gsk_libs = {
 		"Icon": "images/tex/icons-figure5.png",
 		"Name": "Settings"
 	},
+	/*"vOperators" : {
+		"Icon" : "images/tex/icons-figure3.png",
+		"Name": "Vector operators"
+	},*/
 	/*"hardware" : {
 		"Icon" : "images/tex/icons-figure5.png",
 		"Name": "Hardware"

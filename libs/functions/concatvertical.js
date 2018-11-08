@@ -1,4 +1,4 @@
-gsk_libs_vOperators_concatvertical = {
+gsk_libs_functions_concatvertical = {
 	Name: "Concatenate matrix (vertical)",
 	Parameters: [],
 	Label: function () {
@@ -7,7 +7,7 @@ gsk_libs_vOperators_concatvertical = {
 	MaxInTerminals: MaxInTerminalsAllowedToUse,
 	MaxOutTerminals: MaxOutTerminalsAllowedToUse,
 	Icon: function () {
-		return "images/tex/vOperators-figure1.png"
+		return "images/tex/functions-figure3.png"
 	},
 	Init: function () {
 		this.InputParams = [];
