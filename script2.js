@@ -23,6 +23,8 @@ var RunSimulationForS = 5;
 var LoadByIgnoringCache;
 var MaxInTerminalsAllowedToUse = 99999;
 var MaxOutTerminalsAllowedToUse = 99999;
+var MultipleAddNodes = false;
+var MultipleAddEdges = false;
 var ShowNodeFocusInOptions = {
 	scale : 5,
 	offset : {
@@ -176,6 +178,7 @@ function draw(data) {
 		interaction : {
 			navigationButtons : true,
 			keyboard : false,
+			multiselect : true,
 		},
 		nodes : {
 			shape : 'box',
@@ -258,9 +261,15 @@ function draw(data) {
 					TempIsValidNewEdge = false;
 					TempErrorMessage += "\nYou cannot connect the same block to itself. Use an unit gain instead.";
 				}
-				if (TempIsValidNewEdge)
+				if (TempIsValidNewEdge) {
 					callback(data);
-				else {
+					if (MultipleAddEdges)
+						network.addEdgeMode();
+					else {
+						SetGUIState("EnableAllButtons");
+						$(".NetworkManuplation").attr("BtnState", "Normal");
+					}
+				} else {
 					$.notify("This connection is not allowed:" + TempErrorMessage, "error");
 					callback(null);
 				}
@@ -279,9 +288,9 @@ function draw(data) {
 				if (
 					(network.body.nodes[data.from].options.gskExtra.MaxOutTerminals > NoOfOutputs)
 					 &&
-					(network.body.nodes[data.to].options.gskExtra.MaxInTerminals > NoOfInputs))
+					(network.body.nodes[data.to].options.gskExtra.MaxInTerminals > NoOfInputs)) {
 					callback(data);
-				else {
+				} else {
 					$.notify("This connection is not allowed", "warn");
 					callback(null);
 				}
@@ -708,6 +717,116 @@ function SetGUIState(State) {
 		$("#GSK_Params_Edt_Details").append("<div>" + GSK_Data_ExtrasCopy.Details() + "</div>");
 		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 		break;
+	case "DisableAllButtons":
+		$(".FileHandling").prop('disabled', true);
+		$(".NetworkManuplation").prop('disabled', true);
+		$(".EdgeManuplation").prop('disabled', true);
+		$(".InformationButtons").prop('disabled', true);
+		$(".ExecutionOrder").prop('disabled', true);
+		$(".SimulationButtons").prop('disabled', true);
+		break;
+	case "EnableAllButtons":
+		$(".FileHandling").prop('disabled', false);
+		$(".NetworkManuplation").prop('disabled', false);
+		$(".EdgeManuplation").prop('disabled', false);
+		$(".InformationButtons").prop('disabled', false);
+		$(".ExecutionOrder").prop('disabled', false);
+		$(".SimulationButtons").prop('disabled', false);
+		break;
+	}
+}
+
+function MdlClickNetworkManuplation(DOMItem, ButtonType) {
+	SetGUIState("DisableAllButtons");
+	$(DOMItem).prop('disabled', false);
+	switch (ButtonType) {
+	case "New node":
+		MultipleAddNodes = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "MiddleClick");
+			MultipleAddNodes = true;
+			network.addNodeMode();
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	case "New edge":
+		MultipleAddEdges = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "MiddleClick");
+			MultipleAddEdges = true;
+			network.addEdgeMode();
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	}
+}
+
+function ClickNetworkManuplation(DOMItem, ButtonType) {
+	SetGUIState("DisableAllButtons");
+	$(DOMItem).prop('disabled', false);
+	switch (ButtonType) {
+	case "New node":
+		MultipleAddNodes = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "Click");
+			network.addNodeMode();
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	case "Edit node":
+		SetGUIState("EnableAllButtons");
+		switch (network.getSelectedNodes().length) {
+		case 0:
+			$.notify("No block is selected to edit.\nPlease select a block to edit.", "info");
+			break;
+		case 1:
+			network.editNode();
+			break;
+		default:
+			$.notify("only one block can be edited at one time.\nPlease select only one block to edit.", "info");
+			break;
+		}
+		break;
+	case "New edge":
+		MultipleAddEdges = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "Click");
+			network.addEdgeMode()
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	case "Edit edge":
+		SetGUIState("EnableAllButtons");
+		network.editEdgeMode();
+		break;
+	case "Delete":
+		SetGUIState("EnableAllButtons");
+		network.deleteSelected();
+		break;
 	}
 }
 
@@ -803,7 +922,12 @@ function AddABlockToNetwork(Block) {
 	GSK_Data.gskExtra.Constructor(GSK_Data);
 	GSK_Callback(GSK_Data);
 	LibraryDialog.dialog("close");
-
+	if (MultipleAddNodes)
+		network.addNodeMode();
+	else {
+		SetGUIState("EnableAllButtons");
+		$(".NetworkManuplation").attr("BtnState", "Normal");
+	}
 }
 
 function PrepareParamsEditor() {
