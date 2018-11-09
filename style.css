@@ -129,3 +129,8 @@ form input{
     box-shadow: 0 0 0 transparent;
   }
 }
+
+#scroller {
+  overflow: auto;
+  height: 100px;
+}

@@ -82,6 +82,7 @@ gsk_libs_sources_sine = {
 				StrOut += "\\\\";
 			}
 			StrOut += "\\end{bmatrix}$";
+			StrOut += "<br/>where $t$ is time.";
 			return StrOut;
 		} else return 'Error:<br/>' + ValidateText;
 	},

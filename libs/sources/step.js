@@ -87,6 +87,7 @@ gsk_libs_sources_step = {
 			StrOut += "\\end{bmatrix}$";
 			StrOut += "<br/>";
 			StrOut += "$$H(t-t_0)=\\left\\{\\begin{matrix}0 & \\mbox{if} & t \\lt t_0 \\\\ 1 & \\mbox{if} & t \\ge t_0 \\\\ \\end{matrix} \\right.$$";
+			StrOut += "<br/>where $t$ is time.";
 			return StrOut;
 		} else return 'Error:<br/>' + ValidateText;
 	},

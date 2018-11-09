@@ -81,22 +81,18 @@ gsk_libs_sources_sawtooth = {
 	},
 	Details : function () {
 		var A = 	this.Parameters[0].Value;
-		var t_0 = this.Parameters[1].Value;
-		var O = 	this.Parameters[2].Value;
+		var f = this.Parameters[1].Value;
+		var t_0 = 	this.Parameters[2].Value;
+		var O = 	this.Parameters[3].Value;
 		var ValidateText = this.ValidateParams();
 		if (ValidateText === 'OK') {
-			var StrOut;
-			StrOut = "$Y(t) = \\begin{bmatrix}";
-			for (var i=0; i<A.length; i++) {
-				for (var j=0; j<A[0].length; j++) {
-					if (j!==0) StrOut += "&";
-					StrOut += "(" + math.round(math.eval(A[i][j]),3) + ") H{\\left[t - (" + math.round(math.eval(t_0[i][j]), 3) + ")\\right]} + " + math.round(math.eval(O[i][j]), 3);
-				}
-				StrOut += "\\\\";
-			}
-			StrOut += "\\end{bmatrix}$";
-			StrOut += "<br/>";
-			StrOut += "$$H(t-t_0)=\\left\\{\\begin{matrix}0 & \\mbox{if} & t \\lt t_0 \\\\ 1 & \\mbox{if} & t \\ge t_0 \\\\ \\end{matrix} \\right.$$";
+			var StrOut="";
+			StrOut += "Sawtooth wave with";
+			StrOut += "<br/>Amplitude: $" + MatrixToLatexString(A) + "$";
+			StrOut += "<br/>Frequency: $" + MatrixToLatexString(f) + "$";
+			StrOut += "<br/>Time advancement: $" + MatrixToLatexString(t_0) + "$";
+			StrOut += "<br/>Offset: $" + MatrixToLatexString(O) + "$";
+			StrOut += "<br/><img style='width: 100%;' src='images/tex/Illustrations-figure1.png' alt='triangular wave'/>";
 			return StrOut;
 		} else return 'Error:<br/>' + ValidateText;
 	},

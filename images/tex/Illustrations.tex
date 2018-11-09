@@ -1,0 +1,126 @@
+\RequirePackage{fix-cm}
+%
+\RequirePackage{amsmath}
+
+
+
+%\documentclass{svjour3}                     % onecolumn (standard format)
+%\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
+%\documentclass[smallextended]{svjour3}       % onecolumn (second format)
+% \documentclass[twocolumn]{svjour3}          % twocolumn
+%\documentclass[letterpaper, 12pt, twocolumn]{article}
+\documentclass{report}
+\usepackage[cm]{fullpage}
+%\usepackage[margin=1in]{geometry}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+%\usepackage{physics}
+\newcommand{\me}{\mathrm{e}}
+\usepackage{amsmath}
+\usepackage{varwidth}
+\usepackage[binary-units]{siunitx}
+\usepackage{algpseudocode}
+\usepackage{circuitikz}
+
+\usepackage{physics}
+
+
+%\usepackage[monochrome]{color}
+
+
+
+%\usepackage[round]{natbib}
+%\usepackage{apacite}
+\usepackage{url}
+
+
+\PassOptionsToPackage{monochrome}{xcolor}
+
+% For the flow charts
+\usepackage{tikz}
+\usetikzlibrary{
+	external, shapes.geometric, positioning,
+}
+\usepackage{tikz-dimline}
+\tikzexternalize
+
+\usetikzlibrary{shapes.geometric, arrows, calc, positioning, arrows.meta}
+\tikzstyle{startstop} = [rectangle, thick, rounded corners=2.5mm, minimum width=2cm, minimum height=5mm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, thick, trapezium left angle=70, trapezium right angle=110, text width=3.75cm, minimum height=0.5cm, text centered, draw=black]
+\tikzstyle{process} = [rectangle, thick, minimum width=2.5cm, text width=4cm, minimum height=0.5cm, text centered, draw=black]
+\tikzstyle{block} = [rectangle, thick, minimum width=0.5cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{support} = [coordinate, join=by fuzzy]
+\tikzstyle{decision} = [diamond, thick, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{dottedbox} = [rectangle, dotted, thick, minimum width=2.5cm, text width=2.8cm, minimum height=0.5cm, text centered, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{dottedarrow} = [thick, dotted,->,>=stealth]
+\tikzstyle{FigureArrow} = [-{Stealth[length=3mm, width=2mm]}, line width=0.2mm]
+
+
+
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{patchplots}
+\pgfplotsset{compat=newest, samples=100} %Set this value to 65 for the final version
+%\usepgfplotslibrary{dateplot} 
+
+
+%\providecommand{\keywords}[1]{\textbf{\textit{Index terms---}} #1}
+
+%\journalname{Journal of Science Education and Technology}
+
+\begin{document}
+
+\begin{tikzpicture}
+	\begin{axis}[domain=-1:1, tick style={draw=none}, ticks=none, ymax=5, ymin=-5, xmax=11, xmin=-1, line width=5, width=20cm, height=10cm]
+		\addplot [line width=1] coordinates{(0, -15) (0, 15)};
+		\addplot [line width=1] coordinates{(-15, 0) (15, 0)};
+		\addplot [line width=0.5, dashed] coordinates{(-15, 4) (15, 4)};
+		\addplot [line width=0.5, dashed] coordinates{(-15, -4) (15, -4)};
+		\addplot [line width=0.5, dashed] coordinates{(3.75, -15) (3.75, 15)};
+		\addplot [line width=0.5, dashed] coordinates{(8.75, -15) (8.75, 15)};
+		\dimline [line style = {line width=0.7}, extension start length=0, extension end length=0]{(0.5,-4)}{(0.5, 4)}{\Large $2A$};
+		\dimline [line style = {line width=0.7}, extension start length=0, extension end length=0]{(3.75,-1.5)}{(8.75, -1.5)}{\Large$\displaystyle T:=\frac{1}{f}$};
+		\node[] at (axis cs: 0, 0) {\Huge $\bullet$};
+		\node[] at (axis cs: -0.5, 0.6) {\Large $(O, t_0)$};
+		\addplot [line width=2, mark=none] coordinates{(-1.25, -4) (1.25, 4) (3.75, -4) (6.25, 4) (8.75, -4) (11.25, 4) (13.75, -4)};
+	\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+	\begin{axis}[domain=-1:1, tick style={draw=none}, ticks=none, ymax=5, ymin=-5, xmax=11, xmin=-1, line width=5, width=20cm, height=10cm]
+		\addplot [line width=1] coordinates{(0, -15) (0, 15)};
+		\addplot [line width=1] coordinates{(-15, 0) (15, 0)};
+		\addplot [line width=0.5, dashed] coordinates{(-15, 4) (15, 4)};
+		\addplot [line width=0.5, dashed] coordinates{(-15, -4) (15, -4)};
+		\addplot [line width=0.5, dashed] coordinates{(2.5, -15) (2.5, 15)};
+		\addplot [line width=0.5, dashed] coordinates{(7.5, -15) (7.5, 15)};
+		\dimline [line style = {line width=0.7}, extension start length=0, extension end length=0]{(0.5,-4)}{(0.5, 4)}{\Large $2A$};
+		\dimline [line style = {line width=0.7}, extension start length=0, extension end length=0]{(2.5,-2.5)}{(7.5, -2.5)}{\Large$\displaystyle T:=\frac{1}{f}$};
+		\node[] at (axis cs: 0, 0) {\Huge $\bullet$};
+		\node[] at (axis cs: -0.5, 0.6) {\Large $(O, t_0)$};
+		\addplot [line width=2, mark=none] coordinates{(-2.5, -4) (2.5, 4) (2.5, -4) (7.5, 4) (7.5, -4) (12.5, 4) (12.5, -4)};
+	\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+	\begin{axis}[domain=-1:1, tick style={draw=none}, ticks=none, ymax=5, ymin=-5, xmax=11, xmin=-1, line width=5, width=20cm, height=10cm]
+		\addplot [line width=1] coordinates{(0, -15) (0, 15)};
+		\addplot [line width=1] coordinates{(-15, 0) (15, 0)};
+		\addplot [line width=0.5, dashed] coordinates{(-15, 4) (15, 4)};
+		\addplot [line width=0.5, dashed] coordinates{(-15, -4) (15, -4)};
+		\addplot [line width=0.5, dashed] coordinates{(5, -15) (5, 15)};
+		\addplot [line width=0.5, dashed] coordinates{(6.5, -15) (6.5, 15)};
+		\addplot [line width=0.5, dashed] coordinates{(10, -15) (10, 15)};
+		\dimline [line style = {line width=0.7}, extension start length=0, extension end length=0]{(0.5,-4)}{(0.5, 4)}{\Large $2A$};
+		\dimline [line style = {line width=0.7}, extension start length=0, extension end length=0]{(5,-2.5)}{(10, -2.5)}{\Large$\displaystyle T:=\frac{1}{f}$};
+		\dimline [line style = {line width=0.7}, extension start length=0, extension end length=0]{(5,-1.0)}{(6.5, -1.0)}{\Large$\displaystyle DT$};
+		\node[] at (axis cs: 0, 0) {\Huge $\bullet$};
+		\node[] at (axis cs: -0.5, 0.6) {\Large $(O, t_0)$};
+		\addplot [line width=2, mark=none] coordinates{(-2.5, -4) (0, -4) (0, -4) (0, 4) (1.5, 4) (1.5, -4) (5, -4) (5, 4) (6.5, 4) (6.5, -4) (10, -4) (10, 4) (11.5, 4)};
+	\end{axis}
+\end{tikzpicture}
+
+\end{document}

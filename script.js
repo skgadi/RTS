@@ -308,7 +308,7 @@ function draw(data) {
 			else if (properties.edges.length == 1)
 				network.editEdgeMode();
 			else
-				network.addNodeMode();
+				MdlClickNetworkManuplation($(".NetworkManuplation")[0], "New node");
 		}
 		if ((SimulationState !== "Design") && (properties.nodes.length == 1))
 			network.body.nodes[properties.nodes[0]].options.gskExtra.RunTimeExec();
@@ -1471,7 +1471,6 @@ function SimulateOperation(ButtonType) {
 				break;
 			case "Paused":
 				ExecuteFunctions();
-				SetGUIState("SimulationPaused");
 				break;
 			}
 			break;
@@ -1479,5 +1478,23 @@ function SimulateOperation(ButtonType) {
 			console.log(err);
 			SimulateOperation("Stop");
 		}
+	}
+}
+
+function MatrixToLatexString (InputMat) {
+	console.log(InputMat);
+	var StrOut = "\\begin{bmatrix}";
+	try {
+		for (var i = 0; i < InputMat.length; i++) {
+			for (var j = 0; j < InputMat[0].length; j++) {
+				if (j !== 0) StrOut += " & ";
+				StrOut += math.eval(InputMat[i][j]);
+			}
+			StrOut += " \\\\";
+		}
+		StrOut += "\\end{bmatrix}";
+		return StrOut;
+	} catch (err) {
+		return "";
 	}
 }

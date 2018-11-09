@@ -36,7 +36,7 @@ gsk_libs_sinks_display = {
 	RunTimeExec: function () {},
 	Evaluate: function () {
 		//console.log(this.InputParams);
-		if (SimulationTime===0 || (SimulationTime >= (this.CompiledParams[1] + this.CompiledParams[2]))) {
+		if (PauseTheSimulation || RealTime===0 || (RealTime >= (this.CompiledParams[1] + this.CompiledParams[2]))) {
 			var StrToDisp = "";
 			for (var i = 0; i < this.InputParams[0].length; i++) {
 				for (var j = 0; j < this.InputParams[0][0].length; j++) {
@@ -49,7 +49,7 @@ gsk_libs_sinks_display = {
 				id: this.CompiledParams[0],
 				label: StrToDisp,
 			});
-			if (SimulationTime!==0) this.CompiledParams[2] += this.CompiledParams[1];
+			if ( (!PauseTheSimulation) && (RealTime!==0)) this.CompiledParams[2] += this.CompiledParams[1];
 		}
 		return;
 	},
