@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Real-time simulation - S. K. Gadi</title>
+	<link rel="icon" type="image/png" href="favicon.png">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="style.css?version=0.001"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" />
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+	<script   src="https://code.jquery.com/jquery-3.3.1.min.js"   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="   crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js'></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+	<script src="math-functions.js?version=0.002"></script>
+	<script src="sources.js?version=0.002"></script>
+	<script src="operators.js?version=0.002"></script>
+	<script src="transfer-functions.js?version=0.002"></script>
+	<script src="hardware-io.js?version=0.002"></script>
+	<script src="script.js?version=0.002"></script>
+</head>
+<body>
+<div class="GSKShowWhenLoading" style="display: block">
+	<p>Loading ...</p>
+	<p>Please wait until it loads. If it takes more than 1 minute, please refresh the page.</p>
+</div>
+<div class="GSKShowWhenLoaded" style="display: none; width: 100%; height: 100%;">
+<div id="NodeEditor" title="Node editor" style="display: none; padding: 0px;">
+	<div class="w3-bar w3-theme">
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink w3-red" id="btnSources"           onclick="OpenSelectNodeType(event,'Sources')"           ><img src="images/tex/icons-figure0.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnFunctions"         onclick="OpenSelectNodeType(event,'Functions')"         ><img src="images/tex/icons-figure1.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnSinks"             onclick="OpenSelectNodeType(event,'Sinks')"             ><img src="images/tex/icons-figure2.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnOperators"         onclick="OpenSelectNodeType(event,'Operators')"         ><img src="images/tex/icons-figure3.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnTransferFunctions" onclick="OpenSelectNodeType(event,'TransferFunctions')" ><img src="images/tex/icons-figure4.png" style="width: 100%;" /></button>
+		<button style="width:16.667%; padding: 0px;" class="w3-bar-item w3-button tablink"        id="btnHardwareIOs"        onclick="OpenSelectNodeType(event,'HardwareIOs')"        ><img src="images/tex/icons-figure5.png" style="width: 100%;" /></button>
+	</div>
+	<div id="Sources" class="w3-container NodeType" style = "padding: 0px;">
+		<div class="w3-row">
+			<div class="w3-col s3 m3 l3">
+				<label class="SourceSignalType"><b>Select a signal</b></label>
+				<select class="SourceSignalType w3-input w3-select w3-border w3-border-theme" id="SourceSignalType">
+				</select>
+			</div>
+			<div id="SourceSingnalParams">
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col s12 m12 l12">
+				<label class="SourcesLaTeXRender"><b>Functionality where $t$ is simulation time and $y(t)$ is output</b></label>
+				<div class="w3-col s12 m12 l12" id="SourcesLaTeXRender">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="Sinks" class="w3-container NodeType" style="padding: 0px; display:none">
+		<div class="w3-row">
+			<div class="w3-col s4 m4 l4">
+				<label class="SinksPlotType"><b>Plot type</b></label>
+				<select class="SinksPlotType w3-input w3-select w3-border w3-border-theme" id="SinksPlotType">
+					<option value="SCOPE">Scope</option>
+					<option value="XYGRAPH">XY Graph</option>
+				</select>
+			</div>
+			<div class="w3-col s4 m4 l4">
+				<label class="SinksLineColor"><b>Line color</b></label>
+				<input id="SinksLineColor" style="display: block;width: 100%;height: 39px;" type="color" name="color" value="#800000" />
+			</div>
+			<div class="w3-col s4 m4 l4">
+				<label class="SinksLineType"><b>Line type</b></label>
+				<select class="SinksLineType w3-input w3-select w3-border w3-border-theme" id="SinksLineType">
+					<option value="SOLID">Solid</option>
+					<option value="DASHED">Dashed</option>
+					<option value="DOTTED">Dotted</option>
+				</select>
+			</div>
+			<div class="w3-col s4 m4 l4">
+				<label class="SinksXAxisType"><b>X-axis type</b></label>
+				<select class="SinksXAxisType w3-input w3-select w3-border w3-border-theme" id="SinksXAxisType">
+					<option value="LINEAR">Linear</option>
+					<option value="LOGARITHMIC">Logarithmic</option>
+				</select>
+			</div>
+			<div class="w3-col s4 m4 l4">
+				<label class="SinksYAxisType"><b>Y-axis type</b></label>
+				<select class="SinksYAxisType w3-input w3-select w3-border w3-border-theme" id="SinksYAxisType">
+					<option value="LINEAR">Linear</option>
+					<option value="LOGARITHMIC">Logarithmic</option>
+				</select>
+			</div>
+			<div class="w3-col s4 m4 l4">
+				<label class="SinksLabel"><b>Label</b></label>
+				<input class="w3-input w3-border w3-border-theme" value="Signal" id="SinksLabel"/>
+			</div>
+		</div>
+	</div>
+	<div id="Operators" class="w3-container NodeType" style="padding: 0px; display:none">
+		<div class="w3-row">
+			<div class="w3-col s12 m12 l12">
+				<label class="OperatorsName"><b>Operator</b></label>
+				<select class="OperatorsName w3-input w3-select w3-border w3-border-theme" id="OperatorsName">
+				</select>
+			</div>
+		<div class="w3-row">
+			<div class="w3-col s12 m12 l12">
+				<label class="OperatorsLaTeXRender"><b>Functionality where $u_1$, $u_2$, $u_3$, $\dots$, $u_n$ are inputs and $y$ is output</b></label>
+				<div class="w3-col s12 m12 l12" id="OperatorsLaTeXRender">
+				</div>
+			</div>
+		</div>
+		</div>
+	</div>
+	<div id="Functions" class="w3-container NodeType" style="padding: 0px; display:none">
+		<div class="w3-row">
+			<div class="w3-col s3 m3 l3">
+				<label class="FunctionsName"><b>Static function</b></label>
+				<select class="FunctionsName w3-input w3-select w3-border w3-border-theme" id="FunctionsName">
+				</select>
+			</div>
+			<div id="StaticFunctionParams">
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col s12 m12 l12">
+				<label class="FunctionsLaTeXRender"><b>Functionality where $u$ is input and $y$ is output</b></label>
+				<div class="w3-col s12 m12 l12" id="FunctionsLaTeXRender">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="TransferFunctions" class="w3-container NodeType" style="padding: 0px; display:none">
+		<div class="w3-row">
+			<div class="w3-col s3 m3 l3">
+				<label class="TransferFunctionsName"><b>Static function</b></label>
+				<select class="TransferFunctionsName w3-input w3-select w3-border w3-border-theme" id="TransferFunctionsName">
+				</select>
+			</div>
+			<div id="TransferFunctionsParams">
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col s12 m12 l12">
+				<label class="TransferFunctionsLaTeXRender"><b>Functionality where $u$ is input and $y$ is output</b></label>
+				<div class="w3-col s12 m12 l12" id="TransferFunctionsLaTeXRender">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="HardwareIOs" class="w3-container NodeType" style="padding: 0px; display:none">
+		<div class="w3-row">
+			<div class="w3-col s3 m3 l3">
+				<label class="HardwareIOsName"><b>Static function</b></label>
+				<select class="HardwareIOsName w3-input w3-select w3-border w3-border-theme" id="HardwareIOsName">
+				</select>
+			</div>
+			<div id="HardwareIOsParams">
+			</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-col s12 m12 l12">
+				<label class="HardwareIOsNameLaTeXRender"><b>More info</b></label>
+				<div class="w3-col s12 m12 l12" id="HardwareIOsNameLaTeXRender">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="SinksDialogs"></div>
+<div id="mynetwork"></div>
+<div class="w3-bar w3-theme" style="position: absolute; bottom: 0; border: 0; left: 0;">
+	<button class="FileHandling w3-bar-item w3-button" id="NewNetwork"><i class="fas fa-file"></i></button>
+	<button class="FileHandling w3-bar-item w3-button" id="SaveNetwork"><i class="fas fa-save"></i></button>
+	<button class="FileHandling w3-bar-item w3-button" id="OpenNetwork"><i class="fas fa-folder-open"></i></button>
+	<button class="w3-bar-item w3-button w3-right" id="Simulate"><i class="fas fa-play"></i></button>
+	<button class="w3-bar-item w3-button w3-right" id="Settings"><i class="fas fa-cogs"></i></button>
+</div>
+</div>
+<div style="display: none;">
+<div id="ConfirmRemoveNetwork" title="Delete this network?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This network will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>
+<div id="OpenFileDialog" title="Select a file" style="padding: 0px">
+	<form>
+		<input type="file" />
+		<p></p>
+	</form>
+</div>
+</div>
+</body>
+</html>	

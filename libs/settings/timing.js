@@ -8,6 +8,10 @@ gsk_libs_settings_timing = {
 			Name: "Sampling time (ms)",
 			Type: "ScalarReal",
 			Value: [[10]],
+		}, {
+			Name: "Execution time interval (ms)",
+			Type: "ScalarReal",
+			Value: [[10]],
 		},
 	],
 	Label: function () {
@@ -22,6 +26,7 @@ gsk_libs_settings_timing = {
 	Init: function () {
 		RunSimulationForS = math.eval(this.Parameters[0].Value[0][0]);
 		SamplingTimeMs = math.eval(this.Parameters[1].Value[0][0]);
+		SamplingTimeForExecMs = math.eval(this.Parameters[2].Value[0][0]);
 	},
 	End: function () {},
 	Constructor: function (data) {},
@@ -42,7 +47,9 @@ gsk_libs_settings_timing = {
 	},
 	ValidateParams: function () {
 		if (math.eval(this.Parameters[1].Value[0][0]) <= 0)
-			return "Sampling time should be positive";
+			return "Sampling time should be a positive number";
+		if (math.eval(this.Parameters[1].Value[0][0]) <= 0)
+			return "Execution time interval should be a positive number";
 		return "OK";
 	},
 }

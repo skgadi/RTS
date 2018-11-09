@@ -1,35 +1,152 @@
 var network = null;
-var options;
+var NetworkOptions;
 var container;
 var dialog;
+var LibraryDialog, ParametersEditorDialog;
+var GSK_BtnsForParametersEditorDialog, GSK_BtnsForMatrixEditorForParamsDialog;
+var GSK_MatrixEditor;
+var GSK_Data, GSK_Callback, GSK_Data_ExtrasCopy;
+var showInterval = false;
+var SelectedLibraryBlock;
 var TempSourceNodeItem, TempFunctionNodeItem, TempOperatorNodeItem, TempTransferFunctionNodeItem, TempHardwareIONodeItem;
 var CurrentTab = "Sources";
 var OrderOfExecution = [];
+var SettingsBlocksList = [];
 var SimulationState = "Loading";
 var SimulateAtInterval;
 var SimulationTime;
+var RealTime;
 var SamplingTimeMs = 10;
-var RefreshGraphsMS = 1000;
+var SamplingTimeForExecMs = 10;
+var RefreshGraphsMS = 500;
 var MaximumNoOfPointsToShow = 300;
 var MaximumFileSize = 2 * 1024 * 1024;
-/*function setDefaultLocale() {
-var defaultLocal = navigator.language;
-var select = document.getElementById('locale');
-select.selectedIndex = 0; // set fallback value
-for (var i = 0, j = select.options.length; i < j; ++i) {
-if (select.options[i].getAttribute('value') === defaultLocal) {
-select.selectedIndex = i;
-break;
-}
-}
-}*/
+var RunSimulationForS = 5;
+var LoadByIgnoringCache;
+var MaxInTerminalsAllowedToUse = 99999;
+var MaxOutTerminalsAllowedToUse = 99999;
+var MultipleAddNodes = false;
+var MultipleAddEdges = false;
+var PauseTheSimulation = false;
+var ShowNodeFocusInOptions = {
+	scale : 5,
+	offset : {
+		x : 0,
+		y : 0
+	},
+	animation : {
+		duration : 1000,
+		easingFunction : "easeInOutQuad"
+	}
+};
+var ShowNodeFocusOutOptions = {
+	scale : 2,
+	offset : {
+		x : 0,
+		y : 0
+	},
+	animation : {
+		duration : 1000,
+		easingFunction : "easeInOutQuad"
+	}
+};
+var ErrorReportingText = "<p>Check your internet connection and try again.</p><p>If you have tried everything, please report this at <a href='https://github.com/skgadi/RTS/issues'>github.com/skgadi/RTS/issues/</a>.</p>";
+GSK_Colors = ['AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'Black', 'BlanchedAlmond', 'Blue', 'BlueViolet', 'Brown', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGrey', 'DarkGreen', 'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon', 'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkSlateGrey', 'DarkTurquoise', 'DarkViolet', 'DeepPink', 'DeepSkyBlue', 'DimGray', 'DimGrey', 'DodgerBlue', 'FireBrick', 'FloralWhite', 'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod', 'Gray', 'Grey', 'Green', 'GreenYellow', 'HoneyDew', 'HotPink', 'IndianRed ', 'Indigo ', 'Ivory', 'Khaki', 'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue', 'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey', 'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue', 'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime', 'LimeGreen', 'Linen', 'Magenta', 'Maroon', 'MediumAquaMarine', 'MediumBlue', 'MediumOrchid', 'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen', 'MediumTurquoise', 'MediumVioletRed', 'MidnightBlue', 'MintCream', 'MistyRose', 'Moccasin', 'NavajoWhite', 'Navy', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed', 'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed', 'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple', 'RebeccaPurple', 'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Salmon', 'SandyBrown', 'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue', 'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'Tan', 'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White', 'WhiteSmoke', 'Yellow', 'YellowGreen',
+]
+var GSK_Parameter_Types = {
+	"ScalarOptions" : {
+		"Size" : "Scalar",
+		"Type" : "Options",
+	},
+	"VectOptions" : {
+		"Size" : "Vector",
+		"Type" : "Options",
+	},
+	/*"MatOptions" : {
+	"Size" : "Matrix",
+	"Type" : "Options",
+	},*/
+	"ScalarInteger" : {
+		"Size" : "Scalar",
+		"Type" : "Integer",
+	},
+	"VectInteger" : {
+		"Size" : "Vector",
+		"Type" : "Integer",
+	},
+	"MatInteger" : {
+		"Size" : "Matrix",
+		"Type" : "Integer",
+	},
+	"ScalarReal" : {
+		"Size" : "Scalar",
+		"Type" : "Real",
+	},
+	"VectReal" : {
+		"Size" : "Vector",
+		"Type" : "Real",
+	},
+	"MatReal" : {
+		"Size" : "Matrix",
+		"Type" : "Real",
+	},
+	"ScalarComplex" : {
+		"Size" : "Scalar",
+		"Type" : "Complex",
+	},
+	"VectComplex" : {
+		"Size" : "Vector",
+		"Type" : "Complex",
+	},
+	"MatComplex" : {
+		"Size" : "Matrix",
+		"Type" : "Complex",
+	},
+	"ScalarText" : {
+		"Size" : "Scalar",
+		"Type" : "Text",
+	},
+	"VectText" : {
+		"Size" : "Vector",
+		"Type" : "Text",
+	},
+	"MatText" : {
+		"Size" : "Matrix",
+		"Type" : "Text",
+	},
+	"ScalarColor" : {
+		"Size" : "Scalar",
+		"Type" : "Color",
+	},
+	"VectColor" : {
+		"Size" : "Vector",
+		"Type" : "Color",
+	},
+	/*"MatColor" : {
+	"Size" : "Matrix",
+	"Type" : "Color",
+	},*/
+};
+var GSK_Mandatory_Items = {
+	"Constructor" : "function",
+	"Destructor" : "function",
+	"Details" : "function",
+	"End" : "function",
+	"Evaluate" : "function",
+	"Init" : "function",
+	"Label" : "function",
+	"MaxInTerminals" : "number",
+	"MaxOutTerminals" : "number",
+	"Name" : "string",
+	"Parameters" : "object",
+	"RunTimeExec" : "function",
+	"ValidateParams" : "function",
+};
 
 function destroy() {
 	if (network !== null) {
-		for (var TempNode in network.body.data.nodes._data) {
-			if (network.body.data.nodes._data[TempNode].gskExtra.Tab == "Sinks")
-				$("#Node_" + TempNode).remove();
-		}
+		for (TempBlockID in network.body.data.nodes._data)
+			network.body.data.nodes._data[TempBlockID].gskExtra.Destructor();
 		network.destroy();
 		network = null;
 	}
@@ -42,114 +159,89 @@ function ResetNetwork() {
 function draw(data) {
 	// create a network
 	container = document.getElementById('mynetwork');
-	options = {
-		nodes: {
-			shape: 'box',
-			color: {
-				border: '#000000',
-				background: "#ffffff",
+	NetworkOptions = {
+		locale : "gsk",
+		locales : {
+			"gsk" : {
+				edit : 'Edit',
+				del : 'Delete selected',
+				back : 'Back',
+				addNode : 'Add block',
+				addEdge : 'New connection',
+				editNode : 'Edit block',
+				editEdge : 'Edit connection',
+				addDescription : 'Click in an empty space to place a new block.',
+				edgeDescription : 'Click on a block and drag the connection to another block to connect them.',
+				editEdgeDescription : 'Click on the control points and drag them to a block to connect to it.',
+				createEdgeError : 'Cannot connect to a cluster.',
+				deleteClusterError : 'Clusters cannot be deleted.',
+				editClusterError : 'Clusters cannot be edited.'
+			}
+		},
+		interaction : {
+			navigationButtons : true,
+			keyboard : false,
+			multiselect : true,
+		},
+		nodes : {
+			shape : 'box',
+			color : {
+				border : '#000000',
+				background : "#ffffff",
 			},
-			font: {
-				color: '#000000',
+			font : {
+				color : '#000000',
 			},
 		},
-		edges: {
-			color: {
-				color: '#000000',
+		edges : {
+			//smooth : false,
+			color : {
+				color : '#000000',
 			},
-			arrows: {
-				to: {
-					enabled: true,
-					scaleFactor: 1,
-					type: 'arrow'
+			arrows : {
+				to : {
+					enabled : true,
+					scaleFactor : 1,
+					type : 'arrow'
 				}
 			},
 		},
-		physics: {
-			enabled: true,
-			solver: 'barnesHut',
-			barnesHut: {
-				centralGravity: 0,
-				springLength: 0,
-				avoidOverlap: 1,
-				damping: 1,
-				springConstant: 0.00,
-				gravitationalConstant: -1,
+		physics : {
+			enabled : true,
+			solver : 'barnesHut',
+			barnesHut : {
+				centralGravity : 0,
+				springLength : 0,
+				avoidOverlap : 1,
+				damping : 1,
+				springConstant : 0.00,
+				gravitationalConstant : -1,
 			},
-			forceAtlas2Based: {
-				springLength: 50,
-				springConstant: 0,
-				avoidOverlap: 1,
-				centralGravity: 0.00,
-				gravitationalConstant: -1
+			forceAtlas2Based : {
+				springLength : 50,
+				springConstant : 0,
+				avoidOverlap : 1,
+				centralGravity : 0.00,
+				gravitationalConstant : -1
 			},
 		},
-		manipulation: {
-			initiallyActive: true,
-			addNode: function (data, callback) {
-				// filling in the popup DOM elements
-				dialog = $("#NodeEditor").dialog({
-						dialogClass: 'noTitleStuff',
-						closeOnEscape: false,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: true,
-						resizable: false,
-						buttons: {
-							"Add node": saveData.bind(this, data, callback),
-							Cancel: function () {
-								cancelEdit(callback);
-							}
-						},
-						close: function () {}
-					}).dialog("open");
+		manipulation : {
+			enabled : false,
+			addNode : function (data, callback) {
+				GSK_Data = data;
+				GSK_Callback = callback;
+				LibraryDialog.dialog("open");
 			},
-			editNode: function (data, callback) {
-				if (data.gskExtra === 'undefined') {}
-				else {
-					$("#btn" + data.gskExtra.Tab)[0].click();
-					if (data.gskExtra.Tab == "Sources" || data.gskExtra.Tab == "Functions" || data.gskExtra.Tab == "Operators" || data.gskExtra.Tab == "TransferFunctions" || data.gskExtra.Tab == "HardwareIOs") {
-						var Elements = $("#" + data.gskExtra.Tab).find(".w3-input");
-						$(Elements[0]).val($(Elements[0]).children().filter(function () {
-								return $(this).html() == data.gskExtra.Name;
-							}).val()).change();
-						Elements = $("#" + data.gskExtra.Tab).find(".w3-input");
-						for (var i = 1; i < Elements.length; i++)
-							$(Elements[i]).val(data.gskExtra.Parameters[i - 1].Value).change();
-					} else if (data.gskExtra.Tab == "Sinks") {
-						$("#SinksLabel").val(data.label);
-						$("#SinksPlotType").val(data.gskExtra.SinksPlotType);
-						$("#SinksLineColor").val(data.gskExtra.SinksLineColor);
-						$("#SinksLineType").val(data.gskExtra.SinksLineType);
-						$("#SinksXAxisType").val(data.gskExtra.SinksXAxisType);
-						$("#SinksYAxisType").val(data.gskExtra.SinksYAxisType);
-					}
-				}
-				dialog = $("#NodeEditor").dialog({
-						dialogClass: 'noTitleStuff',
-						closeOnEscape: false,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: true,
-						resizable: false,
-						buttons: {
-							"Save node": saveDataAndCheckEdges.bind(this, data, callback),
-							Cancel: function () {
-								cancelEdit(callback);
-							}
-						},
-						close: function () {}
-					}).dialog("open");
+			editNode : function (data, callback) {
+				GSK_Data = data;
+				GSK_Callback = callback;
+				PrepareParamsEditor();
 			},
-			deleteNode: function (data, callback) {
-				if (network.body.nodes[data.nodes[0]].options.gskExtra.Tab == "Sinks")
-					$("#Node_" + data.nodes[0]).remove();
-				//console.log(data.nodes[0]);
+			deleteNode : function (data, callback) {
+				network.body.nodes[data.nodes[0]].options.gskExtra.Destructor(data);
 				callback(data);
 			},
-			addEdge: function (data, callback) {
+			addEdge : function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -158,19 +250,34 @@ function draw(data) {
 					if (data.to == network.body.edges[element].toId)
 						NoOfInputs++;
 				};
-				if (
-					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
-					 &&
-					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs)
-					 &&
-					data.from != data.to)
+				var TempIsValidNewEdge = true;
+				var TempErrorMessage = "";
+				if (NoOfOutputs >= network.body.nodes[data.from].options.gskExtra.MaxOutTerminals) {
+					TempIsValidNewEdge = false;
+					TempErrorMessage += "\nThe origin block cannot generate more output.";
+				}
+				if (NoOfInputs >= network.body.nodes[data.to].options.gskExtra.MaxInTerminals) {
+					TempIsValidNewEdge = false;
+					TempErrorMessage += "\nThe destination block cannot take more inputs.";
+				}
+				if (data.from === data.to) {
+					TempIsValidNewEdge = false;
+					TempErrorMessage += "\nYou cannot connect the same block to itself. Use an unit gain instead.";
+				}
+				if (TempIsValidNewEdge) {
 					callback(data);
-				else {
-					$.notify("This connection is not allowed", "warn");
+					if (MultipleAddEdges)
+						network.addEdgeMode();
+					else {
+						SetGUIState("EnableAllButtons");
+						$(".NetworkManuplation").attr("BtnState", "Normal");
+					}
+				} else {
+					$.notify("This connection is not allowed:" + TempErrorMessage, "error");
 					callback(null);
 				}
 			},
-			editEdge: function (data, callback) {
+			editEdge : function (data, callback) {
 				var NoOfOutputs = 0;
 				var NoOfInputs = 0;
 				for (var element in network.body.edges) {
@@ -182,21 +289,20 @@ function draw(data) {
 					}
 				};
 				if (
-					(network.body.nodes[data.from].options.gskExtra.MaxOutputs > NoOfOutputs)
+					(network.body.nodes[data.from].options.gskExtra.MaxOutTerminals > NoOfOutputs)
 					 &&
-					(network.body.nodes[data.to].options.gskExtra.MaxInputs > NoOfInputs))
+					(network.body.nodes[data.to].options.gskExtra.MaxInTerminals > NoOfInputs)) {
 					callback(data);
-				else {
+				} else {
 					$.notify("This connection is not allowed", "warn");
 					callback(null);
 				}
 			}
 		}
 	};
-	network = new vis.Network(container, data, options);
+	network = new vis.Network(container, data, NetworkOptions);
 	network.on('doubleClick', function (properties) {
-		//console.log(properties);
-		if (SimulationState == "Design") {
+		if (SimulationState === "Design") {
 			if (properties.nodes.length == 1)
 				network.editNode();
 			else if (properties.edges.length == 1)
@@ -204,421 +310,297 @@ function draw(data) {
 			else
 				network.addNodeMode();
 		}
-		if (SimulationState == "Running")
-			if (properties.nodes.length == 1)
-				if (network.body.nodes[properties.nodes[0]].options.gskExtra.Tab == "Sinks")
-					network.body.nodes[properties.nodes[0]].options.gskExtra.Init();
+		if ((SimulationState !== "Design") && (properties.nodes.length == 1))
+			network.body.nodes[properties.nodes[0]].options.gskExtra.RunTimeExec();
 	});
 }
 
-function clearPopUp() {
-	dialog.dialog("close");
-}
-
-function cancelEdit(callback) {
-	clearPopUp();
-	callback(null);
-}
-
-function saveDataAndCheckEdges(data, callback) {
-	saveData(data, callback);
-	var NoOfOutputs = 0;
-	var NoOfInputs = 0;
-	var RemoveElement = false;
-	for (var element in network.body.edges) {
-		RemoveElement = false;
-		if (network.body.edges[element].fromId == data.id) {
-			NoOfOutputs++;
-			if (NoOfOutputs > data.gskExtra.MaxOutputs)
-				RemoveElement = true;
-		}
-		if (network.body.edges[element].toId == data.id) {
-			NoOfInputs++;
-			if (NoOfInputs > data.gskExtra.MaxInputs)
-				RemoveElement = true;
-		}
-		if (RemoveElement)
-			network.body.data.edges.remove({
-				id: element
-			});
-	};
-}
-
-function saveData(data, callback) {
-	var d = new Date();
-	var n = d.getTime();
-	data.gskExtra = {};
-	if (CurrentTab == "Sources") {
-		data.label = TempSourceNodeItem.String();
-		data.shape = "image";
-		data.image = TempSourceNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempSourceNodeItem);
-		data.gskExtra.MaxInputs = 0;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "Sinks") {
-		$("#Node_" + data.id).remove();
-		$("#SinksDialogs").append("<div id='Node_" + data.id + "' style='padding: 0px;' title='" + $("#SinksLabel").val() + "'><div id='Chart_" + data.id + "'></div></div>");
-		var TempImgId0,
-		TempImgId1;
-		if ($("#SinksXAxisType").val() == "LINEAR")
-			TempImgId0 = 0;
-		else
-			TempImgId0 = 1;
-		if ($("#SinksYAxisType").val() == "LINEAR")
-			TempImgId1 = 0;
-		else
-			TempImgId1 = 1;
-		data.gskExtra = {
-			Name: $("#SinksLabel").val(),
-			Image: "images/tex/sinks-figure" + (TempImgId0 * 2 + TempImgId1) + ".png",
-			SinksPlotType: $("#SinksPlotType").val(),
-			SinksLineColor: $("#SinksLineColor").val(),
-			SinksLineType: $("#SinksLineType").val(),
-			SinksXAxisType: $("#SinksXAxisType").val(),
-			SinksYAxisType: $("#SinksYAxisType").val(),
-			MaxOutputs: 0,
-			DialogDiv: "Node_" + data.id,
-			ChartDiv: "Chart_" + data.id,
-			DialogID: "",
-			ChartID: "",
-			ChartData: "",
-			InputParams: [0],
-			PresentOut: [0],
-			String: function () {
-				return SinksLabel;
-			},
-			Init: function () {
-				this.DialogID = $("#" + this.DialogDiv).dialog({
-						closeOnEscape: true,
-						autoOpen: false,
-						height: 350,
-						width: 500,
-						modal: false,
-						resizable: true,
-					}).dialog("open");
-				//Chart Initialization
-				var options = {
-					legend: "none",
-					chartArea: {
-						height: ($("#" + this.DialogDiv).height() - 50),
-						width: ($("#" + this.DialogDiv).width() - 100),
-					},
-					height: $("#" + this.DialogDiv).height() - 7,
-					width: $("#" + this.DialogDiv).width(),
-				};
-				this.ChartID = new google.visualization.LineChart(document.getElementById(this.ChartDiv));
-				this.ChartData = new google.visualization.DataTable();
-				this.ChartData.addColumn('number', 'Time');
-				this.ChartData.addColumn('number', this.Name);
-				this.ChartID.draw(this.ChartData, options);
-			},
-			Eval: function () {
-				var hAxis,
-				vAxis;
-				var LineStyle = [];
-				if (this.SinksXAxisType == "LOGARITHMIC")
-					hAxis = 'log';
-				else
-					hAxis = 'linear';
-				if (this.SinksYAxisType == "LOGARITHMIC")
-					vAxis = 'log';
-				else
-					vAxis = 'linear';
-				if (this.SinksLineType == "DASHED")
-					LineStyle = [10, 2];
-				else if (this.SinksLineType == "DOTTED")
-					LineStyle = [4, 4];
-				else
-					LineStyle = [0];
-				var options = {
-					legend: "none",
-					chartArea: {
-						height: ($("#" + this.DialogDiv).height() - 50),
-						width: ($("#" + this.DialogDiv).width() - 100),
-					},
-					series: {
-						0: {
-							lineDashStyle: LineStyle,
-						}
-					},
-					colors: [this.SinksLineColor],
-					vAxis: {
-						scaleType: vAxis
-					},
-					hAxis: {
-						scaleType: hAxis
-					},
-					height: $("#" + this.DialogDiv).height() - 7,
-					width: $("#" + this.DialogDiv).width(),
-				};
-				//console.log(this.InputParams);
-				if (this.ChartData.getNumberOfRows() >= MaximumNoOfPointsToShow)
-					this.ChartData.removeRow(0);
-				if (this.SinksPlotType == "XYGRAPH")
-					this.ChartData.addRow([this.InputParams[0], this.InputParams[1]]);
-				else
-					this.ChartData.addRow([SimulationTime, this.InputParams[0]]);
-				if ((SimulationTime * 1000) % RefreshGraphsMS == 0)
-					this.ChartID.draw(this.ChartData, options);
-				return [0];
-			},
-		};
-		if ($("#SinksPlotType").val() == "XYGRAPH")
-			data.gskExtra.MaxInputs = 2;
-		else
-			data.gskExtra.MaxInputs = 1;
-		data.label = data.gskExtra.Name;
-		data.shape = "image";
-		data.image = data.gskExtra.Image;
-	} else if (CurrentTab == "Functions") {
-		data.label = TempFunctionNodeItem.String();
-		data.shape = "image";
-		data.image = TempFunctionNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempFunctionNodeItem);
-		data.gskExtra.MaxInputs = 1;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "Operators") {
-		data.label = TempOperatorNodeItem.String();
-		data.shape = "image";
-		data.image = TempOperatorNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempOperatorNodeItem);
-		data.gskExtra.MaxInputs = Infinity;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "TransferFunctions") {
-		data.label = TempTransferFunctionNodeItem.String();
-		data.shape = "image";
-		data.image = TempTransferFunctionNodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempTransferFunctionNodeItem);
-		data.gskExtra.MaxInputs = 1;
-		data.gskExtra.MaxOutputs = Infinity;
-	} else if (CurrentTab == "HardwareIOs") {
-		data.label = TempHardwareIONodeItem.String();
-		data.shape = "image";
-		data.image = TempHardwareIONodeItem.Image;
-		data.gskExtra = CopyJSONForNodes(TempHardwareIONodeItem);
-	} else {
-		data.label = "Error: " + n;
-		data.gskExtra = {
-			MaxInputs: 1,
-			MaxOutputs: Infinity,
-		}
-	}
-	data.gskExtra.Tab = CurrentTab;
-	data.gskExtra.id = n;
-	clearPopUp();
-	callback(data);
-}
-
 function init() {
+	LoadByIgnoringCache = "?cache=" + (new Date()).UniqueMSNumber();
+	$.getScript('libs/libs.js' + LoadByIgnoringCache)
+	.done(function (script, textStatus, jqxhr) {
+		try {
+			for (var TempTabs in gsk_libs) {
+				$("#GSK_Lib_Head").append("<button style='border: 2px black dashed; width:" + Math.round(100000 / Object.keys(gsk_libs).length) / 1000 + "%; padding: 0px;' class='w3-bar-item w3-button w3-hover-yellow LibraryTabLink' onclick=\"SelectLibraryTab(event,\'" + TempTabs + "\') \" title='" + gsk_libs[TempTabs].Name + "'> <img src='" + gsk_libs[TempTabs].Icon + "' style='height: 2em;'/></button>");
+			}
+			LibraryDialog = $("#GSK_Library").dialog({
+					closeOnEscape : true,
+					autoOpen : false,
+					height : 400,
+					width : 500,
+					modal : true,
+					resizable : false,
+					open : function () {
+						$(".ui-dialog").css("padding", "0px");
+						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
+						SetGUIState("DisableLibraryAddButton");
+					},
+					close : function (event, ui) {
+						GSK_Callback(null);
+					}
+				});
+			ParametersEditorDialog = $("#GSK_Params_Editor").dialog({
+					closeOnEscape : false,
+					autoOpen : false,
+					height : 400,
+					width : 500,
+					modal : true,
+					resizable : false,
+					open : function () {
+						$(".ui-dialog").css("padding", "0px");
+						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
+						SetGUIState("DisableLibraryAddButton");
+					},
+					close : function (event, ui) {
+						GSK_Callback(null);
+					}
+				});
+		} catch (err) {
+			$("#GSKShowInitProgress").append("<p>Error in resolving <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
+		}
+	})
+	.fail(function (jqxhr, settings, exception) {
+		$("#GSKShowInitProgress").append("<p>Error in loading <b><i>libs/libs.js</i></b>.</p>" + ErrorReportingText);
+		return;
+	});
 	ResetNetwork();
-	// set Sources Tab
-	var TempSelect = document.getElementById("SourceSignalType");
-	for (var TempSource in SourcesForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				SourcesForNode[TempSource].Name, TempSource);
-	}
-	$("#SourceSignalType").on("change paste keyup", function () {
-		$("#SourceSingnalParams").empty();
-		var SelectedSource = $("#SourceSignalType").val();
-		TempSourceNodeItem = new Object();
-		TempSourceNodeItem = CopyJSONForNodes(SourcesForNode[SelectedSource]);
-		for (var i = 0; i < TempSourceNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempSourceNodeItem.Parameters[i].Name + ', $' + TempSourceNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempSourceNodeItem.Parameters[i].Value + '" id="SourceSingnalParam' + i + '"/></div>';
-			$("#SourceSingnalParams").append(TempString);
-			$("#SourceSingnalParam" + i).on("change paste keyup", function () {
-				TempSourceNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#SourcesLaTeXRender").empty();
-				var TempString = TempSourceNodeItem.LaTeXString();
-				$("#SourcesLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#SourceSingnalParam0").change();
-	}).change();
-	// set Functions Tab
-	TempSelect = document.getElementById("FunctionsName");
-	for (var TempSFunctions in StaticMathFunctions) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				StaticMathFunctions[TempSFunctions].Name, TempSFunctions);
-	}
-	$("#FunctionsName").on("change paste keyup", function () {
-		$("#StaticFunctionParams").empty();
-		var FunctionInt = $("#FunctionsName").val();
-		TempFunctionNodeItem = new Object();
-		TempFunctionNodeItem = CopyJSONForNodes(StaticMathFunctions[FunctionInt]);
-		for (var i = 0; i < TempFunctionNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempFunctionNodeItem.Parameters[i].Name + ', $' + TempFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempFunctionNodeItem.Parameters[i].Value + '" id="FunctionsParam' + i + '"/></div>';
-			$("#StaticFunctionParams").append(TempString);
-			$("#FunctionsParam" + i).on("change paste keyup", function () {
-				TempFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#FunctionsLaTeXRender").empty();
-				var TempString = TempFunctionNodeItem.LaTeXString();
-				$("#FunctionsLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#FunctionsParam0").change();
-	}).change();
-	// set Operators Tab
-	var TempSelect = document.getElementById("OperatorsName");
-	for (var TempOperators in OperatorsForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				OperatorsForNode[TempOperators].Name, TempOperators);
-	}
-	$("#OperatorsName").on("change paste keyup", function () {
-		$("#OperatorParams").empty();
-		var OperatorInt = $("#OperatorsName").val();
-		TempOperatorNodeItem = new Object();
-		TempOperatorNodeItem = CopyJSONForNodes(OperatorsForNode[OperatorInt]);
-		var TempString = TempOperatorNodeItem.LaTeXString();
-		$("#OperatorsLaTeXRender").empty();
-		$("#OperatorsLaTeXRender").append(TempString);
-		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-	}).change();
-	// set TransferFunctions Tab
-	var TempSelect = document.getElementById("TransferFunctionsName");
-	for (var TempTransferFunctions in TransferFunctionsForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				TransferFunctionsForNode[TempTransferFunctions].Name, TempTransferFunctions);
-	}
-	$("#TransferFunctionsName").on("change paste keyup", function () {
-		$("#TransferFunctionsParams").empty();
-		var TransferFunctionInt = $("#TransferFunctionsName").val();
-		TempTransferFunctionNodeItem = new Object();
-		TempTransferFunctionNodeItem = CopyJSONForNodes(TransferFunctionsForNode[TransferFunctionInt]);
-		for (var i = 0; i < TempTransferFunctionNodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempTransferFunctionNodeItem.Parameters[i].Name + ', $' + TempTransferFunctionNodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" value="' + TempTransferFunctionNodeItem.Parameters[i].Value + '" id="TransferFunctionsParam' + i + '"/></div>';
-			$("#TransferFunctionsParams").append(TempString);
-			$("#TransferFunctionsParam" + i).on("change paste keyup", function () {
-				TempTransferFunctionNodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#TransferFunctionsLaTeXRender").empty();
-				var TempString = TempTransferFunctionNodeItem.LaTeXString();
-				$("#TransferFunctionsLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#TransferFunctionsParam0").change();
-	}).change();
-	// set HardwareIOs Tab
-	var TempSelect = document.getElementById("HardwareIOsName");
-	for (var TempHardwareIOs in HardwareIOsForNode) {
-		TempSelect.options[TempSelect.options.length] = new Option(
-				HardwareIOsForNode[TempHardwareIOs].Name, TempHardwareIOs);
-	}
-	$("#HardwareIOsName").on("change paste keyup", function () {
-		$("#HardwareIOsParams").empty();
-		var HardwareIOsInt = $("#HardwareIOsName").val();
-		TempHardwareIONodeItem = new Object();
-		TempHardwareIONodeItem = CopyJSONForNodes(HardwareIOsForNode[HardwareIOsInt]);
-		for (var i = 0; i < TempHardwareIONodeItem.Parameters.length; i++) {
-			var TempString = '<div class="w3-col s3 m3 l3"><label><b>' + TempHardwareIONodeItem.Parameters[i].Name + ', $' + TempHardwareIONodeItem.Parameters[i].LaTeX + '$</b></label><input class="w3-input w3-border w3-border-theme" type="number" value="' + TempHardwareIONodeItem.Parameters[i].Value + '" id="HardwareIOsParam' + i + '"/></div>';
-			$("#HardwareIOsParams").append(TempString);
-			$("#HardwareIOsParam" + i).on("change paste keyup", function () {
-				TempHardwareIONodeItem.Parameters[parseInt(ExtractNumberAtEnd($(this)[0].id))].Value = $(this).val();
-				$("#HardwareIOsNameLaTeXRender").empty();
-				var TempString = TempHardwareIONodeItem.LaTeXString();
-				$("#HardwareIOsNameLaTeXRender").append(TempString);
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			});
-		}
-		$("#HardwareIOsParam0").change();
-	}).change();
 	google.charts.load('current', {
-		'packages': ['corechart']
+		'packages' : ['corechart']
 	});
 	google.charts.setOnLoadCallback(SetViewAsLoaded);
 }
 
 $(document).ready(function () {
+	//MathJax setup
 	MathJax.Hub.Config({
-		extensions: ["tex2jax.js"],
-		jax: ["input/TeX", "output/HTML-CSS"],
-		tex2jax: {
-			inlineMath: [["$", "$"], ["\\(", "\\)"]]
+		menuSettings : {
+			inTabOrder : false
+		},
+		extensions : ["tex2jax.js"],
+		jax : ["input/TeX", "output/HTML-CSS"],
+		tex2jax : {
+			inlineMath : [["$", "$"], ["\\(", "\\)"]]
 		}
 	});
-	window.onbeforeunload = function () {
+	window.onbeforeunload = (function () {
 		return true;
-	}
-	$("#NewNetwork").click(function () {
-		$("#ConfirmRemoveNetwork").dialog({
-			resizable: false,
-			height: "auto",
-			width: 400,
-			modal: true,
-			buttons: {
-				"Delete this network": function () {
-					ResetNetwork();
-					$(this).dialog("close");
-				},
-				Cancel: function () {
-					$(this).dialog("close");
-				}
+	});
+	//Handsontable validator for complex number
+	(function (Handsontable) {
+		function GSK_Cell_ValidateInteger(query, callback) {
+			try {
+				((typeof math.eval(query) === 'number') && (math.eval(query) % 1 === 0)) ? callback(true) : callback(false);
+			} catch (err) {
+				callback(false);
 			}
-		}).dialog("open");
-	});
-	$("#SaveNetwork").click(function () {
-		PrepareNetworkToDownload();
-	});
+		}
+		function GSK_Cell_ValidateReal(query, callback) {
+			try {
+				(typeof math.eval(query) === 'number') ? callback(true) : callback(false);
+			} catch (err) {
+				callback(false);
+			}
+		}
+		function GSK_Cell_ValidateComplex(query, callback) {
+			try {
+				((math.eval(query).type === 'Complex') || (typeof math.eval(query) === 'number')) ? callback(true) : callback(false);
+			} catch (err) {
+				callback(false);
+			}
+		}
+		function GSK_Cell_ValidateText(query, callback) {
+			if (query === "" || query === null)
+				callback(false);
+			else
+				callback(true);
+		}
+		function GSK_Cell_ValidateColor(query, callback) {
+			if (query === "" || query === null)
+				callback(false);
+			else
+				callback(true);
+		}
+		function GSK_Cell_ValidateOption(query, callback) {
+			if (query === "" || query === null)
+				callback(false);
+			else
+				callback(true);
+		}
+
+		Handsontable.validators.registerValidator('my.Integer', GSK_Cell_ValidateInteger);
+		Handsontable.validators.registerValidator('my.Real', GSK_Cell_ValidateReal);
+		Handsontable.validators.registerValidator('my.Complex', GSK_Cell_ValidateComplex);
+		Handsontable.validators.registerValidator('my.Text', GSK_Cell_ValidateText);
+		Handsontable.validators.registerValidator('my.Color', GSK_Cell_ValidateColor);
+		Handsontable.validators.registerValidator('my.Options', GSK_Cell_ValidateOption);
+	})(Handsontable);
+	// Handle loading files to open
 	$('form input').change(function (event) {
 		$('form p').html("Loading the file<br/><b><i>" + this.files[0].name + "</i></b>.<br/>Please wait ...");
 		if (this.files[0].size > MaximumFileSize)
 			$('form p').html($('form p').html() + "<br/>This file is too big, select another file.");
 		else {
 			readFileContent(this.files[0]).then(content => {
-				var TempData = JSON.parse2(content);
-				var TempNodes = [];
-				var TempEdges = [];
-				for (var TempNode in TempData.nodes._data)
-					TempNodes[TempNodes.length] = JSON.parse2(JSON.stringify2(TempData.nodes._data[TempNode]));
-				for (var TempEdge in TempData.edges._data)
-					TempEdges[TempEdges.length] = JSON.parse2(JSON.stringify2(TempData.edges._data[TempEdge]));
-				console.log(TempNodes);
-				console.log(TempEdges);
+				var TempData = Flatted.parse(content);
+				//console.log(TempData);
 				var NewData = {
-					nodes: new vis.DataSet(TempNodes),
-					edges: new vis.DataSet(TempEdges),
+					nodes : getNodeData(TempData),
+					edges : getEdgeData(TempData),
 				};
-				console.log(NewData);
 				draw(NewData);
+				PrepareNetworkAfterOpenAction();
 				$("#OpenFileDialog").dialog("close");
-			}).catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the file."))
+			}).catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the selected file."));
 		}
 		$('form input').val("");
-		/*$('form input').val("");
-		if
-		$("#OpenFileDialog").dialog("close");*/
 	});
-	$("#OpenNetwork").click(function () {
-		$("#OpenFileDialog").dialog({
-			height: "auto",
-			height: 300,
-			width: 400,
-			modal: true,
-			/*buttons : {
-			"Open selected" : function () {
-
-			$(this).dialog("close");
-			},
-			Cancel : function () {
-			$(this).dialog("close");
-			}
-			}*/
-		}).dialog("open");
-		$('form p').text("Drag your file here or click in this area.");
-	});
-	$("#Simulate").click(function () {
-		if (SimulationState == "Running") {
-			if (SimulateAtInterval != undefined)
-				clearInterval(SimulateAtInterval);
-			SetViewAsLoaded();
-		} else if (SimulationState == "Design") {
-			SetViewAsSimulating();
-			RunSimulation();
-		}
+	$("#ToolbarDragging").draggable({
+		handle : ".ToolbarDraggingHandle",
+		snap : "body",
+		containment : "body"
 	});
 	init();
 });
+function getNodeData(data) {
+	var networkNodes = [];
+	data.forEach(function (elem, index, array) {
+		if (typeof elem.image === "undefined") {
+			networkNodes.push({
+				id : elem.id,
+				label : elem.label,
+				x : elem.x,
+				y : elem.y,
+				gskExtra : elem.gskExtra
+			});
+		} else {
+			networkNodes.push({
+				id : elem.id,
+				label : elem.label,
+				x : elem.x,
+				y : elem.y,
+				shape : "image",
+				image : elem.image,
+				gskExtra : elem.gskExtra
+			});
+		}
+	});
+
+	return new vis.DataSet(networkNodes);
+}
+function getNodeById(data, id) {
+	for (var n = 0; n < data.length; n++) {
+		if (data[n].id == id) { // double equals since id can be numeric or string
+			return data[n];
+		}
+	};
+
+	throw 'Can not find id \'' + id + '\' in data';
+}
+
+function getEdgeData(data) {
+	var networkEdges = [];
+	data.forEach(function (node) {
+		// add the connection
+		node.connections.forEach(function (connId, cIndex, conns) {
+			networkEdges.push({
+				from : node.id,
+				to : connId
+			});
+			let cNode = getNodeById(data, connId);
+
+			var elementConnections = cNode.connections;
+
+			// remove the connection from the other node to prevent duplicate connections
+			/*var duplicateIndex = elementConnections.findIndex(function (connection) {
+			return connection == node.id; // double equals since id can be numeric or string
+			});
+
+			if (duplicateIndex != -1) {
+			elementConnections.splice(duplicateIndex, 1);
+			};*/
+		});
+	});
+	return new vis.DataSet(networkEdges);
+}
+function objectToArray(obj) {
+	return Object.keys(obj).map(function (key) {
+		obj[key].id = key;
+		return obj[key];
+	});
+}
+
+function addConnections(elem, index) {
+	// need to replace this with a tree of the network, then get child direct children of the element
+	elem.connections = [];
+	network.body.nodes[elem.id].edges.forEach(function (TempEdgeOfItem) {
+		if (TempEdgeOfItem.to.id !== elem.id) {
+			elem.connections.push(TempEdgeOfItem.to.id);
+			//console.log(network.body.nodes[TempEdgeOfItem.from.id].options.gskExtra.Name+" -> " + TempEdgeOfItem.to.id + "->"+ network.body.nodes[TempEdgeOfItem.to.id].options.gskExtra.Name )
+		}
+	});
+}
+
+function addGSKExtras(elem, index) {
+	elem.label = network.body.data.nodes._data[elem.id].label;
+	if (typeof network.body.data.nodes._data[elem.id].image !== "undefined")
+		elem.image = network.body.data.nodes._data[elem.id].image;
+	elem.gskExtra = network.body.data.nodes._data[elem.id].gskExtra;
+}
+
+function CreateNewFile() {
+	$("#ConfirmRemoveNetwork").dialog({
+		resizable : false,
+		height : "auto",
+		width : 400,
+		modal : true,
+		buttons : {
+			"Delete this network" : function () {
+				ResetNetwork();
+				$(this).dialog("close");
+			},
+			Cancel : function () {
+				$(this).dialog("close");
+			}
+		}
+	}).dialog("open");
+}
+function ConfirmOpenFile() {
+	$("#ConfirmRemoveNetwork").dialog({
+		resizable : false,
+		height : "auto",
+		width : 400,
+		modal : true,
+		buttons : {
+			"Delete this network" : function () {
+				ResetNetwork();
+				$(this).dialog("close");
+				OpenAFile();
+			},
+			Cancel : function () {
+				$(this).dialog("close");
+			}
+		}
+	}).dialog("open");
+}
+
+function OpenAFile() {
+	$("#OpenFileDialog").dialog({
+		height : "auto",
+		height : 300,
+		width : 400,
+		modal : true,
+		/*buttons : {
+		"Open selected" : function () {
+
+		$(this).dialog("close");
+		},
+		Cancel : function () {
+		$(this).dialog("close");
+		}
+		}*/
+	}).dialog("open");
+	$('form p').text("Drag your file here or click in this area.");
+}
 
 function OpenSelectNodeType(evt, TabId) {
 	var i,
@@ -637,195 +619,649 @@ function OpenSelectNodeType(evt, TabId) {
 	CurrentTab = TabId;
 }
 
-function ExtractNumberAtEnd(Str) {
-	var matches = Str.match(/\d+$/);
-	if (matches)
-		return matches[0];
-	else
-		return 0;
+function SetViewAsLoading() {
+	SimulationState = "Loading";
+	SetGUIState("LoadingSimulationState");
 }
 
-function GenJSONFuncsForNodes(TabName, ItemName) {
-	/*switch(TabName) {
-	case "Sources":{}
-	}
-	Source.Init = */
-}
-function CopyJSONForNodes(Source) {
-	var target;
-	target = JSON.parse2(JSON.stringify2(Source));
-	target.Init = Source.Init;
-	target.Eval = Source.Eval;
-	target.String = Source.String;
-	target.LaTeXString = Source.LaTeXString;
-	return target;
+function SetViewAsLoaded() {
+	SimulationState = "Design";
+	SetGUIState("DesignSimulationState");
 }
 
-// Taken from https://gist.github.com/kaustubh-karkare/6065251
-JSON.stringify2 = function (obj, replacer) {
-	if (typeof(reviver) !== "function")
-		replacer = undefined;
-	var reference = [],
-	replace = {};
-	(function (obj) {
-		if (typeof(obj) === "function" || obj === undefined)
-			return;
-		var i;
-		// if this element is already in the reference array, return the index
-		if ((i = reference.indexOf(obj)) !== -1)
-			return i;
-		// or else, push this element, and save the index, to be returned later
-		else
-			i = reference.push(obj) - 1;
-		// if this is an object (exceptions: RegExp & null)
-		if (obj && typeof(obj) === "object" && !(obj instanceof RegExp)) {
-			var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
-			// recursively process this object
-			for (var key in obj)
-				if (typeof(obj[key]) !== "function" && obj[key] !== undefined)
-					obj2[key] = arguments.callee(obj[key]);
-			// mark the original object for replacement later
-			replace[i] = obj2;
-		}
-		return i;
-	})(obj);
-	// replace the original objects in the reference array
-	for (var i in replace)
-		reference[i] = replace[i];
-	return JSON.stringify(reference, function (key, value) {
-		value = (replacer ? replacer(key, value) : value);
-		if (typeof(value) === "string")
-			return "S" + value;
-		else if (value !== value)
-			return "N"; // NaN
-		else if (value === Infinity)
-			return "I";
-		else if (value === -Infinity)
-			return "i";
-		else if (value instanceof RegExp)
-			return "R" + value.lastIndex + "/" + (value.ignoreCase ? "i" : "") +
-			(value.global ? "g" : "") + (value.multiline ? "m" : "") + "/" + value.source;
-		else
-			return value;
-	});
-};
-
-JSON.parse2 = function (obj_str, reviver) {
-	if (typeof(reviver) !== "function")
-		reviver = undefined;
-	var replace = {};
-	var reference = JSON.parse(obj_str, function (key, value) {
-			var result;
-			if (typeof(value) !== "string")
-				result = value;
-			else if (value[0] === "R") {
-				var i = value.indexOf("/"),
-				j = value.indexOf("/", i + 1);
-				k = new RegExp(value.substr(j + 1), value.substr(i + 1, j - i - 1));
-				k.lastIndex = parseInt(value.substr(1, i - 1));
-				result = k;
-			} else if (value[0] === "i")
-				result = -Infinity;
-			else if (value[0] === "I")
-				result = Infinity;
-			else if (value[0] === "N")
-				result = NaN;
-			else if (value[0] === "S")
-				result = value.substr(1);
-			else
-				throw new Error("Invalid Item");
-			return (reviver ? reviver(key, result) : result);
-		});
-	return (function (obj) {
-		// if the item is not an object or an array, return immediately
-		if (!obj || typeof(obj) !== "object" || obj instanceof RegExp)
-			return obj;
-		var obj2 = Array.isArray(obj) ? new Array(obj.length) : {};
-		// save a reference to new object corresponding to the index of the old one
-		replace[reference.indexOf(obj)] = obj2;
-		// if the item has not already been encountered, recursively process its components
-		for (var key in obj)
-			obj2[key] = replace[obj[key]] || arguments.callee(reference[obj[key]]);
-		return obj2;
-	})(reference[0]);
-};
-
-//$(".vis-manipulation").css("display", "none")
-//$(".vis-edit-mode").css("display", "none")
-
-function GetOrderOfExecution() {
-	if (network != null) {
-		OrderOfExecution = [];
-		for (var TempEdge in network.body.edges) {
-			if (
-				(OrderOfExecution.indexOf(network.body.edges[TempEdge].toId) < 0) &&
-				(network.body.nodes[network.body.edges[TempEdge].toId].options.gskExtra.MaxOutputs == 0))
-				OrderOfExecution.push(network.body.edges[TempEdge].toId);
-		}
-		var TempIndex = 0;
-		if (OrderOfExecution.length > 0) {
-			while (true) {
-				for (var TempEdge in network.body.edges) {
-					if (
-						(OrderOfExecution.indexOf(network.body.edges[TempEdge].fromId) < 0) &&
-						(network.body.edges[TempEdge].toId == OrderOfExecution[TempIndex]))
-						OrderOfExecution.push(network.body.edges[TempEdge].fromId);
-				}
-				TempIndex++;
-				if (TempIndex >= OrderOfExecution.length)
-					break;
-			}
-		}
-	}
-	OrderOfExecution.reverse();
-	/*OrderOfExecution.forEach(function (TempNode) {
-	console.log(network.body.nodes[TempNode].options.label);
-	});*/
+function SetViewAsSimulating() {
+	SimulationState = "Running";
+	SetGUIState("RunningSimulationState");
 }
 
-function SetProperView() {
-	if (SimulationState == "Loading") {
+function SetGUIState(State) {
+	switch (State) {
+	case "ShowingExectionOrder":
+		$("#BtnExecOrderDisplay").html("<i class='far fa-eye-slash'></i>");
+		break;
+	case "NotShowingExectionOrder":
+		$("#BtnExecOrderDisplay").html("<i class='far fa-eye'></i>");
+		break;
+	case "LoadingSimulationState":
 		$(".GSKShowWhenLoading").css("display", "block");
 		$(".GSKShowWhenLoaded").css("display", "none");
-	}
-	if (SimulationState == "Design") {
+		break;
+	case "DesignSimulationState":
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
 		$("#Simulate").html("<i class='fas fa-play'></i>");
 		network.enableEditMode()
 		$(".vis-edit-mode").css("display", "block");
-		$(".FileHandling").css("display", "block");
-	}
-	if (SimulationState == "Running") {
+		$(".FileHandling").prop('disabled', false);
+		$(".SimulationTimeDisplay").prop('disabled', true);
+		break;
+	case "RunningSimulationState":
 		$(".GSKShowWhenLoading").css("display", "none");
 		$(".GSKShowWhenLoaded").css("display", "block");
 		$("#Simulate").html("<i class='fas fa-stop'></i>");
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
-		$(".FileHandling").css("display", "none");
-
+		$(".FileHandling").prop('disabled', true);
+		$(".SimulationTimeDisplay").prop('disabled', false);
+		break;
+	case "DisableLibraryAddButton":
+		$(".ui-dialog-buttonpane button:contains('Add block')").button("disable");
+		$(".ui-dialog-buttonpane button:contains('Modify block')").button("disable");
+		break;
+	case "EnableLibraryAddButton":
+		$(".ui-dialog-buttonpane button:contains('Add block')").button("enable");
+		$(".ui-dialog-buttonpane button:contains('Modify block')").button("enable");
+		break;
+	case "SuspendGUIDialog":
+		$(".ui-dialog *").attr("disabled", true);
+		$(".LoadingAnimation").css('height', "2px");
+		break;
+	case "ResumeGUIDialog":
+		$(".ui-dialog *").attr("disabled", false);
+		$(".LoadingAnimation").css('height', "0px");
+		break;
+	case "SetMatrixEditorForParamsDialog":
+		$("#GSK_Params_Mtx_Editor").css("display", "block");
+		$("#GSK_Params_Items").css("display", "none");
+		$("#GSK_Params_Edt_Details").css("display", "none");
+		ParametersEditorDialog.dialog('option', 'buttons', GSK_BtnsForMatrixEditorForParamsDialog);
+		break;
+	case "RemoveMatrixEditorForParamsDialog":
+		$("#GSK_Params_Mtx_Editor").css("display", "none");
+		$("#GSK_Params_Items").css("display", "block");
+		$("#GSK_Params_Edt_Details").css("display", "block");
+		ParametersEditorDialog.dialog('option', 'buttons', GSK_BtnsForParametersEditorDialog);
+		ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon !== 'undefined') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon() + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label());
+		$("#GSK_Params_Edt_Details").empty();
+		$("#GSK_Params_Edt_Details").append("<label><b>Details</b></label>");
+		$("#GSK_Params_Edt_Details").append("<div>" + GSK_Data_ExtrasCopy.Details() + "</div>");
+		MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+		break;
+	case "DisableAllButtons":
+		$(".FileHandling").prop('disabled', true);
+		$(".NetworkManuplation").prop('disabled', true);
+		$(".EdgeManuplation").prop('disabled', true);
+		$(".InformationButtons").prop('disabled', true);
+		$(".ExecutionOrder").prop('disabled', true);
+		$(".SimulationButtons").prop('disabled', true);
+		break;
+	case "EnableAllButtons":
+		$(".FileHandling").prop('disabled', false);
+		$(".NetworkManuplation").prop('disabled', false);
+		$(".EdgeManuplation").prop('disabled', false);
+		$(".InformationButtons").prop('disabled', false);
+		$(".ExecutionOrder").prop('disabled', false);
+		$(".SimulationButtons").prop('disabled', false);
+		break;
 	}
 }
 
-function SetViewAsLoaded() {
-	SimulationState = "Design";
-	SetProperView();
+function MdlClickNetworkManuplation(DOMItem, ButtonType) {
+	SetGUIState("DisableAllButtons");
+	$(DOMItem).prop('disabled', false);
+	switch (ButtonType) {
+	case "New node":
+		MultipleAddNodes = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "MiddleClick");
+			MultipleAddNodes = true;
+			network.addNodeMode();
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	case "New edge":
+		MultipleAddEdges = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "MiddleClick");
+			MultipleAddEdges = true;
+			network.addEdgeMode();
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	}
 }
 
-function SetViewAsSimulating() {
-	SimulationState = "Running";
-	SetProperView();
+function ClickNetworkManuplation(DOMItem, ButtonType) {
+	SetGUIState("DisableAllButtons");
+	$(DOMItem).prop('disabled', false);
+	switch (ButtonType) {
+	case "New node":
+		MultipleAddNodes = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "Click");
+			network.addNodeMode();
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	case "Edit node":
+		SetGUIState("EnableAllButtons");
+		switch (network.getSelectedNodes().length) {
+		case 0:
+			$.notify("No block is selected to edit.\nPlease select a block to edit.", "info");
+			break;
+		case 1:
+			network.editNode();
+			break;
+		default:
+			$.notify("only one block can be edited at one time.\nPlease select only one block to edit.", "info");
+			break;
+		}
+		break;
+	case "New edge":
+		MultipleAddEdges = false;
+		switch ($(DOMItem).attr("BtnState")) {
+		case "Normal":
+			$(DOMItem).attr("BtnState", "Click");
+			network.addEdgeMode()
+			break;
+		default:
+			$(DOMItem).attr("BtnState", "Normal");
+			network.disableEditMode();
+			SetGUIState("EnableAllButtons");
+			break;
+		}
+		break;
+	case "Edit edge":
+		SetGUIState("EnableAllButtons");
+		network.editEdgeMode();
+		break;
+	case "Delete":
+		SetGUIState("EnableAllButtons");
+		network.deleteSelected();
+		break;
+	}
+}
+
+function SelectLibraryTab(evt, TabId) {
+	//Set GUI state
+	SetGUIState("DisableLibraryAddButton");
+	//TabColoring and opening
+	var LibTabLinks;
+	x = document.getElementsByClassName("LibraryTab");
+	LibTabLinks = document.getElementsByClassName("LibraryTabLink");
+	for (var i = 0; i < LibTabLinks.length; i++) {
+		LibTabLinks[i].className = LibTabLinks[i].className.replace(" w3-red", "");
+	}
+	evt.currentTarget.className += " w3-red";
+	//Generating parameters
+	$("#GSK_Lib_Functions").empty();
+	if (gsk_libs[TabId].Loaded != true) {
+		SetGUIState("SuspendGUIDialog");
+		$.getScript('libs/' + TabId + '/' + TabId + '.js' + LoadByIgnoringCache)
+		.done(function (script, textStatus, jqxhr, TempTabId = TabId) {
+			try {
+				gsk_libs[TempTabId].Loaded = true;
+				AddLibraryTabMainSelect(TempTabId);
+				SetGUIState("ResumeGUIDialog");
+			} catch (err) {
+				$("#LibraryContent").append("<p>Error in resolving <b><i>libs/" + TempTabId + "/" + TempTabId + ".js</i></b>.</p>" + ErrorReportingText);
+				SetGUIState("ResumeGUIDialog");
+			}
+		})
+		.fail(function (jqxhr, settings, exception, TempTabId = TabId) {
+			$("#LibraryContent").append("<p>Error in loading <b><i>libs/" + TempTabId + "/" + TempTabId + ".js</i></b>.</p>" + ErrorReportingText);
+			SetGUIState("ResumeGUIDialog");
+			return;
+		});
+	} else
+		AddLibraryTabMainSelect(TabId);
+}
+
+function AddLibraryTabMainSelect(TabId) {
+	for (var TempBlock in eval("gsk_libs_" + TabId)) {
+		$("#GSK_Lib_Functions").append("<div class='w3-col s2 m2 l2 w3-padding w3-button' title='" + eval("gsk_libs_" + TabId)[TempBlock].Name + "' GSK_File = 'libs/" + TabId + "/" + TempBlock + ".js' GSK_Var = 'gsk_libs_" + TabId + "_" + TempBlock + "' onclick = 'PrepareAndAddBlock(this)'><img src='" + eval("gsk_libs_" + TabId)[TempBlock].Icon + "' style='width:100%'></div>");
+	}
+	LibraryDialog.dialog('option', 'title', "Library > " + gsk_libs[TabId].Name);
+}
+
+function PrepareAndAddBlock(Block) {
+	if (eval("typeof " + $(Block).attr('GSK_Var')) === 'undefined') {
+		$.getScript($(Block).attr('GSK_File') + LoadByIgnoringCache)
+		.done(function (script, textStatus, jqxhr, TempBlock = Block) {
+			ValidateAndAddBlock(TempBlock);
+		})
+		.fail(function (jqxhr, settings, exception, TempFileToLoad = $(Block).attr('GSK_File')) {
+			$.notify("Error in loading " + TempFileToLoad + ".", "error");
+		});
+	} else
+		ValidateAndAddBlock(Block);
+
+}
+
+function ValidateAndAddBlock(Block) {
+	try {
+		var IsValid = true;
+		for (TempBlockItem in GSK_Mandatory_Items) {
+			if (typeof eval($(Block).attr('GSK_Var'))[TempBlockItem] !== GSK_Mandatory_Items[TempBlockItem]) {
+				IsValid = false;
+				console.log("Unable to load the mandatory " + GSK_Mandatory_Items[TempBlockItem] + " from the member " + TempBlockItem);
+			}
+		}
+		if (IsValid)
+			AddABlockToNetwork(Block);
+		else {
+			$.notify("Error in validating " + $(Block).attr('GSK_Var') + ".", "error");
+		}
+	} catch (err) {
+		console.log(err);
+		$.notify("Error in processing " + $(Block).attr('GSK_Var') + ".", "error");
+	}
+}
+
+function AddABlockToNetwork(Block) {
+	GSK_Data.gskExtra = CopyJSONForBlocks(eval($(Block).attr('GSK_Var')));
+	GSK_Data.gskExtra.FileName = $(Block).attr('GSK_File');
+	GSK_Data.gskExtra.VarName = $(Block).attr('GSK_Var');
+	GSK_Data.gskExtra.InputParams = [];
+	GSK_Data.gskExtra.PresentOut = [];
+	GSK_Data.label = GSK_Data.gskExtra.Label();
+	if (typeof GSK_Data.gskExtra.Icon !== 'undefined') {
+		if (typeof GSK_Data.gskExtra.Icon() === 'string') {
+			GSK_Data.image = GSK_Data.gskExtra.Icon();
+			GSK_Data.shape = "image";
+		}
+	}
+	GSK_Data.gskExtra.Constructor(GSK_Data);
+	GSK_Callback(GSK_Data);
+	LibraryDialog.dialog("close");
+	if (MultipleAddNodes)
+		network.addNodeMode();
+	else {
+		SetGUIState("EnableAllButtons");
+		$(".NetworkManuplation").attr("BtnState", "Normal");
+	}
+}
+
+function PrepareParamsEditor() {
+	try {
+		GSK_BtnsForParametersEditorDialog = {
+			"Update block" : function () {
+				GSK_ParamsValidationText = GSK_Data_ExtrasCopy.ValidateParams();
+				if (GSK_ParamsValidationText === "OK") {
+					GSK_Data.gskExtra.Parameters = GSK_Data_ExtrasCopy.Parameters;
+					GSK_Data.label = GSK_Data.gskExtra.Label();
+					if (typeof GSK_Data.gskExtra.Icon !== 'undefined') {
+						if (typeof GSK_Data.gskExtra.Icon() === 'string') {
+							GSK_Data.image = GSK_Data.gskExtra.Icon();
+							GSK_Data.shape = "image";
+						}
+					} else if (typeof GSK_Data.shape !== 'undefined')
+						delete GSK_Data.shape;
+					GSK_Data.gskExtra.Constructor(GSK_Data);
+					GSK_Callback(GSK_Data);
+					ParametersEditorDialog.dialog("close");
+				} else
+					$.notify("Unable to validate the parameters.\nPlease correct the parameters.\nDetails:\n" + GSK_ParamsValidationText, "error");
+			},
+			Cancel : function () {
+				ParametersEditorDialog.dialog("close");
+			}
+		};
+		GSK_Data_ExtrasCopy = CopyJSONForBlocks(GSK_Data.gskExtra);
+		$("#GSK_Params_Items").empty();
+		$("#GSK_Params_Edt_Details").empty();
+		$("#GSK_Params_Mtx_Editor").empty();
+		for (var i = 0; i < GSK_Data_ExtrasCopy.Parameters.length; i++) {
+			if (i % 3 === 0)
+				$("#GSK_Params_Items").append("<div class='w3-row'>");
+			$("#GSK_Params_Items").append("<div class=' w3-col s4 m4 l4'><button class='w3-left-align w3-button w3-block w3-white w3-border w3-border-theme w3-ripple' style='padding: 0.25em;' GSKParamType='" + GSK_Data_ExtrasCopy.Parameters[i].Type + "' GSKValid=' true ' GSKParamNum='" + i + "' onclick='PrepareMatrixToEditAParam(this)'>" + GSK_Data_ExtrasCopy.Parameters[i].Name + "<i class='fas fa-pencil-alt w3-right' style='font-size: 0.5em'></i></button></div>");
+			if (i % 3 === 0)
+				$("#GSK_Params_Items").append("</div>");
+		}
+		SetGUIState("RemoveMatrixEditorForParamsDialog");
+		ParametersEditorDialog.dialog("open");
+	} catch (err) {
+		$.notify("Unable to prepare this block for editing.\n Recommendation: Delete this block and report author(s) of this block.", "error");
+		console.log(err);
+		GSK_Callback(null);
+	}
+}
+
+var OpenOperationLoadingFilesIndex = 0;
+function PrepareNetworkAfterOpenAction() {
+	Object.keys(network.body.data.nodes._data);
+	if (OpenOperationLoadingFilesIndex === Object.keys(network.body.data.nodes._data).length) {
+		OpenOperationLoadingFilesIndex = 0;
+		SetViewAsLoaded();
+		network.fit();
+	} else {
+		SetViewAsLoading();
+		GSK_Data = network.body.data.nodes._data[Object.keys(network.body.data.nodes._data)[OpenOperationLoadingFilesIndex]];
+		if (eval("typeof " + GSK_Data.gskExtra.VarName + " === 'undefined'")) {
+			$.getScript(GSK_Data.gskExtra.FileName + LoadByIgnoringCache)
+			.done(function (script, textStatus, jqxhr) {
+				LoadABlockFromOpenFileContext();
+			})
+			.fail(function (jqxhr, settings, exception) {
+				$.notify("Error in loading " + GSK_Data.gskExtra.FileName + ".", "error");
+			});
+		} else {
+			LoadABlockFromOpenFileContext();
+		}
+	}
+}
+
+function LoadABlockFromOpenFileContext() {
+	CopyFuncsToBlock(eval(GSK_Data.gskExtra.VarName), GSK_Data.gskExtra);
+	GSK_Data.gskExtra.Constructor(GSK_Data);
+	network.manipulation.body.data.nodes.getDataSet().update(GSK_Data);
+	OpenOperationLoadingFilesIndex++;
+	PrepareNetworkAfterOpenAction();
+}
+
+function PrepareMatrixToEditAParam(InputItem) {
+	InputItem = $(InputItem);
+	$('#GSK_Params_Mtx_Editor').empty();
+
+	var TempParamItem = GSK_Data_ExtrasCopy.Parameters[parseInt(InputItem.attr("GSKParamNum"))];
+	var TempSpreadSheetSettings = {
+		data : Flatted.parse(Flatted.stringify(TempParamItem.Value)),
+		rowHeaders : true,
+		colHeaders : function (col) {
+			return (col + 1);
+		},
+		manualRowMove : true,
+		manualColumnMove : true,
+		manualRowResize : true,
+		manualColumnResize : true,
+		contextMenu : true,
+		"allowInvalid" : false,
+		"allowEmpty" : false,
+	};
+	var TempValidatorText = "my." + GSK_Parameter_Types[TempParamItem.Type].Type;
+	switch (GSK_Parameter_Types[TempParamItem.Type].Size) {
+	case "Scalar":
+		TempSpreadSheetSettings.maxRows = 1;
+		TempSpreadSheetSettings.maxCols = 1;
+		TempSpreadSheetSettings.colWidths = [400];
+		break;
+	case "Vector":
+		TempSpreadSheetSettings.maxCols = 1;
+		TempSpreadSheetSettings.colWidths = [400];
+		break;
+	}
+	switch (GSK_Parameter_Types[TempParamItem.Type].Type) {
+	case "Color":
+		TempSpreadSheetSettings.columns = [{
+				type : 'dropdown',
+				source : GSK_Colors,
+			}
+		];
+		break;
+	case "Options":
+		TempSpreadSheetSettings.columns = [{
+				type : 'dropdown',
+				source : TempParamItem.Options,
+			}
+		];
+		break;
+	}
+	GSK_MatrixEditor = new Handsontable(document.getElementById('GSK_Params_Mtx_Editor'), TempSpreadSheetSettings);
+
+	GSK_BtnsForMatrixEditorForParamsDialog = {
+		"Row +" : function () {
+			GSK_MatrixEditor.alter('insert_row');
+		},
+		"Row -" : function () {
+			if (GSK_MatrixEditor.countRows() > 1)
+				GSK_MatrixEditor.alter('remove_row');
+		},
+		"Column +" : function () {
+			GSK_MatrixEditor.alter('insert_col');
+		},
+		"Column -" : function () {
+			if (GSK_MatrixEditor.countCols() > 1)
+				GSK_MatrixEditor.alter('remove_col');
+		},
+		"Update variable" : function () {
+			var TempTableData = GSK_MatrixEditor.getData();
+			for (var i = 0; i < TempTableData.length; i++) {
+				for (var j = 0; j < TempTableData[0].length; j++) {
+					GSK_MatrixEditor.setCellMeta(i, j, 'validator', TempValidatorText);
+				}
+			}
+			GSK_MatrixEditor.validateCells(function () {
+				var TempIsValid = true;
+				for (var i = 0; i < TempTableData.length; i++) {
+					for (var j = 0; j < TempTableData[0].length; j++) {
+						if (!GSK_MatrixEditor.getCellMeta(i, j).valid) {
+							TempIsValid = false;
+							break;
+						}
+					}
+				}
+				if (TempIsValid) {
+					TempParamItem.Value = Flatted.parse(Flatted.stringify(GSK_MatrixEditor.getData()));
+					SetGUIState("RemoveMatrixEditorForParamsDialog");
+				} else
+					$.notify("Error in validating user input. Please correct the red cells.", "error");
+			});
+		},
+		"Back" : function () {
+			SetGUIState("RemoveMatrixEditorForParamsDialog");
+		}
+	};
+	SetGUIState("SetMatrixEditorForParamsDialog");
+	ParametersEditorDialog.dialog('widget').find('.ui-dialog-title').html(((typeof GSK_Data_ExtrasCopy.Icon !== 'undefined') ? ("<img style='height: 2em;' src='" + GSK_Data_ExtrasCopy.Icon() + "'/> ") : ("")) + GSK_Data_ExtrasCopy.Label() + " > " + TempParamItem.Name + " | <i style='border: 1pt black solid; background: yellow'>&lt;" + GSK_Parameter_Types[TempParamItem.Type].Type + ", " + GSK_Parameter_Types[TempParamItem.Type].Size + "&gt;</i>");
+	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+}
+
+function CopyFuncsToBlock(FromBlock, ToBlock) {
+	for (var TempObject in FromBlock) {
+		if (typeof FromBlock[TempObject] === "function") {
+			ToBlock[TempObject] = FromBlock[TempObject];
+		}
+	}
+}
+
+function CopyJSONForBlocks(Source) {
+	var target;
+	target = Flatted.parse(Flatted.stringify(Source));
+	CopyFuncsToBlock(Source, target);
+	return target;
+}
+
+function GetSettingsBlocksList() {
+	SettingsBlocksList = [];
+	for (var TempNode in network.body.data.nodes._data) {
+		if ((network.body.data.nodes._data[TempNode].gskExtra.MaxOutTerminals === 0)
+			 && (network.body.data.nodes._data[TempNode].gskExtra.MaxInTerminals === 0)) {
+			SettingsBlocksList.push(TempNode);
+		}
+	}
+}
+
+function GetOrderOfExecution() {
+	if (network != null) {
+		var TempOrderOfExecution = [];
+		for (var TempEdge in network.body.edges) {
+			if (
+				(TempOrderOfExecution.indexOf(network.body.edges[TempEdge].toId) < 0) &&
+				(network.body.nodes[network.body.edges[TempEdge].toId].options.gskExtra.MaxOutTerminals === 0))
+				TempOrderOfExecution.push(network.body.edges[TempEdge].toId);
+		}
+		var TempIndex = 0;
+		if (TempOrderOfExecution.length > 0) {
+			while (true) {
+				for (var TempEdge in network.body.edges) {
+					if (
+						(TempOrderOfExecution.indexOf(network.body.edges[TempEdge].fromId) < 0) &&
+						(network.body.edges[TempEdge].toId == TempOrderOfExecution[TempIndex]))
+						TempOrderOfExecution.push(network.body.edges[TempEdge].fromId);
+				}
+				TempIndex++;
+				if (TempIndex >= TempOrderOfExecution.length)
+					break;
+			}
+		}
+	}
+	TempOrderOfExecution.reverse();
+	//Finding all the sources and dynamicItems.
+	OrderOfExecution = [];
+	for (var i = 0; i < TempOrderOfExecution.length; i++) {
+		if ((network.body.nodes[TempOrderOfExecution[i]].options.gskExtra.MaxInTerminals === 0)
+			 || (typeof network.body.nodes[TempOrderOfExecution[i]].options.gskExtra.FirstInExecutionOrder !== 'undefined')) {
+			OrderOfExecution.push(TempOrderOfExecution[i]);
+		}
+	}
+
+	//Removing sources from the TempOrderOfExecution
+	for (var i = 0; i < OrderOfExecution.length; i++) {
+		var TempIndexOfFoundItem;
+		if ((TempIndexOfFoundItem = TempOrderOfExecution.indexOf(OrderOfExecution[i])) >= 0)
+			TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
+	}
+
+	//Adding previous items before present items.
+	try {
+		OrderOfExecution = OrderOfExecution.concat(OrderByAddingPreviousBlocks(TempOrderOfExecution));
+	} catch (err) {
+		throw err;
+	}
+	/*
+	//Add forward path blocks
+	var TempFeedBackBlocks = [];
+	var CursorOfSearch = 0;
+	while (true) {
+	network.body.nodes[OrderOfExecution[CursorOfSearch]].edges.forEach(function (TempEdgeOfItem) {
+	var TempIndexOfFoundItem;
+	if (
+	(TempEdgeOfItem.to.id !== OrderOfExecution[CursorOfSearch])
+	&& ((TempIndexOfFoundItem = TempOrderOfExecution.indexOf(TempEdgeOfItem.to.id)) >= 0)) {
+	var IsForwardBlock = true;
+	network.body.nodes[TempEdgeOfItem.to.id].edges.forEach(function (TempEdgeToTest) {
+	if (OrderOfExecution.indexOf(TempEdgeToTest.to.id) >= 0)
+	IsForwardBlock = false;
+	});
+	if (IsForwardBlock) {
+	OrderOfExecution.push(TempEdgeOfItem.to.id);
+	TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
+	} else {
+	TempFeedBackBlocks.push(TempEdgeOfItem.to.id);
+	TempOrderOfExecution.splice(TempIndexOfFoundItem, 1);
+	}
+	}
+	});
+	if (TempOrderOfExecution.length === 0)
+	break;
+	CursorOfSearch++;
+	}
+	//Add feedback blocks
+	CursorOfSearch = 0;
+	while (true) {
+	network.body.nodes[OrderOfExecution[CursorOfSearch]].edges.forEach(function (TempEdgeOfItem) {
+	var TempIndexOfFoundItem;
+	if (
+	(TempEdgeOfItem.to.id !== OrderOfExecution[CursorOfSearch])
+	&& ((TempIndexOfFoundItem = TempFeedBackBlocks.indexOf(TempEdgeOfItem.to.id)) >= 0)) {
+	OrderOfExecution.push(TempEdgeOfItem.to.id);
+	TempFeedBackBlocks.splice(TempIndexOfFoundItem, 1);
+	}
+	});
+	if (TempFeedBackBlocks.length === 0)
+	break;
+	CursorOfSearch++;
+	}*/
+}
+
+function OrderByAddingPreviousBlocks(AllBlocks) {
+	var TempAllBlocks = AllBlocks.slice();
+	var OutArray = [];
+	var TempCursor = 0;
+	var ExitIteration = 0;
+	try {
+		while (TempAllBlocks.length !== 0) {
+			var ExistPrevNodeUnAttended = -1;
+			for (TempEdge of network.body.nodes[TempAllBlocks[TempCursor]].edges) {
+				if (
+					(TempEdge.from.id !== TempAllBlocks[TempCursor])
+					 && ((ExistPrevNodeUnAttended = TempAllBlocks.indexOf(TempEdge.from.id)) >= 0)) {
+					if ((ExitIteration++) > TempAllBlocks.length)
+						throw "Too many iterations";
+					TempCursor = ExistPrevNodeUnAttended;
+					break;
+				}
+			}
+			if (ExistPrevNodeUnAttended < 0) {
+				OutArray.push(TempAllBlocks[TempCursor]);
+				TempAllBlocks.splice(TempCursor, 1);
+				TempCursor = 0;
+				ExitIteration = 0;
+			}
+		}
+		return OutArray;
+	} catch (err) {
+		$.notify("Error in identifying execution order, possibily there exists an arthematic loop.", "error");
+		network.focus(AllBlocks[TempCursor], ShowNodeFocusInOptions);
+		throw (err);
+	}
 }
 
 function RunSimulation() {
+	GetSettingsBlocksList();
 	GetOrderOfExecution();
 	if (OrderOfExecution.length > 0) {
-		for (var i = 0; i < OrderOfExecution.length; i++) {
-			//console.log(network.body.nodes[OrderOfExecution[i]]);
-			network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
+		var i;
+		try {
+			for (i = 0; i < SettingsBlocksList.length; i++) {
+				network.body.nodes[SettingsBlocksList[i]].options.gskExtra.Init();
+			}
+			for (i = 0; i < OrderOfExecution.length; i++) {
+				network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams = [];
+				network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = [];
+				network.body.nodes[OrderOfExecution[i]].options.gskExtra.Init();
+				//if (network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut.length === 0) {}
+			}
+			SimulationTime = 0;
+			RealTime = 0;
+			SimulateAtInterval = setInterval(function () {
+					if (!PauseTheSimulation)
+						ExecuteFunctions();
+				}, SamplingTimeForExecMs);
+		} catch (err) {
+			network.focus(OrderOfExecution[i], ShowNodeFocusInOptions);
+			$.notify("Error in simulating this network.", "error");
+			console.log(err);
+			throw (err);
 		}
-		SimulationTime = 0;
-		SimulateAtInterval = setInterval(ExecuteFunctions, SamplingTimeMs);
 	} else {
 		$.notify("There is nothing to simulate", "warn");
 		SetViewAsLoaded();
@@ -833,24 +1269,57 @@ function RunSimulation() {
 }
 
 function ExecuteFunctions() {
-	for (var i = 0; i < OrderOfExecution.length; i++) {
-		var TempArrayIndex = 0;
-		network.body.nodes[OrderOfExecution[i]].edges.forEach(function (TempEdge) {
-			if (TempEdge.toId == OrderOfExecution[i]) {
-				network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams[TempArrayIndex] = network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut;
-				TempArrayIndex++;
+	var i;
+	try {
+		for (i = 0; i < OrderOfExecution.length; i++) {
+			network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams = [];
+			network.body.nodes[OrderOfExecution[i]].edges.forEach(function (TempEdge) {
+				if (TempEdge.toId == OrderOfExecution[i]) {
+					/*console.log(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name+" ... is receiving ...")
+					console.log(network.body.nodes[TempEdge.fromId].options.gskExtra.Name);
+					console.log(network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut);*/
+					network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams.push(network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut);
+				}
+			});
+			network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
+			//network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = math.clone(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate());
+			/*console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
+			for (var j = 0; j < OrderOfExecution.length; j++) {
+			console.log("Name: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.Name);
+			console.log("PresentOut: " + network.body.nodes[OrderOfExecution[j]].options.gskExtra.PresentOut);
 			}
-		});
-		network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = parseFloat(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Eval());
+			console.log("------------------"); /**/
+		}
+		$("#SimulationTimeDisplay").html(SimulationTime.toFixed(3));
+		if ((RunSimulationForS > 0) && (SimulationTime >= RunSimulationForS))
+			SimulateOperation("Stop");
+		SimulationTime = math.round(SimulationTime + SamplingTimeMs / 1000, 3);
+		RealTime = math.round(RealTime + SamplingTimeForExecMs / 1000, 3);
+	} catch (err) {
+		network.focus(OrderOfExecution[i], ShowNodeFocusInOptions);
+		$.notify("Error in simulating this network.", "error");
+		console.log(err);
+		SimulateOperation("Stop");
+		throw (err)
 	}
-	SimulationTime = parseFloat((SimulationTime + SamplingTimeMs / 1000).toFixed(3))
+}
+
+Date.prototype.FileFormat = function () {
+	return "GSK_" + this.getFullYear() + this.getMonth() + this.getDay() + this.getHours() + this.getMinutes() + this.getSeconds() + this.getMilliseconds() + ".rts";
+}
+
+Date.prototype.UniqueMSNumber = function () {
+	return "" + this.getFullYear() + this.getMonth() + this.getDay() + this.getHours() + this.getMinutes() + this.getSeconds() + this.getMilliseconds();
 }
 
 function PrepareNetworkToDownload() {
-	var blob = new Blob([JSON.stringify2(network.body.data)], {
-			type: "application/json"
+	var TempFileToSave = objectToArray(network.getPositions());
+	TempFileToSave.forEach(addConnections);
+	TempFileToSave.forEach(addGSKExtras);
+	var blob = new Blob([Flatted.stringify(TempFileToSave)], {
+			type : "application/json"
 		});
-	saveAs(blob, "hello world.JSON");
+	saveAs(blob, (new Date()).FileFormat());
 }
 
 function readFileContent(file) {
@@ -860,4 +1329,145 @@ function readFileContent(file) {
 				reader.onerror = error => reject(error)
 				reader.readAsText(file)
 		})
+}
+
+var FocusAllTheNodesIndex = 0;
+var FocusAllTheNodesInterval;
+var IsShowingTheNodes = false;
+function FocusAllNodes() {
+	try {
+		if (IsShowingTheNodes === false) {
+			GetOrderOfExecution();
+			if (OrderOfExecution.length !== 0) {
+				SetGUIState("ShowingExectionOrder");
+				network.fit({
+					animation : {
+						duration : 1000,
+						easingFunction : "easeInOutQuad",
+					}
+				});
+				setTimeout(function () {
+					network.fit({
+						nodes : OrderOfExecution,
+						animation : {
+							duration : 1000,
+							easingFunction : "easeInOutQuad",
+						}
+					});
+				}, 1000);
+				FocusAllTheNodesInterval = setInterval(FocusANode, 3000);
+				IsShowingTheNodes = true;
+			} else {
+				FocusAllTheNodesIndex = 0;
+				$.notify("There are no connections to simulate.", "error");
+			}
+		} else {
+			clearInterval(FocusAllTheNodesInterval);
+			FocusAllTheNodesIndex = 0;
+			IsShowingTheNodes = false;
+			SetGUIState("NotShowingExectionOrder");
+		}
+	} catch (err) {
+		SetGUIState("NotShowingExectionOrder");
+		$.notify("Unable to show the execution order", "error");
+	}
+}
+
+function FocusANode() {
+	if (FocusAllTheNodesIndex === OrderOfExecution.length) {
+		FocusAllTheNodesIndex = 0;
+		FocusAllNodes();
+		network.fit({
+			animation : {
+				duration : 1000,
+				easingFunction : "easeInOutQuad",
+			}
+		});
+	} else {
+		nodeId = OrderOfExecution[FocusAllTheNodesIndex];
+		network.focus(nodeId, ShowNodeFocusInOptions);
+		setTimeout(function () {
+			network.focus(nodeId, ShowNodeFocusOutOptions);
+			FocusAllTheNodesIndex++;
+		}, 1000);
+	}
+}
+
+function SimulateOperation(ButtonType) {
+	SetGUIState("DisableAllButtons");
+	$(".SimulationButtons").prop('disabled', false);
+	switch (ButtonType) {
+	case "Run":
+		try {
+			switch (SimulationState) {
+			case "Design":
+				PauseTheSimulation = false;
+				RunSimulation();
+				$("#Simulate").html("<i class='fas fa-pause'></i>");
+				SimulationState = "Running";
+				break;
+			case "Running":
+				PauseTheSimulation = true;
+				$("#Simulate").html("<i class='fas fa-play'></i>");
+				SimulationState = "Paused";
+				break;
+			case "Paused":
+				PauseTheSimulation = false;
+				$("#Simulate").html("<i class='fas fa-pause'></i>");
+				SimulationState = "Running";
+				break;
+			}
+		} catch (err) {
+			console.log(err);
+			SimulateOperation("Stop");
+		}
+		break;
+	case "Stop":
+		$("#SimulationTimeDisplay").html("0.000");
+		switch (SimulationState) {
+		case "Running":
+		case "Paused":
+			try {
+				if (SimulateAtInterval !== undefined) {
+					clearInterval(SimulateAtInterval);
+				}
+				if (OrderOfExecution.length > 0) {
+					for (var i = 0; i < OrderOfExecution.length; i++) {
+						network.body.nodes[OrderOfExecution[i]].options.gskExtra.End();
+					}
+				}
+			} catch (err) {
+				console.log(err);
+			}
+		}
+		SetGUIState("EnableAllButtons");
+		$("#Simulate").html("<i class='fas fa-play'></i>");
+		SimulationState = "Design";
+		break;
+	case "OneStepAdvance":
+		try {
+			switch (SimulationState) {
+			case "Design":
+				PauseTheSimulation = true;
+				RunSimulation();
+				ExecuteFunctions();
+				$("#Simulate").html("<i class='fas fa-play'></i>");
+				SimulationState = "Paused";
+				break;
+			case "Running":
+				PauseTheSimulation = true;
+				$("#Simulate").html("<i class='fas fa-play'></i>");
+				SimulationState = "Paused";
+				break;
+			case "Paused":
+				ExecuteFunctions();
+				$("#Simulate").html("<i class='fas fa-play'></i>");
+				break;
+			}
+			break;
+		} catch (err) {
+			console.log(err);
+			SimulateOperation("Stop");
+		}
+	}
 }
