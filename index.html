@@ -47,6 +47,15 @@
 	</div>
 </div>
 <div id="mynetwork"></div>
+<div class="w3-show-inline-block" style="position: absolute; top: 0px; right: 0; font-size: 1.5em;"><div class="w3-bar w3-theme-l5 w3-border w3-border-theme">
+	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div>
+	<a style = "padding: 2px;" class="InformationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" title="Explore the code in GitHub" href="https://github.com/skgadi/RTS" target="_blank"><i class="fab fa-github"></i></a>
+	<a style = "padding: 2px;" class="InformationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" title="More information" href="info.html" target="_blank"><i class="fas fa-info-circle"></i></a>
+	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div>
+	<!--a style = "padding: 2px;" class="DonationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" title="Donate on patreon" href="https://www.patreon.com/skgadi" target="_blank"><i class="fab fa-patreon"></i></a>
+	<a style = "padding: 2px;" class="DonationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" title="Donate on paypal" href="https://www.paypal.me/skgadi" target="_blank"><i class="fab fa-paypal"></i></a>
+	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div-->
+</div></div>
 <div id ="ToolbarDragging" class="w3-show-inline-block" style="position: absolute; top: 0px; left: 0; font-size: 1.5em;"><div class="w3-bar w3-theme-l5 w3-border w3-border-theme">
 	<div style = "padding: 2px 2px; cursor: move;" class="w3-bar-item w3-hover-theme w3-text-theme w3-ripple ToolbarDraggingHandle" title="Handle to move this toolbar"><i class="fas fa-grip-horizontal"></i></div>
 	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div>
@@ -60,9 +69,6 @@
 	<button style = "padding: 2px;" class="NetworkManuplation w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" BtnState="Normal" onclick="ClickNetworkManuplation(this, 'Edit edge')" title="Edit an existing connection"><i class="fas fa-pen-nib"></i></button>
 	<button style = "padding: 2px;" class="NetworkManuplation w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" BtnState="Normal" onclick="ClickNetworkManuplation(this, 'Delete')" title="Delete the selected blocks and connections"><i class="far fa-trash-alt"></i></button>
 	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div>
-	<a style = "padding: 2px;" class="InformationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" title="Explore the code in GitHub" href="https://github.com/skgadi/RTS" target="_blank"><i class="fab fa-github"></i></a>
-	<a style = "padding: 2px;" class="InformationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" onclick="" title="More information" href="info.html" target="_blank"><i class="fas fa-info-circle"></i></a>
-	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div>
 	<button id = "BtnExecOrderDisplay" style = "padding: 2px;" class="ExecutionOrder w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple"  title="Explore the execution order" onclick="FocusAllNodes()"><i class="far fa-eye"></i></button>
 	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div>
 	<!--button id = "Simulate" style = "padding: 2px;" class="SimulationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" onclick="SimulateTheNetwork()" title="Run the simulation"><i class="fas fa-play"></i></button-->
@@ -71,9 +77,7 @@
 	<button style = "padding: 2px;" class="SimulationButtons w3-bar-item w3-button w3-hover-theme w3-text-theme w3-ripple" onclick="SimulateOperation('OneStepAdvance')" title="Advance the simulation by a step"><i class="fas fa-step-forward"></i></button>
 	<div style = "padding: 2px 0px; cursor: default;" class="w3-bar-item w3-theme-d3">&nbsp;</div>
 	<span style = "padding: 2px 0px; font-family: DSEG14-Classic;" class="w3-bar-item w3-text-theme SimulationTimeDisplay" title="Simulation time" id="SimulationTimeDisplay">0.000</span>
-	
 </div></div>
-
 </div>
 <div id="GSK_HiddenForEverDIV" style="display: none;">
 <div id="ConfirmRemoveNetwork" title="Delete this network?">

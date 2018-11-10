@@ -711,6 +711,8 @@ function SetGUIState(State) {
 		$($(".SimulationButtons")[1]).prop('disabled', true);
 		if (network.getSelection().nodes.length !== 1)
 			$($(".NetworkManuplation")[1]).prop('disabled', true);
+		if (network.body.data.nodes.length <= 1)
+			$($(".NetworkManuplation")[2]).prop('disabled', true);
 		if (network.getSelection().edges.length !== 1)
 			$($(".NetworkManuplation")[3]).prop('disabled', true);
 		if ((network.getSelection().nodes.length === 0) && (network.getSelection().edges.length === 0))
