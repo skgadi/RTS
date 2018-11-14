@@ -524,10 +524,10 @@ function getNodeById(data, id) {
 }
 
 function getEdgeData(data) {
-	EdgesReceivedAtANode=[];
+	EdgesReceivedAtANode = [];
 	var networkEdges = [];
 	data.forEach(function (node) {
-		EdgesReceivedAtANode[node.id]=[];
+		EdgesReceivedAtANode[node.id] = [];
 		// add the connection
 		var TempId = 0;
 		node.connections.forEach(function (TempEdge) {
@@ -609,7 +609,7 @@ function OpenAFile() {
 		height : 300,
 		width : 400,
 		modal : true,
-		close : function() {
+		close : function () {
 			SetGUIState("EnableAllButtons");
 		},
 		/*buttons : {
@@ -842,7 +842,39 @@ function ClickNetworkManuplation(DOMItem, ButtonType) {
 		network.deleteSelected();
 		SetGUIState("EnableAllButtons");
 		break;
+	case "Group blocks":
+		var TempNodes = network.getSelectedNodes();
+		var TempCID = guid();
+		TempNodes.forEach(function (TempNode) {
+			TempData = {
+				id : TempNode,
+				cid : TempCID,
+			};
+			network.manipulation.body.data.nodes.getDataSet().update(TempData);
+		});
+		var clusterOptionsByData = {
+			joinCondition : function (childOptions) {
+				return childOptions.cid === TempCID;
+			},
+			clusterNodeProperties : {
+				id : 'cidCluster',
+				borderWidth : 3,
+				shape : 'database'
+			}
+		};
+		network.cluster(clusterOptionsByData);
+		SetGUIState("EnableAllButtons");
+		break;
 	}
+}
+
+function guid() {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+		.toString(16)
+		.substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
 function SelectLibraryTab(evt, TabId) {
@@ -1544,8 +1576,7 @@ function ShowLabelsAttachedToANode(node) {
 	network.redraw()
 }
 
-
-function PrepareEdgeLabelsafterOpenAction(){
+function PrepareEdgeLabelsafterOpenAction() {
 	ResetAllTheEdgeLabels();
 }
 
