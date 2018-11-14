@@ -28,6 +28,7 @@ var MaxOutTerminalsAllowedToUse = 99999;
 var MultipleAddNodes = false;
 var MultipleAddEdges = false;
 var PauseTheSimulation = false;
+var EdgesReceivedAtANode = [];
 var ShowNodeFocusInOptions = {
 	scale : 5,
 	offset : {
@@ -152,6 +153,7 @@ function destroy() {
 	}
 }
 function ResetNetwork() {
+	EdgesReceivedAtANode = [];
 	destroy();
 	var data;
 	draw(data);
@@ -239,6 +241,18 @@ function draw(data) {
 			},
 			deleteNode : function (data, callback) {
 				network.body.nodes[data.nodes[0]].options.gskExtra.Destructor(data);
+				data.nodes.forEach(function (TempNode) {
+					delete EdgesReceivedAtANode[TempNode];
+				});
+				callback(data);
+			},
+			deleteEdge : function (data, callback) {
+				data.edges.forEach(function (TempEdge) {
+					if (typeof EdgesReceivedAtANode[network.body.edges[TempEdge].toId] !== "undefined") {
+						EdgesReceivedAtANode[network.body.edges[TempEdge].toId].splice(EdgesReceivedAtANode[network.body.edges[TempEdge].toId].indexOf(TempEdge), 1);
+						ShowLabelsAttachedToANode(network.body.edges[TempEdge].toId);
+					}
+				});
 				callback(data);
 			},
 			addEdge : function (data, callback) {
@@ -265,7 +279,10 @@ function draw(data) {
 					TempErrorMessage += "\nYou cannot connect the same block to itself. Use an unit gain instead.";
 				}
 				if (TempIsValidNewEdge) {
+					//console.log(data);
 					callback(data);
+					EdgesReceivedAtANode[data.to].push(data.id);
+					ShowLabelsAttachedToANode(data.to);
 					if (MultipleAddEdges)
 						network.addEdgeMode();
 					else {
@@ -292,7 +309,12 @@ function draw(data) {
 					(network.body.nodes[data.from].options.gskExtra.MaxOutTerminals > NoOfOutputs)
 					 &&
 					(network.body.nodes[data.to].options.gskExtra.MaxInTerminals > NoOfInputs)) {
+					if (typeof EdgesReceivedAtANode[network.body.edges[data.id].toId] !== "undefined") {
+						EdgesReceivedAtANode[network.body.edges[data.id].toId].splice(EdgesReceivedAtANode[network.body.edges[data.id].toId].indexOf(data.id), 1);
+					}
 					callback(data);
+					EdgesReceivedAtANode[data.to].push(data.id);
+					ShowLabelsAttachedToANode(data.to);
 				} else {
 					$.notify("This connection is not allowed", "warn");
 					callback(null);
@@ -314,7 +336,7 @@ function draw(data) {
 			network.body.nodes[properties.nodes[0]].options.gskExtra.RunTimeExec();
 	});
 	network.on('click', function (properties) {
-		if (SimulationState === "Design")
+		if ((SimulationState === "Design") && ($($(".NetworkManuplation")[0]).attr('BtnState') === "Normal") && ($($(".NetworkManuplation")[2]).attr('BtnState') === "Normal"))
 			SetGUIState("EnableAllButtons");
 	});
 }
@@ -337,7 +359,7 @@ function init() {
 					open : function () {
 						$(".ui-dialog").css("padding", "0px");
 						$(".ui-dialog-buttonpane").css("padding", "0px").css("margin", "0px");
-						SetGUIState("DisableLibraryAddButton");
+						//SetGUIState("DisableLibraryAddButton");
 					},
 					close : function (event, ui) {
 						GSK_Callback(null);
@@ -446,13 +468,13 @@ $(document).ready(function () {
 		else {
 			readFileContent(this.files[0]).then(content => {
 				var TempData = Flatted.parse(content);
-				//console.log(TempData);
 				var NewData = {
 					nodes : getNodeData(TempData),
 					edges : getEdgeData(TempData),
 				};
 				draw(NewData);
 				PrepareNetworkAfterOpenAction();
+				PrepareEdgeLabelsafterOpenAction();
 				$("#OpenFileDialog").dialog("close");
 			}).catch (error => $('form p').html($('form p').html() + "<br/>Unable to load the selected file."));
 		}
@@ -502,28 +524,23 @@ function getNodeById(data, id) {
 }
 
 function getEdgeData(data) {
+	EdgesReceivedAtANode=[];
 	var networkEdges = [];
 	data.forEach(function (node) {
+		EdgesReceivedAtANode[node.id]=[];
 		// add the connection
-		node.connections.forEach(function (connId, cIndex, conns) {
+		var TempId = 0;
+		node.connections.forEach(function (TempEdge) {
+			EdgesReceivedAtANode[node.id].push(TempEdge[0]);
 			networkEdges.push({
-				from : node.id,
-				to : connId
+				id : TempEdge[0],
+				from : TempEdge[1],
+				to : node.id
 			});
-			let cNode = getNodeById(data, connId);
-
-			var elementConnections = cNode.connections;
-
-			// remove the connection from the other node to prevent duplicate connections
-			/*var duplicateIndex = elementConnections.findIndex(function (connection) {
-			return connection == node.id; // double equals since id can be numeric or string
-			});
-
-			if (duplicateIndex != -1) {
-			elementConnections.splice(duplicateIndex, 1);
-			};*/
+			TempId++;
 		});
 	});
+	//console.log(new vis.DataSet(networkEdges));
 	return new vis.DataSet(networkEdges);
 }
 function objectToArray(obj) {
@@ -536,12 +553,11 @@ function objectToArray(obj) {
 function addConnections(elem, index) {
 	// need to replace this with a tree of the network, then get child direct children of the element
 	elem.connections = [];
-	network.body.nodes[elem.id].edges.forEach(function (TempEdgeOfItem) {
-		if (TempEdgeOfItem.to.id !== elem.id) {
-			elem.connections.push(TempEdgeOfItem.to.id);
-			//console.log(network.body.nodes[TempEdgeOfItem.from.id].options.gskExtra.Name+" -> " + TempEdgeOfItem.to.id + "->"+ network.body.nodes[TempEdgeOfItem.to.id].options.gskExtra.Name )
-		}
-	});
+	if (typeof EdgesReceivedAtANode[elem.id] !== "undefined") {
+		EdgesReceivedAtANode[elem.id].forEach(function (TempEdge) {
+			elem.connections.push([TempEdge, network.body.edges[TempEdge].fromId]);
+		});
+	}
 }
 
 function addGSKExtras(elem, index) {
@@ -593,6 +609,9 @@ function OpenAFile() {
 		height : 300,
 		width : 400,
 		modal : true,
+		close : function() {
+			SetGUIState("EnableAllButtons");
+		},
 		/*buttons : {
 		"Open selected" : function () {
 
@@ -657,8 +676,8 @@ function SetGUIState(State) {
 		$("#Simulate").html("<i class='fas fa-stop'></i>");
 		network.disableEditMode();
 		$(".vis-edit-mode").css("display", "none");
-		$(".FileHandling").prop('disabled', true);
-		$(".SimulationTimeDisplay").prop('disabled', false);
+		/*$(".FileHandling").prop('disabled', true);
+		$(".SimulationTimeDisplay").prop('disabled', false);*/
 		break;
 	case "DisableLibraryAddButton":
 		$(".ui-dialog-buttonpane button:contains('Add block')").button("disable");
@@ -828,7 +847,7 @@ function ClickNetworkManuplation(DOMItem, ButtonType) {
 
 function SelectLibraryTab(evt, TabId) {
 	//Set GUI state
-	SetGUIState("DisableLibraryAddButton");
+	//SetGUIState("DisableLibraryAddButton");
 	//TabColoring and opening
 	var LibTabLinks;
 	x = document.getElementsByClassName("LibraryTab");
@@ -917,6 +936,8 @@ function AddABlockToNetwork(Block) {
 	}
 	GSK_Data.gskExtra.Constructor(GSK_Data);
 	GSK_Callback(GSK_Data);
+	EdgesReceivedAtANode[GSK_Data.id] = [];
+	//console.log(GSK_Data);
 	LibraryDialog.dialog("close");
 	if (MultipleAddNodes)
 		network.addNodeMode();
@@ -1289,14 +1310,11 @@ function ExecuteFunctions() {
 	try {
 		for (i = 0; i < OrderOfExecution.length; i++) {
 			network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams = [];
-			network.body.nodes[OrderOfExecution[i]].edges.forEach(function (TempEdge) {
-				if (TempEdge.toId == OrderOfExecution[i]) {
-					/*console.log(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name+" ... is receiving ...")
-					console.log(network.body.nodes[TempEdge.fromId].options.gskExtra.Name);
-					console.log(network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut);*/
-					network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams.push(network.body.nodes[TempEdge.fromId].options.gskExtra.PresentOut);
+			if (typeof EdgesReceivedAtANode[OrderOfExecution[i]] !== "undefined") {
+				for (var j = 0; j < EdgesReceivedAtANode[OrderOfExecution[i]].length; j++) {
+					network.body.nodes[OrderOfExecution[i]].options.gskExtra.InputParams.push(network.body.edges[EdgesReceivedAtANode[OrderOfExecution[i]][j]].from.options.gskExtra.PresentOut);
 				}
-			});
+			}
 			network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate();
 			//network.body.nodes[OrderOfExecution[i]].options.gskExtra.PresentOut = math.clone(network.body.nodes[OrderOfExecution[i]].options.gskExtra.Evaluate());
 			/*console.log("Evaluated :" + network.body.nodes[OrderOfExecution[i]].options.gskExtra.Name);
@@ -1509,5 +1527,30 @@ function MatrixToLatexString(InputMat) {
 		return StrOut;
 	} catch (err) {
 		return "";
+	}
+}
+
+function ShowLabelsAttachedToANode(node) {
+	if (typeof EdgesReceivedAtANode[node] !== "undefined") {
+		for (var i = 0; i < EdgesReceivedAtANode[node].length; i++) {
+			network.manipulation.body.edges[EdgesReceivedAtANode[node][i]].setOptions({
+				id : network.manipulation.body.edges[EdgesReceivedAtANode[node][i]].id,
+				to : network.manipulation.body.edges[EdgesReceivedAtANode[node][i]].to.id,
+				from : network.manipulation.body.edges[EdgesReceivedAtANode[node][i]].from.id,
+				label : (i + 1).toString()
+			});
+		}
+	}
+	network.redraw()
+}
+
+
+function PrepareEdgeLabelsafterOpenAction(){
+	ResetAllTheEdgeLabels();
+}
+
+function ResetAllTheEdgeLabels() {
+	for (var TempNode in network.body.data.nodes._data) {
+		ShowLabelsAttachedToANode(TempNode);
 	}
 }
