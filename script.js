@@ -240,19 +240,13 @@ function draw(data) {
 				PrepareParamsEditor();
 			},
 			deleteNode : function (data, callback) {
+				console.log(data);
 				network.body.nodes[data.nodes[0]].options.gskExtra.Destructor(data);
-				data.nodes.forEach(function (TempNode) {
-					delete EdgesReceivedAtANode[TempNode];
-				});
+				DeleteNodeOrEdgeOperationStuff(data);
 				callback(data);
 			},
 			deleteEdge : function (data, callback) {
-				data.edges.forEach(function (TempEdge) {
-					if (typeof EdgesReceivedAtANode[network.body.edges[TempEdge].toId] !== "undefined") {
-						EdgesReceivedAtANode[network.body.edges[TempEdge].toId].splice(EdgesReceivedAtANode[network.body.edges[TempEdge].toId].indexOf(TempEdge), 1);
-						ShowLabelsAttachedToANode(network.body.edges[TempEdge].toId);
-					}
-				});
+				DeleteNodeOrEdgeOperationStuff(data);
 				callback(data);
 			},
 			addEdge : function (data, callback) {
@@ -1584,4 +1578,16 @@ function ResetAllTheEdgeLabels() {
 	for (var TempNode in network.body.data.nodes._data) {
 		ShowLabelsAttachedToANode(TempNode);
 	}
+}
+
+function DeleteNodeOrEdgeOperationStuff(data) {
+	data.nodes.forEach(function (TempNode) {
+		delete EdgesReceivedAtANode[TempNode];
+	});
+	data.edges.forEach(function (TempEdge) {
+		if (typeof EdgesReceivedAtANode[network.body.edges[TempEdge].toId] !== "undefined") {
+			EdgesReceivedAtANode[network.body.edges[TempEdge].toId].splice(EdgesReceivedAtANode[network.body.edges[TempEdge].toId].indexOf(TempEdge), 1);
+			ShowLabelsAttachedToANode(network.body.edges[TempEdge].toId);
+		}
+	});
 }
